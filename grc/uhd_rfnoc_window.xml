@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Window</name>
+  <key>uhd_rfnoc_streamer_window</key>
+  <import>import ettus</import>
+  <import>import numpy as np</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    "Window_{0}".format($block_index),
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="window_len=$coeffs_len,spp=$coeffs_len",
+    )
+)
+self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
+  <callback>set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</callback>
+
+  <param>
+    <name>Number of Coeffs</name>
+    <key>coeffs_len</key>
+    <type>enum</type>
+    <option>
+      <name>256</name>
+      <key>256</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Coeffs</name>
+    <key>coeffs</key>
+    <value>[0,2,7,16,29,45,65,89,116,148,183,222,266,314,366,422,483,549,620,695,776,862,953,1050,1153,1261,1376,1496,1623,1757,1897,2043,2197,2358,2526,2701,2883,3074,3272,3477,3691,3912,4142,4380,4626,4880,5142,5413,5692,5979,6275,6579,6891,7211,7540,7876,8220,8572,8932,9299,9674,10056,10445,10840,11242,11651,12065,12485,12911,13342,13778,14218,14662,15111,15563,16017,16475,16935,17397,17860,18324,18789,19253,19718,20182,20644,21104,21563,22018,22470,22919,23363,23802,24237,24665,25087,25503,25911,26312,26704,27088,27462,27828,28183,28527,28861,29183,29494,29793,30079,30352,30613,30859,31092,31311,31515,31705,31880,32039,32183,32312,32425,32522,32603,32668,32717,32750,32766,32766,32750,32717,32668,32603,32522,32425,32312,32183,32039,31880,31705,31515,31311,31092,30859,30613,30352,30079,29793,29494,29183,28861,28527,28183,27828,27462,27088,26704,26312,25911,25503,25087,24665,24237,23802,23363,22919,22470,22018,21563,21104,20644,20182,19718,19253,18789,18324,17860,17397,16935,16475,16017,15563,15111,14662,14218,13778,13342,12911,12485,12065,11651,11242,10840,10445,10056,9674,9299,8932,8572,8220,7876,7540,7211,6891,6579,6275,5979,5692,5413,5142,4880,4626,4380,4142,3912,3691,3477,3272,3074,2883,2701,2526,2358,2197,2043,1897,1757,1623,1496,1376,1261,1153,1050,953,862,776,695,620,549,483,422,366,314,266,222,183,148,116,89,65,45,29,16,7,2,0]</value>
+    <type>int_vector</type>
+  </param>
+
+  <param>
+    <name>Window Select</name>
+    <key>block_index</key>
+    <type>enum</type>
+    <option>
+      <name>0</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>1</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>2</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
+    </option>
+    <option>
+      <name>5</name>
+      <key>5</key>
+    </option>
+    <option>
+      <name>6</name>
+      <key>6</key>
+    </option>
+    <option>
+      <name>7</name>
+      <key>7</key>
+    </option>
+    <option>
+      <name>8</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>9</name>
+      <key>9</key>
+    </option>
+    <option>
+      <name>10</name>
+      <key>10</key>
+    </option>
+  </param>
+
+  <check>(len($coeffs) == $coeffs_len) and (abs(max($coeffs)) > 2^15-1)</check>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$coeffs_len</vlen>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$coeffs_len</vlen>
+    <domain>rfnoc</domain>
+  </source>
+</block>

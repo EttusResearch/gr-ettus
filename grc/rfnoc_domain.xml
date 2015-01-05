@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+###################################################
+## RFNoC Domain: When connecting to other GR blocks,
+## it's actually like a GR block.
+###################################################
+ -->
+ <domain>
+  <name>RFNoC</name>
+  <key>rfnoc</key>
+  <color>#81b35d</color>
+  <multiple_sinks>False</multiple_sinks>
+  <multiple_sources>False</multiple_sources>
+  <connection>
+    <source_domain>gr_stream</source_domain>
+    <sink_domain>rfnoc</sink_domain>
+    <make>#slurp
+        self.connect($make_port_sig($source), $make_port_sig($sink))#slurp
+    </make>
+  </connection>
+  <connection>
+    <source_domain>rfnoc</source_domain>
+    <sink_domain>gr_stream</sink_domain>
+    <make>#slurp
+        self.connect($make_port_sig($source), $make_port_sig($sink))#slurp
+    </make>
+  </connection>
+  <connection>
+    <source_domain>rfnoc</source_domain>
+    <sink_domain>rfnoc</sink_domain>
+    <make>#slurp
+        #set rfnoc_source = $source.get_parent().get_id()
+        #set rfnoc_source_port = $source.get_key()
+        #set rfnoc_sink = $sink.get_parent().get_id()
+        #set rfnoc_sink_port = $sink.get_key()
+        self.device3.connect(self.${rfnoc_source}.get_block_id(), $rfnoc_source_port, self.${rfnoc_sink}.get_block_id(), $rfnoc_sink_port)#slurp
+    </make>
+  </connection>
+</domain>

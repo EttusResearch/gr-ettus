@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+###################################################
+##Block Tree for uhd blocks.
+###################################################
+ -->
+<cat>
+	<name></name> <!-- Blank for Root Name -->
+	<cat>
+		<name>UHD</name>
+		<cat>
+			<name>RFNoC</name>
+			<block>uhd_device3</block>
+			<block>uhd_rfnoc_source</block>
+			<block>uhd_rfnoc_streamer</block>
+			<block>uhd_rfnoc_streamer_radio</block>
+			<block>uhd_rfnoc_streamer_fifo</block>
+			<block>uhd_rfnoc_streamer_fft</block>
+			<block>uhd_rfnoc_streamer_fir</block>
+			<block>uhd_rfnoc_streamer_adder</block>
+			<block>uhd_rfnoc_streamer_window</block>
+		</cat>
+	</cat>
+</cat>

@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Radio</name>
+  <key>uhd_rfnoc_streamer_radio</key>
+  <throttle>1</throttle>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    "Radio_{0}".format($radio_index),
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args=$stream_args,
+    )
+)
+self.$(id).set_option("tx_freq", str($tx_freq))
+self.$(id).set_option("tx_rate", str($tx_rate))
+self.$(id).set_option("tx_gain", str($tx_gain))
+self.$(id).set_option("rx_ant", $rx_ant)
+self.$(id).set_option("rx_freq", str($rx_freq))
+self.$(id).set_option("rx_rate", str($rx_rate))
+self.$(id).set_option("rx_gain", str($rx_gain))
+</make>
+<callback>set_option("tx_freq", str($tx_freq))</callback>
+<callback>set_option("tx_rate", str($tx_rate))</callback>
+<callback>set_option("tx_gain", str($tx_gain))</callback>
+<callback>set_option("rx_ant", $rx_ant)</callback>
+<callback>set_option("rx_freq", str($rx_freq))</callback>
+<callback>set_option("rx_rate", str($rx_rate))</callback>
+<callback>set_option("rx_gain", str($rx_gain))</callback>
+
+  <param>
+    <name>Radio Select</name>
+    <key>radio_index</key>
+    <type>enum</type>
+    <option>
+      <name>A</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>B</name>
+      <key>1</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Stream Args</name>
+    <key>stream_args</key>
+    <type>string</type>
+  </param>
+
+  <param>
+    <name>Tx Frequency</name>
+    <key>tx_freq</key>
+    <value>1.982e9</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Tx Rate</name>
+    <key>tx_rate</key>
+    <value>1e6</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Tx Gain</name>
+    <key>tx_gain</key>
+    <value>20</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Rx Antenna</name>
+    <key>rx_ant</key>
+    <type>enum</type>
+    <option>
+      <name>TX/RX</name>
+      <key>"TX/RX"</key>
+    </option>
+    <option>
+      <name>RX2</name>
+      <key>"RX2"</key>
+    </option>
+  </param>
+  <param>
+    <name>Rx Frequency</name>
+    <key>rx_freq</key>
+    <value>1.982e9</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Rx Rate</name>
+    <key>rx_rate</key>
+    <value>1e6</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Rx Gain</name>
+    <key>rx_gain</key>
+    <value>20</value>
+    <type>real</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+    <optional>1</optional>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+    <optional>1</optional>
+  </source>
+</block>

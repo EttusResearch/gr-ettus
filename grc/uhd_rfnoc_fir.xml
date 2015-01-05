@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: FIR</name>
+  <key>uhd_rfnoc_streamer_fir</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    "FIR_{0}".format($block_index),
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="",
+    )
+)
+self.$(id).set_taps($taps)</make>
+  <callback>set_taps($taps)</callback>
+
+  <param>
+    <name>Filter Taps</name>
+    <key>taps</key>
+    <value>[14614,-69849,-203468,-216117,-7860,194302,81889,-216542,-207219,195672,372287,-93615,-558778,-131378,743447,557343,-899809,-1447471,1004420,5224804,7347329,5224804,1004420,-1447471,-899809,557343,743447,-131378,-558778,-93615,372287,195672,-207219,-216542,81889,194302,-7860,-216117,-203468,-69849,14614]</value>
+    <type>int_vector</type>
+  </param>
+
+  <param>
+    <name>FIR Select</name>
+    <key>block_index</key>
+    <type>enum</type>
+    <option>
+      <name>0</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>1</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>2</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
+    </option>
+    <option>
+      <name>5</name>
+      <key>5</key>
+    </option>
+    <option>
+      <name>6</name>
+      <key>6</key>
+    </option>
+    <option>
+      <name>7</name>
+      <key>7</key>
+    </option>
+    <option>
+      <name>8</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>9</name>
+      <key>9</key>
+    </option>
+    <option>
+      <name>10</name>
+      <key>10</key>
+    </option>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </source>
+</block>

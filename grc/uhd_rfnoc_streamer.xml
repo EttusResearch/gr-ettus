@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Configurable Block</name>
+  <key>uhd_rfnoc_streamer</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    $block_id,
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args=$stream_args,
+#if $block_ports()
+        channels=$block_ports,
+#end if
+    ),
+    $ninputs,
+    $noutputs,
+)</make>
+  <param>
+    <name>Block ID</name>
+    <key>block_id</key>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Number of Inputs</name>
+    <key>ninputs</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Number of Outputs</name>
+    <key>noutputs</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Stream Args</name>
+    <key>stream_args</key>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Block Ports</name>
+    <key>block_ports</key>
+    <type>int_vector</type>
+  </param>
+  <!--<param>-->
+    <!--<name>Settings Registers</name>-->
+    <!--<key>sregs</key>-->
+    <!--<value>{}</value>-->
+    <!--<type>raw</type>-->
+    <!--<hide>part</hide>-->
+  <!--</param>-->
+  <!--<param>-->
+    <!--<name>Options</name>-->
+    <!--<key>named_options</key>-->
+    <!--<value>{}</value>-->
+    <!--<type>raw</type>-->
+    <!--<hide>part</hide>-->
+  <!--</param>-->
+  <!--<check>isinstance($sregs, dict)</check>-->
+  <!--<check>all([isinstance(x, int) for x in $sregs.keys()])</check>-->
+  <!--<check>all([isinstance(x, int) for x in $sregs.values()])</check>-->
+  <!--<check>isinstance($named_options, dict)</check>-->
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <nports>$ninputs</nports>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <nports>$noutputs</nports>
+    <domain>rfnoc</domain>
+  </source>
+</block>
