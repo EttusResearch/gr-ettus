@@ -60,7 +60,7 @@ set(Boost_ADDITIONAL_VERSIONS
 find_package(Boost "1.35" COMPONENTS filesystem system)
 
 if(NOT Boost_FOUND)
-    message(FATAL_ERROR "Boost required to compile ettus")
+    message(FATAL_ERROR "Boost required to compile gr-ettus")
 endif()
 
 ########################################################################
@@ -119,10 +119,10 @@ find_package(Doxygen)
 # caps such as FILTER or FFT) and change the version to the minimum
 # API compatible version required.
 set(GR_REQUIRED_COMPONENTS RUNTIME UHD FILTER FFT)
-find_package(Gnuradio "3.7.5" REQUIRED)
+find_package(Gnuradio "3.7.6" REQUIRED)
 
 if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile ettus")
+    message(FATAL_ERROR "CppUnit required to compile gr-ettus")
 endif()
 
 ########################################################################
