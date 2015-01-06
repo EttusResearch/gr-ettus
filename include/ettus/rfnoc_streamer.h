@@ -33,9 +33,17 @@ namespace gr {
   namespace ettus {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Base class for RFNoC blocks
      * \ingroup uhd
      *
+     * RFNoC is method provided by UHD to have multiple processing blocks
+     * on an FPGA (typically on a USRP). These blocks can be connected
+     * dynamically, similar to GNU Radio blocks.
+     *
+     * This is an interface to represent a UHD RFNoC block in GNU Radio.
+     * It can also be used to connect GNU Radio blocks with RFNoC blocks;
+     * in this case, a streamer will internally be created for the transport
+     * between the FPGA and the GNU Radio flow graph.
      */
     //class UHD_API rfnoc_streamer : virtual public gr::block
     class ETTUS_API rfnoc_streamer : virtual public gr::block

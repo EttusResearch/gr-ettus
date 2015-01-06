@@ -42,6 +42,11 @@ namespace gr {
 
 /*!
  * \brief A representation of a generation 3 USRP device.
+ *
+ * The typical use case for this is in RFNoC flow graphs. Unlike
+ * flow graphs with a typical USRP source and/or sink, we may have
+ * many blocks that all use the same UHD device instantiation. This
+ * class allows this UHD device to be shared between blocks.
  */
 //class UHD_API device3
 class ETTUS_API device3
