@@ -65,14 +65,14 @@
   <sink>
     <name>in</name>
     <type>complex</type>
-    <nports>$ninputs</nports>
     <domain>rfnoc</domain>
+    <nports>$ninputs</nports>
   </sink>
 
   <source>
     <name>out</name>
     <type>complex</type>
-    <nports>$noutputs</nports>
     <domain>rfnoc</domain>
+    <nports>$noutputs</nports>
   </source>
 </block>

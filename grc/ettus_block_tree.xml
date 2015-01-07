@@ -10,8 +10,7 @@
 		<name>UHD</name>
 		<cat>
 			<name>RFNoC</name>
-			<block>uhd_device3</block>
-			<block>uhd_rfnoc_source</block>
+			<block>variable_uhd_device3</block>
 			<block>uhd_rfnoc_streamer</block>
 			<block>uhd_rfnoc_streamer_radio</block>
 			<block>uhd_rfnoc_streamer_fifo</block>
