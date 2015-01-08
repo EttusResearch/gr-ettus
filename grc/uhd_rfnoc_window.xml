@@ -10,7 +10,7 @@
     uhd.stream_args(
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="window_len=$coeffs_len,spp=$coeffs_len",
+        args="window_len={0}".format($coeffs_len),
     )
 )
 self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
@@ -19,11 +19,8 @@ self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
   <param>
     <name>Number of Coeffs</name>
     <key>coeffs_len</key>
-    <type>enum</type>
-    <option>
-      <name>256</name>
-      <key>256</key>
-    </option>
+    <value>256</value>
+    <type>int</type>
   </param>
 
   <param>
@@ -83,7 +80,7 @@ self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
     </option>
   </param>
 
-  <check>(len($coeffs) == $coeffs_len) and (abs(max($coeffs)) > 2^15-1)</check>
+  <!--<check>(len($coeffs) == $coeffs_len) and (abs(max($coeffs)) < 32768)</check>-->
 
   <sink>
     <name>in</name>
