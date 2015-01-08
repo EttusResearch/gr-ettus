@@ -31,6 +31,7 @@
 #include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
 #include <uhd/usrp/rfnoc/fir_block_ctrl.hpp>
 #include <uhd/usrp/rfnoc/window_block_ctrl.hpp>
+#include <uhd/usrp/rfnoc/vector_iir_block_ctrl.hpp>
 #include <uhd/convert.hpp>
 #include <iostream>
 #include <cassert>
@@ -538,6 +539,40 @@ namespace gr {
       }
 
       window_ctrl->set_window(coeffs);
+    }
+
+    void rfnoc_streamer_impl::set_vector_iir_alpha(const double alpha)
+    {
+        if (_blk_ctrl->get_block_id().get_block_name() != "VectorIIR") {
+          std::cout << "[GR] Calling set_vector_iir_alpha() on a non-VectorIIR block!" << std::endl;
+          return;
+        }
+
+        ::uhd::rfnoc::vector_iir_block_ctrl::sptr vector_iir_ctrl =
+                boost::dynamic_pointer_cast< ::uhd::rfnoc::vector_iir_block_ctrl >(_blk_ctrl);
+        if (not vector_iir_ctrl) {
+          std::cout << "[GR] Calling set_vector_iir_alpha() on a non-VectorIIR block!" << std::endl;
+          return;
+        }
+
+        vector_iir_ctrl->set_alpha(alpha);
+    }
+
+    void rfnoc_streamer_impl::set_vector_iir_beta(const double beta)
+    {
+        if (_blk_ctrl->get_block_id().get_block_name() != "VectorIIR") {
+          std::cout << "[GR] Calling set_vector_iir_beta() on a non-VectorIIR block!" << std::endl;
+          return;
+        }
+
+        ::uhd::rfnoc::vector_iir_block_ctrl::sptr vector_iir_ctrl =
+                boost::dynamic_pointer_cast< ::uhd::rfnoc::vector_iir_block_ctrl >(_blk_ctrl);
+        if (not vector_iir_ctrl) {
+          std::cout << "[GR] Calling set_vector_iir_beta() on a non-VectorIIR block!" << std::endl;
+          return;
+        }
+
+        vector_iir_ctrl->set_beta(beta);
     }
 
     std::string

@@ -66,6 +66,8 @@ namespace gr {
       virtual std::string get_block_id() = 0;
       virtual void set_taps(const std::vector<int> &taps) = 0;
       virtual void set_window(const std::vector<int> &coeffs) = 0;
+      virtual void set_vector_iir_alpha(const double alpha) = 0;
+      virtual void set_vector_iir_beta(const double beta) = 0;
     };
 
   } // namespace uhd

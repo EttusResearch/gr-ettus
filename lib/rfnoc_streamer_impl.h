@@ -55,6 +55,8 @@ namespace gr {
 
       void set_taps(const std::vector<int> &taps);
       void set_window(const std::vector<int> &coeff);
+      void set_vector_iir_alpha(const double alpha);
+      void set_vector_iir_beta(const double beta);
 
       int general_work(
           int noutput_items,

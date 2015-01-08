@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Vector IIR</name>
+  <key>uhd_rfnoc_streamer_vector_iir</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    "VectorIIR_{0}".format($block_index),
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="vector_len={0},".format($vlen) + "alpha={0},".format($alpha) + "beta={0}".format($beta),
+    )
+)
+self.$(id).set_vector_iir_alpha($alpha)
+self.$(id).set_vector_iir_beta($beta)</make>
+  <callback>set_vector_iir_alpha($alpha)</callback>
+  <callback>set_vector_iir_beta($beta)</callback>
+
+  <param>
+    <name>Vector Length</name>
+    <key>vlen</key>
+    <value>256</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Alpha</name>
+    <key>alpha</key>
+    <value>0.984375</value>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>Beta</name>
+    <key>beta</key>
+    <value>0.015625</value>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>VectorIIR Select</name>
+    <key>block_index</key>
+    <type>enum</type>
+    <option>
+      <name>0</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>1</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>2</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
+    </option>
+    <option>
+      <name>5</name>
+      <key>5</key>
+    </option>
+    <option>
+      <name>6</name>
+      <key>6</key>
+    </option>
+    <option>
+      <name>7</name>
+      <key>7</key>
+    </option>
+    <option>
+      <name>8</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>9</name>
+      <key>9</key>
+    </option>
+    <option>
+      <name>10</name>
+      <key>10</key>
+    </option>
+  </param>
+
+  <!--<check>($vector_len > 0 and $vector_len <= 4096)</check>-->
+  <!--<check>($alpha >= 0.0 and $alpha <= 1.0)</check>-->
+  <!--<check>($beta >= 0.0 and $beta <= 1.0)</check>-->
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$vlen</vlen>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$vlen</vlen>
+    <domain>rfnoc</domain>
+  </source>
+</block>
