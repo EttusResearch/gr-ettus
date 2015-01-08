@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Packet Resizer</name>
+  <key>uhd_rfnoc_streamer_packet_resizer</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_streamer(
+    self.device3,
+    "PacketResizer_{}".format($block_index),
+    uhd.stream_args(
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="pkt_size=$pkt_size",
+    )
+)</make>
+
+  <param>
+    <name>Packet Size</name>
+    <key>pkt_size</key>
+    <value>256</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Packet Resizer Select</name>
+    <key>block_index</key>
+    <type>enum</type>
+    <option>
+      <name>0</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>1</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>2</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
+    </option>
+    <option>
+      <name>5</name>
+      <key>5</key>
+    </option>
+    <option>
+      <name>6</name>
+      <key>6</key>
+    </option>
+    <option>
+      <name>7</name>
+      <key>7</key>
+    </option>
+    <option>
+      <name>8</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>9</name>
+      <key>9</key>
+    </option>
+    <option>
+      <name>10</name>
+      <key>10</key>
+    </option>
+  </param>
+
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </source>
+</block>
