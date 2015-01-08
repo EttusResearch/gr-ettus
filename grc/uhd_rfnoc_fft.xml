@@ -9,7 +9,7 @@
     uhd.stream_args(
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="fftsize=$fft_size",
+        args="fftsize=$fft_size,magnitude_out=$magnitude_out",
     )
 )</make>
 
@@ -18,8 +18,62 @@
     <key>fft_size</key>
     <type>enum</type>
     <option>
+      <name>8</name>
+      <key>8</key>
+    </option>
+    <option>
+      <name>16</name>
+      <key>16</key>
+    </option>
+    <option>
+      <name>32</name>
+      <key>32</key>
+    </option>
+    <option>
+      <name>64</name>
+      <key>64</key>
+    </option>
+    <option>
+      <name>128</name>
+      <key>128</key>
+    </option>
+    <option>
       <name>256</name>
       <key>256</key>
+    </option>
+    <option>
+      <name>512</name>
+      <key>512</key>
+    </option>
+    <option>
+      <name>1024</name>
+      <key>1024</key>
+    </option>
+    <option>
+      <name>2048</name>
+      <key>2048</key>
+    </option>
+    <option>
+      <name>4096</name>
+      <key>4096</key>
+    </option>
+  </param>
+
+  <param>
+    <name>FFT Output</name>
+    <key>magnitude_out</key>
+    <type>enum</type>
+    <option>
+      <name>Complex</name>
+      <key>0</key>
+    </option>
+    <option>
+      <name>Magnitude</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>Magnitude^2</name>
+      <key>2</key>
     </option>
   </param>
 
