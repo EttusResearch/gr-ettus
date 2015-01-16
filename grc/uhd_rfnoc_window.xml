@@ -3,7 +3,6 @@
   <name>RFNoC: Window</name>
   <key>uhd_rfnoc_streamer_window</key>
   <import>import ettus</import>
-  <import>import numpy as np</import>
   <make>ettus.rfnoc_streamer(
     self.device3,
     "Window_{0}".format($block_index),
@@ -13,8 +12,8 @@
         args="window_len={0}".format($coeffs_len),
     )
 )
-self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
-  <callback>set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</callback>
+self.$(id).set_window($coeffs)</make>
+  <callback>set_window($coeffs)</callback>
 
   <param>
     <name>Number of Coeffs</name>
