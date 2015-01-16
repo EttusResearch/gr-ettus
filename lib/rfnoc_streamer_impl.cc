@@ -97,6 +97,8 @@ namespace gr {
       int itemsize = sizeof(gr_complex);
       if (_stream_args.cpu_format == "sc16") {
         itemsize = 2 * 2;
+      } else if (_stream_args.cpu_format == "u8") {
+        itemsize = 1;
       }
       ::uhd::rfnoc::stream_sig_t in_sig = boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(_blk_ctrl)->get_input_signature(0);
       _in_vlen = (in_sig.vlen == 0) ? 1 : in_sig.vlen;

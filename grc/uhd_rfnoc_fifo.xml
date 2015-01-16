@@ -5,10 +5,12 @@
   <import>import ettus</import>
   <make>ettus.rfnoc_streamer(
     self.device3,
-    "FIFO_{}".format($block_index),
+    "FIFO_{0}".format($block_index),
     uhd.stream_args(
-        cpu_format="fc32", \# TODO: This must be made an option
-        otw_format="sc16",
+        cpu_format="$type",
+        #if $otw()
+        otw_format="$otw",
+        #end if
         args="gr_vlen={0},{1}".format($grvlen, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
     )
 )</make>
@@ -62,6 +64,51 @@
       <key>10</key>
     </option>
   </param>
+
+  <param>
+    <name>Data Type</name>
+    <key>type</key>
+    <type>enum</type>
+    <option>
+      <name>Complex float32</name>
+      <key>fc32</key>
+      <opt>type:complex</opt>
+    </option>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+      <opt>type:sc16</opt>
+    </option>
+    <option>
+      <name>Byte</name>
+      <key>u8</key>
+      <opt>type:byte</opt>
+    </option>
+    <option>
+      <name>VITA word32</name>
+      <key>item32</key>
+      <opt>type:s32</opt>
+    </option>
+  </param>
+
+  <param>
+    <name>Wire Format</name>
+    <key>otw</key>
+    <type>enum</type>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+    </option>
+    <option>
+      <name>Complex int8</name>
+      <key>sc8</key>
+    </option>
+    <option>
+      <name>Byte</name>
+      <key>u8</key>
+    </option>
+  </param>
+
   <param>
     <name>Force Vector Length</name>
     <key>grvlen</key>
@@ -71,14 +118,14 @@
 
   <sink>
     <name>in</name>
-    <type>complex</type>
+    <type>$type.type</type>
     <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </sink>
 
   <source>
     <name>out</name>
-    <type>complex</type>
+    <type>$type.type</type>
     <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </source>
