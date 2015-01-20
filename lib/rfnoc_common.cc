@@ -21,6 +21,7 @@
  */
 
 #include <ettus/rfnoc_common.h>
+#include <gnuradio/block.h>
 #include <uhd/convert.hpp>
 #include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
 #include <uhd/usrp/rfnoc/source_block_ctrl_base.hpp>
@@ -118,14 +119,17 @@ rfnoc_common::rfnoc_common(
             const device3::sptr &dev,
             const std::string &block_id,
             const ::uhd::stream_args_t &tx_stream_args,
-            const ::uhd::stream_args_t &rx_stream_args
+            const ::uhd::stream_args_t &rx_stream_args,
             //gr::logger_ptr logger,
-            //block_func_t producer, block_func_t consumer
+            block_func_t consumer, block_func1_t consumer_each,
+            block_func_t producer
 ) :
   _dev(dev->get_device()),
   _blk_ctrl(dev->get_device()->get_device3()->find_block_ctrl(block_id)),
   _tx(tx_stream_args),
-  _rx(rx_stream_args)
+  _consume(consumer), _consume_each(consumer_each),
+  _rx(rx_stream_args),
+  _produce(producer)
 {
   // Make sure the current device actually has the requested block:
   if (not _blk_ctrl) {
@@ -199,7 +203,6 @@ bool rfnoc_common::check_topology(int ninputs, int noutputs)
   // TODO: Check if ninputs and noutputs match the blocks io signatures.
   return true;
 }
-
 
 bool rfnoc_common::start(size_t ninputs, size_t noutputs)
 {
@@ -358,6 +361,159 @@ void rfnoc_common::flush(size_t streamer_index)
     _rx.streamers[streamer_index]->recv(outputs, nbytes/bpi, _rx.metadata, 0.0);
     if(_rx.metadata.error_code != ::uhd::rx_metadata_t::ERROR_CODE_NONE) {
       break;
+    }
+  }
+}
+
+
+int
+rfnoc_common::general_work (
+    int noutput_items,
+    gr_vector_int &ninput_items,
+    gr_vector_const_void_star &input_items,
+    gr_vector_void_star &output_items
+) {
+  boost::recursive_mutex::scoped_lock lock(d_mutex);
+
+  // These call consume()
+  if (!input_items.empty()) {
+    if (_tx.align) {
+      work_tx_a(ninput_items, input_items);
+    } else {
+      work_tx_u(ninput_items, input_items);
+    }
+  }
+
+  // These call produce()
+  if (!output_items.empty()) {
+    if (_rx.align) {
+      // Well, this doesn't
+      return work_rx_a(noutput_items, output_items);
+    } else {
+      work_rx_u(noutput_items, output_items);
+    }
+  }
+
+  return gr::block::WORK_CALLED_PRODUCE;
+}
+
+void
+rfnoc_common::work_tx_a(
+    gr_vector_int &ninput_items,
+    gr_vector_const_void_star &input_items
+) {
+  // TODO Figure out why this doesn't work. It looks like the fragmentation logic
+  //  in the tx_streamer is screwing up the packets, they're definitely wrong
+  //  on the wire (checked with wireshark).
+  //size_t num_vectors_to_send = ninput_items[0];
+  size_t num_vectors_to_send = _tx.streamers[0]->get_max_num_samps() / _rx.vlen;
+  const size_t num_sent = _tx.streamers[0]->send(
+      input_items,
+      num_vectors_to_send * _tx.vlen,
+      _tx.metadata,
+      1.0
+  );
+
+  _consume_each(num_sent / _tx.vlen);
+}
+
+void
+rfnoc_common::work_tx_u(
+    gr_vector_int &ninput_items,
+    gr_vector_const_void_star &input_items
+) {
+  assert(input_items.size() == _tx.streamers.size());
+
+  // In every loop iteration, this will point to the relevant buffer
+  gr_vector_const_void_star buff_ptr(1);
+
+  for (size_t i = 0; i < _tx.streamers.size(); i++) {
+    buff_ptr[0] = input_items[i];
+    //size_t num_vectors_to_send = std::min(_tx.streamers[i]->get_max_num_samps() / _rx.vlen, size_t(ninput_items[i]));
+    size_t num_vectors_to_send = ninput_items[i];
+    const size_t num_sent = _tx.streamers[i]->send(
+        buff_ptr,
+        num_vectors_to_send * _tx.vlen,
+        _tx.metadata,
+        1.0
+    );
+    _consume(i, num_sent / _tx.vlen);
+  }
+}
+
+int
+rfnoc_common::work_rx_a(
+    int noutput_items,
+    gr_vector_void_star &output_items
+) {
+  size_t num_vectors_to_recv = noutput_items;
+  size_t num_samps = _rx.streamers[0]->recv(
+      output_items,
+      num_vectors_to_recv * _rx.vlen,
+      _rx.metadata, 0.1
+  );
+
+  switch(_rx.metadata.error_code) {
+    case ::uhd::rx_metadata_t::ERROR_CODE_NONE:
+      break;
+
+    case ::uhd::rx_metadata_t::ERROR_CODE_TIMEOUT:
+      //its ok to timeout, perhaps the user is doing finite streaming
+      std::cout << "timeout on chan 0" << std::endl;
+      break;
+
+    case ::uhd::rx_metadata_t::ERROR_CODE_OVERFLOW:
+      // Not much we can do about overruns here
+      std::cout << "overrun on chan 0" << std::endl;
+      break;
+
+    default:
+      std::cout << boost::format("RFNoC Streamer block received error %s (Code: 0x%x)")
+        % _rx.metadata.strerror() % _rx.metadata.error_code << std::endl;
+  }
+
+  // There's no 'produce_each()', unfortunately
+  return num_samps / _rx.vlen;
+}
+
+void
+rfnoc_common::work_rx_u(
+    int noutput_items,
+    gr_vector_void_star &output_items
+) {
+  assert(_rx.streamers.size() == output_items.size());
+
+  // In every loop iteration, this will point to the relevant buffer
+  gr_vector_void_star buff_ptr(1);
+
+  for (size_t i = 0; i < _rx.streamers.size(); i++) {
+    buff_ptr[0] = output_items[i];
+    //size_t num_vectors_to_recv = std::min(_rx.streamers[i]->get_max_num_samps() / _rx.vlen, size_t(noutput_items));
+    size_t num_vectors_to_recv = noutput_items;
+    size_t num_samps = _rx.streamers[i]->recv(
+        buff_ptr,
+        num_vectors_to_recv * _rx.vlen,
+        _rx.metadata, 0.1
+    );
+    _produce(i, num_samps / _rx.vlen);
+
+    switch(_rx.metadata.error_code) {
+      case ::uhd::rx_metadata_t::ERROR_CODE_NONE:
+        break;
+
+      case ::uhd::rx_metadata_t::ERROR_CODE_TIMEOUT:
+        //its ok to timeout, perhaps the user is doing finite streaming
+        std::cout << "timeout on chan " << i << std::endl;
+        break;
+
+      case ::uhd::rx_metadata_t::ERROR_CODE_OVERFLOW:
+        // Not much we can do about overruns here
+        std::cout << "overrun on chan " << i << std::endl;
+        break;
+
+      default:
+        std::cout << boost::format("RFNoC Streamer block received error %s (Code: 0x%x)")
+          % _rx.metadata.strerror() % _rx.metadata.error_code << std::endl;
     }
   }
 }

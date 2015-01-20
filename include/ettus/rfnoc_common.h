@@ -48,7 +48,8 @@ namespace gr {
         /*********************************************************************
          * Types
          *********************************************************************/
-         //typedef boost::function<void(int, int)> block_func_t;
+         typedef boost::function<void(int, int)> block_func_t;
+         typedef boost::function<void(int)> block_func1_t;
 
         /*********************************************************************
          * Structors
@@ -57,9 +58,10 @@ namespace gr {
             const device3::sptr &dev,
             const std::string &block_id,
             const ::uhd::stream_args_t &tx_stream_args,
-            const ::uhd::stream_args_t &rx_stream_args
+            const ::uhd::stream_args_t &rx_stream_args,
             //gr::logger_ptr logger,
-            //block_func_t producer, block_func_t consumer
+            block_func_t consumer, block_func1_t consumer_each,
+            block_func_t producer
         );
         ~rfnoc_common();
 
@@ -70,8 +72,33 @@ namespace gr {
         bool start(size_t ninputs, size_t noutputs);
         bool stop();
 
+        int general_work(
+            int noutput_items,
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items
+        );
+
         gr::io_signature::sptr get_input_signature();
         gr::io_signature::sptr get_output_signature();
+
+        void work_tx_a(
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items
+        );
+        void work_tx_u(
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items
+        );
+
+        int work_rx_a(
+            int noutput_items,
+            gr_vector_void_star &output_items
+        );
+        void work_rx_u(
+            int noutput_items,
+            gr_vector_void_star &output_items
+        );
 
         /*********************************************************************
          * RFNoC block related functions.
@@ -109,9 +136,9 @@ namespace gr {
          * Private attributes
          *********************************************************************/
         /*** Device and block controls ***********************/
-        ::uhd::usrp::multi_usrp::sptr _dev;
+        ::uhd::usrp::multi_usrp::sptr       _dev;
         ::uhd::rfnoc::block_ctrl_base::sptr _blk_ctrl;
-        ::uhd::device_addr_t _merged_args;
+        ::uhd::device_addr_t                _merged_args;
 
         template <typename T_streamer, typename T_md>
         struct stream_info {
@@ -138,11 +165,12 @@ namespace gr {
 
         /*** TX **********************************************/
         stream_info< ::uhd::tx_streamer::sptr, ::uhd::tx_metadata_t > _tx;
-        boost::function<void(int, int)> _consume;
+        block_func_t   _consume;
+        block_func1_t  _consume_each;
 
         /*** RX **********************************************/
         stream_info< ::uhd::rx_streamer::sptr, ::uhd::rx_metadata_t > _rx;
-        boost::function<void(int, int)> _produce;
+        block_func_t   _produce;
 
         /*** Multi-Streamer Sync and concurrency stuff ********/
         boost::recursive_mutex d_mutex;

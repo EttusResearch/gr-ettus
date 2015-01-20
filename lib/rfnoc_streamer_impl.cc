@@ -74,7 +74,10 @@ namespace gr {
       /***** Set up block control ********************************/
       d_rfnoccer = new rfnoc::rfnoc_common(
           dev, block_id,
-          stream_args, stream_args
+          stream_args, stream_args,
+          boost::bind(&gr::block::consume,      this, _1, _2),
+          boost::bind(&gr::block::consume_each, this, _1),
+          boost::bind(&gr::block::produce,      this, _1, _2)
       );
 
       /***** Finalize I/O signatures and configure GR block ******/
@@ -90,7 +93,6 @@ namespace gr {
       delete d_rfnoccer;
     }
 
-
     int
     rfnoc_streamer_impl::general_work (
         int noutput_items,
@@ -98,148 +100,12 @@ namespace gr {
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items
     ) {
-      boost::recursive_mutex::scoped_lock lock(d_mutex);
-
-      // These call consume()
-      if (!input_items.empty()) {
-        if (d_rfnoccer->_tx.align) {
-          work_tx_a(ninput_items, input_items);
-        } else {
-          work_tx_u(ninput_items, input_items);
-        }
-      }
-
-      // These call produce()
-      if (!output_items.empty()) {
-        if (d_rfnoccer->_rx.align) {
-          return work_rx_a(noutput_items, output_items);
-        } else {
-          work_rx_u(noutput_items, output_items);
-        }
-      }
-
-      return WORK_CALLED_PRODUCE;
-    }
-
-    void
-    rfnoc_streamer_impl::work_tx_a(
-        gr_vector_int &ninput_items,
-        gr_vector_const_void_star &input_items
-    ) {
-      // TODO Figure out why this doesn't work. It looks like the fragmentation logic
-      //  in the tx_streamer is screwing up the packets, they're definitely wrong
-      //  on the wire (checked with wireshark).
-      //size_t num_vectors_to_send = ninput_items[0];
-      size_t num_vectors_to_send = d_rfnoccer->_tx.streamers[0]->get_max_num_samps() / d_rfnoccer->_rx.vlen;
-      const size_t num_sent = d_rfnoccer->_tx.streamers[0]->send(
+      return d_rfnoccer->general_work(
+          noutput_items,
+          ninput_items,
           input_items,
-          num_vectors_to_send * d_rfnoccer->_tx.vlen,
-          d_rfnoccer->_tx.metadata,
-          1.0
+          output_items
       );
-
-      consume_each(num_sent / d_rfnoccer->_tx.vlen);
-    }
-
-    void
-    rfnoc_streamer_impl::work_tx_u(
-        gr_vector_int &ninput_items,
-        gr_vector_const_void_star &input_items
-    ) {
-      assert(input_items.size() == d_rfnoccer->_tx.streamers.size());
-
-      // In every loop iteration, this will point to the relevant buffer
-      gr_vector_const_void_star buff_ptr(1);
-
-      for (size_t i = 0; i < d_rfnoccer->_tx.streamers.size(); i++) {
-        buff_ptr[0] = input_items[i];
-        //size_t num_vectors_to_send = std::min(d_rfnoccer->_tx.streamers[i]->get_max_num_samps() / d_rfnoccer->_rx.vlen, size_t(ninput_items[i]));
-        size_t num_vectors_to_send = ninput_items[i];
-        const size_t num_sent = d_rfnoccer->_tx.streamers[i]->send(
-            buff_ptr,
-            num_vectors_to_send * d_rfnoccer->_tx.vlen,
-            d_rfnoccer->_tx.metadata,
-            1.0
-        );
-        consume(i, num_sent / d_rfnoccer->_tx.vlen);
-      }
-    }
-
-    int
-    rfnoc_streamer_impl::work_rx_a(
-        int noutput_items,
-        gr_vector_void_star &output_items
-    ) {
-      size_t num_vectors_to_recv = noutput_items;
-      size_t num_samps = d_rfnoccer->_rx.streamers[0]->recv(
-          output_items,
-          num_vectors_to_recv * d_rfnoccer->_rx.vlen,
-          d_rfnoccer->_rx.metadata, 0.1
-      );
-
-      switch(d_rfnoccer->_rx.metadata.error_code) {
-        case ::uhd::rx_metadata_t::ERROR_CODE_NONE:
-          break;
-
-        case ::uhd::rx_metadata_t::ERROR_CODE_TIMEOUT:
-          //its ok to timeout, perhaps the user is doing finite streaming
-          std::cout << "timeout on chan 0" << std::endl;
-          break;
-
-        case ::uhd::rx_metadata_t::ERROR_CODE_OVERFLOW:
-          // Not much we can do about overruns here
-          std::cout << "overrun on chan 0" << std::endl;
-          break;
-
-        default:
-          std::cout << boost::format("RFNoC Streamer block received error %s (Code: 0x%x)")
-            % d_rfnoccer->_rx.metadata.strerror() % d_rfnoccer->_rx.metadata.error_code << std::endl;
-      }
-
-      // There's no 'produce_each()', unfortunately
-      return num_samps / d_rfnoccer->_rx.vlen;
-    }
-
-    void
-    rfnoc_streamer_impl::work_rx_u(
-        int noutput_items,
-        gr_vector_void_star &output_items
-    ) {
-      assert(d_rfnoccer->_rx.streamers.size() == output_items.size());
-
-      // In every loop iteration, this will point to the relevant buffer
-      gr_vector_void_star buff_ptr(1);
-
-      for (size_t i = 0; i < d_rfnoccer->_rx.streamers.size(); i++) {
-        buff_ptr[0] = output_items[i];
-        //size_t num_vectors_to_recv = std::min(d_rfnoccer->_rx.streamers[i]->get_max_num_samps() / d_rfnoccer->_rx.vlen, size_t(noutput_items));
-        size_t num_vectors_to_recv = noutput_items;
-        size_t num_samps = d_rfnoccer->_rx.streamers[i]->recv(
-            buff_ptr,
-            num_vectors_to_recv * d_rfnoccer->_rx.vlen,
-            d_rfnoccer->_rx.metadata, 0.1
-        );
-        produce(i, num_samps / d_rfnoccer->_rx.vlen);
-
-        switch(d_rfnoccer->_rx.metadata.error_code) {
-          case ::uhd::rx_metadata_t::ERROR_CODE_NONE:
-            break;
-
-          case ::uhd::rx_metadata_t::ERROR_CODE_TIMEOUT:
-            //its ok to timeout, perhaps the user is doing finite streaming
-            std::cout << "timeout on chan " << i << std::endl;
-            break;
-
-          case ::uhd::rx_metadata_t::ERROR_CODE_OVERFLOW:
-            // Not much we can do about overruns here
-            std::cout << "overrun on chan " << i << std::endl;
-            break;
-
-          default:
-            std::cout << boost::format("RFNoC Streamer block received error %s (Code: 0x%x)")
-              % d_rfnoccer->_rx.metadata.strerror() % d_rfnoccer->_rx.metadata.error_code << std::endl;
-        }
-      }
     }
 
     bool rfnoc_streamer_impl::check_topology(int ninputs, int noutputs)
