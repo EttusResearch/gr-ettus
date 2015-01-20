@@ -1,0 +1,198 @@
+/* -*- c++ -*- */
+/*
+ * Copyright 2015 Free Software Foundation, Inc.
+ *
+ * This file is part of GNU Radio
+ *
+ * GNU Radio is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ *
+ * GNU Radio is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GNU Radio; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#include <ettus/rfnoc_common.h>
+#include <uhd/convert.hpp>
+#include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
+#include <uhd/usrp/rfnoc/source_block_ctrl_base.hpp>
+#include <boost/assign.hpp>
+
+using namespace gr::ettus::rfnoc;
+
+/****************************************************************************
+ * Helper functions
+ ****************************************************************************/
+// Merges args1 and args2. Keys in excluded_keys keys are skipped.
+// If a key is both in args1 and args2, that's fine as long as the value
+// is the same. Otherwise, throw.
+static ::uhd::device_addr_t merge_args(
+    ::uhd::device_addr_t args1,
+    ::uhd::device_addr_t args2,
+    std::set< std::string > excluded_keys
+) {
+  ::uhd::device_addr_t merged_args = args1;
+  BOOST_FOREACH(const std::string &key, args2.keys()) {
+    if (excluded_keys.count(key)) {
+      continue;
+    }
+    if (!merged_args.has_key(key)) {
+      merged_args[key] = args2[key];
+    } else if (merged_args[key] != args2[key]) {
+      throw std::runtime_error(str(
+          boost::format("Error merging arguments - conflicting values: '%s': '%s' != '%s': '%s'")
+          % key % merged_args[key] % key % args2[key]
+      ));
+    }
+  }
+
+  return merged_args;
+}
+
+// Read stream args and block stream signature, returns itemsize
+// and vlen.
+static void set_signature_from_block(
+    ::uhd::stream_args_t stream_args,
+    ::uhd::rfnoc::block_ctrl_base::sptr blk_ctrl,
+    size_t &itemsize,
+    size_t &nchans,
+    size_t &vlen,
+    bool tx
+) {
+  // If the pointer is not set, the block does not support
+  // this direction (tx or rx)
+  if (!blk_ctrl) {
+    itemsize = 0;
+    nchans   = 0;
+    vlen     = 0;
+    return;
+  }
+
+  // Otherwise, set itemsize...
+  const std::string dir = tx ? "TX" : "RX";
+  if (stream_args.cpu_format.empty()) {
+    throw std::runtime_error(str(
+        boost::format("%s: No cpu_format specified on %s.")
+        % blk_ctrl->unique_id() % (tx ? "TX" : "RX")
+    ));
+  }
+  itemsize = ::uhd::convert::get_bytes_per_item(stream_args.cpu_format);
+  // ...and vector length:
+  int gr_vlen = stream_args.args.cast<int>("gr_vlen", 1);
+  size_t block_port = 0; // TODO moar options
+  ::uhd::rfnoc::stream_sig_t sig = tx
+        ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_signature(block_port)
+        : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_signature(block_port);
+  vlen = (sig.vlen == 0) ? 1 : sig.vlen;
+  if (gr_vlen != 1) {
+    if (vlen != 1) {
+      throw std::runtime_error("Can't set gr_vlen if underlying RFNoC block already has a vector length.\n");
+    }
+    vlen = gr_vlen;
+  }
+
+  return;
+}
+
+/****************************************************************************
+ * Structors
+ ****************************************************************************/
+rfnoc_common::rfnoc_common(
+            const device3::sptr &dev,
+            const std::string &block_id,
+            const ::uhd::stream_args_t &tx_stream_args,
+            const ::uhd::stream_args_t &rx_stream_args
+            //gr::logger_ptr logger,
+            //block_func_t producer, block_func_t consumer
+) :
+  _dev(dev->get_device()),
+  _blk_ctrl(dev->get_device()->get_device3()->find_block_ctrl(block_id)),
+  _tx(tx_stream_args),
+  _rx(rx_stream_args)
+{
+  // Make sure the current device actually has the requested block:
+  if (not _blk_ctrl) {
+    throw std::runtime_error(str(boost::format("Cannot find a block for ID: %s") % block_id));
+  }
+
+  // Configure the block
+  std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
+  _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
+  GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
+  _blk_ctrl->set_args(_merged_args);
+  _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
+  _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
+
+  // Determine the stream signatures
+  // Will throw if args are invalid
+  // Input signature / Tx:
+  set_signature_from_block(
+      tx_stream_args,
+      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
+      _tx.itemsize, _tx.nchans, _tx.vlen,
+      true
+  );
+  // Output signature / Rx:
+  set_signature_from_block(
+      rx_stream_args,
+      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
+      _rx.itemsize, _rx.nchans, _rx.vlen,
+      false
+  );
+}
+
+/*********************************************************************
+ * GR Block functions
+ *********************************************************************/
+gr::io_signature::sptr rfnoc_common::get_input_signature()
+{
+  const int min_streams = 0;
+  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  return gr::io_signature::make(min_streams, max_streams, _tx.itemsize * _tx.vlen);
+}
+
+gr::io_signature::sptr rfnoc_common::get_output_signature()
+{
+  const int min_streams = 0;
+  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
+}
+
+rfnoc_common::~rfnoc_common()
+{
+  /* nop */
+}
+
+
+/*********************************************************************
+ * RFNoC block related functions.
+ *********************************************************************/
+void rfnoc_common::flush(size_t streamer_index)
+{
+  const size_t nbytes = 4096;
+  size_t nchan = 1;
+  if (_rx.align) {
+    nchan = _rx.streamers[0]->get_num_channels();
+  }
+  std::vector<std::vector<char> > buffs(nchan, std::vector<char>(nbytes));
+  gr_vector_void_star outputs;
+  for(size_t i = 0; i < nchan; i++) {
+    outputs.push_back(&buffs[i].front());
+  }
+  while(true) {
+    const size_t bpi = ::uhd::convert::get_bytes_per_item(_rx.stream_args.cpu_format);
+    _rx.streamers[streamer_index]->recv(outputs, nbytes/bpi, _rx.metadata, 0.0);
+    if(_rx.metadata.error_code != ::uhd::rx_metadata_t::ERROR_CODE_NONE) {
+      break;
+    }
+  }
+}
+

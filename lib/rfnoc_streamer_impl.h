@@ -23,12 +23,13 @@
 #ifndef INCLUDED_UHD_RFNOC_STREAMER_IMPL_H
 #define INCLUDED_UHD_RFNOC_STREAMER_IMPL_H
 
-#include <boost/thread/mutex.hpp>
 #include <ettus/rfnoc_streamer.h>
+#include <ettus/rfnoc_common.h>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/utils/atomic.hpp>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/usrp/rfnoc/block_ctrl_base.hpp>
+#include <boost/thread/mutex.hpp>
 #include <map>
 
 namespace gr {
@@ -88,26 +89,7 @@ namespace gr {
           gr_vector_void_star &output_items
       );
 
-      ::uhd::usrp::multi_usrp::sptr _dev;
-      ::uhd::rfnoc::block_ctrl_base::sptr _blk_ctrl;
-      ::uhd::stream_args_t _stream_args;
-
-      ::uhd::tx_metadata_t _tx_metadata;
-      std::vector< ::uhd::tx_streamer::sptr > _tx_stream;
-
-      ::uhd::rx_metadata_t _rx_metadata;
-      //! For aligned rx this vector has length 1. Otherwise,
-      // it holds one streamer per port.
-      std::vector< ::uhd::rx_streamer::sptr > _rx_stream;
-
       boost::recursive_mutex d_mutex;
-
-      size_t _ninputs;
-      size_t _noutputs;
-      size_t _in_vlen;
-      size_t _out_vlen;
-      const bool _align_inputs;
-      const bool _align_outputs;
 
       // Multi-Streamer Sync
       //! Counts the number of instantiations of this block
@@ -115,6 +97,9 @@ namespace gr {
       static ::uhd::reusable_barrier _tx_barrier;
       static ::uhd::reusable_barrier _rx_barrier;
       static boost::recursive_mutex s_setup_mutex;
+
+
+      rfnoc::rfnoc_common *d_rfnoccer;
 
     };
   } // namespace uhd

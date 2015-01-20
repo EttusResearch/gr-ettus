@@ -27,6 +27,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND ettus_sources
     device3.cc
+    rfnoc_common.cc
     rfnoc_streamer_impl.cc
 )
 

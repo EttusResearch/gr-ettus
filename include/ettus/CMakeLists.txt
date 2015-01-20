@@ -23,6 +23,7 @@
 install(FILES
     api.h
     device3.h
+    rfnoc_common.h
     rfnoc_streamer.h
     DESTINATION include/ettus
 )
