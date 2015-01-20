@@ -39,11 +39,6 @@ namespace gr {
   //namespace uhd {
   namespace ettus {
 
-    std::map<std::string, bool> rfnoc_streamer_impl::_active_streamers;
-    ::uhd::reusable_barrier rfnoc_streamer_impl::_tx_barrier;
-    ::uhd::reusable_barrier rfnoc_streamer_impl::_rx_barrier;
-    boost::recursive_mutex rfnoc_streamer_impl::s_setup_mutex;
-
     rfnoc_streamer::sptr
     rfnoc_streamer::make(
         const device3::sptr &dev,
@@ -249,165 +244,17 @@ namespace gr {
 
     bool rfnoc_streamer_impl::check_topology(int ninputs, int noutputs)
     {
-      GR_LOG_DEBUG(d_debug_logger, str(boost::format("check_topology()")));
-      {
-        boost::recursive_mutex::scoped_lock lock(s_setup_mutex);
-        std::string blk_id = d_rfnoccer->_blk_ctrl->get_block_id().get();
-        if (ninputs || noutputs) {
-          _active_streamers[blk_id] = true;
-        } else if (_active_streamers.count(blk_id)) {
-          _active_streamers.erase(blk_id);
-        }
-        GR_LOG_DEBUG(d_debug_logger, str(boost::format("RFNoC blocks with streaming ports: %d") % _active_streamers.size()));
-        _tx_barrier.resize(_active_streamers.size());
-        _rx_barrier.resize(_active_streamers.size());
-      }
-
-      // TODO: Check if ninputs and noutputs match the blocks io signatures.
-      return true;
+      return d_rfnoccer->check_topology(ninputs, noutputs);
     }
 
     bool rfnoc_streamer_impl::start()
     {
-      boost::recursive_mutex::scoped_lock lock(d_mutex);
-      GR_LOG_DEBUG(d_debug_logger, str(boost::format("start()")));
-
-      size_t ninputs = detail()->ninputs();
-      size_t noutputs = detail()->noutputs();
-      GR_LOG_DEBUG(d_debug_logger, str(boost::format("ninputs == %d noutputs == %d") % ninputs % noutputs));
-
-      // If the topology changed, we need to clear the old streamers
-      if (d_rfnoccer->_rx.streamers.size() != noutputs) {
-        d_rfnoccer->_rx.streamers.clear();
-      }
-      if (d_rfnoccer->_tx.streamers.size() != ninputs) {
-        d_rfnoccer->_tx.streamers.clear();
-      }
-
-      //////////////////// TX ///////////////////////////////////////////////////////////////
-      // Setup TX streamer.
-      if (ninputs && d_rfnoccer->_tx.streamers.empty()) {
-        // Get a block control for the tx side:
-        ::uhd::rfnoc::sink_block_ctrl_base::sptr tx_blk_ctrl =
-            boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(d_rfnoccer->_blk_ctrl);
-        if (!tx_blk_ctrl) {
-          GR_LOG_FATAL(d_logger, str(boost::format("Not a sink_block_ctrl_base: %s") % d_rfnoccer->_blk_ctrl->unique_id()));
-          return false;
-        }
-        if (d_rfnoccer->_tx.align) { // Aligned streamers:
-          GR_LOG_DEBUG(d_debug_logger, str(boost::format("Creating one aligned tx streamer for %d inputs.") % ninputs));
-          GR_LOG_DEBUG(d_debug_logger,
-              str(boost::format("cpu: %s  otw: %s  args: %s channels.size: %d ") % d_rfnoccer->_tx.stream_args.cpu_format % d_rfnoccer->_tx.stream_args.otw_format % d_rfnoccer->_tx.stream_args.args.to_string() % d_rfnoccer->_tx.stream_args.channels.size()));
-          assert(ninputs == d_rfnoccer->_tx.stream_args.channels.size());
-          ::uhd::tx_streamer::sptr tx_stream = d_rfnoccer->_dev->get_tx_stream(d_rfnoccer->_tx.stream_args);
-          if (tx_stream) {
-            d_rfnoccer->_tx.streamers.push_back(tx_stream);
-          } else {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % d_rfnoccer->_blk_ctrl->get_block_id().get()));
-            return false;
-          }
-        } else { // Unaligned streamers:
-          for (size_t i = 0; i < size_t(ninputs); i++) {
-            d_rfnoccer->_tx.stream_args.channels = std::vector<size_t>(1, i);
-            GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating tx streamer with: %s") % d_rfnoccer->_tx.stream_args.args.to_string()));
-            ::uhd::tx_streamer::sptr tx_stream = d_rfnoccer->_dev->get_tx_stream(d_rfnoccer->_tx.stream_args);
-            if (tx_stream) {
-              d_rfnoccer->_tx.streamers.push_back(tx_stream);
-            }
-          }
-          if (d_rfnoccer->_tx.streamers.size() != size_t(ninputs)) {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % d_rfnoccer->_blk_ctrl->get_block_id().get()));
-            return false;
-          }
-        }
-      }
-
-      d_rfnoccer->_tx.metadata.start_of_burst = false;
-      d_rfnoccer->_tx.metadata.end_of_burst = false;
-      d_rfnoccer->_tx.metadata.has_time_spec = false;
-
-      // Wait for all RFNoC streamers to have set up their tx streamers
-      _tx_barrier.wait();
-
-      //////////////////// RX ///////////////////////////////////////////////////////////////
-      // Setup RX streamer
-      if (noutputs && d_rfnoccer->_rx.streamers.empty()) {
-        // Get a block control for the rx side:
-        ::uhd::rfnoc::source_block_ctrl_base::sptr rx_blk_ctrl =
-            boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(d_rfnoccer->_blk_ctrl);
-        if (!rx_blk_ctrl) {
-          GR_LOG_FATAL(d_logger, str(boost::format("Not a source_block_ctrl_base: %s") % d_rfnoccer->_blk_ctrl->unique_id()));
-          return false;
-        }
-        if (d_rfnoccer->_rx.align) { // Aligned streamers:
-          GR_LOG_DEBUG(d_debug_logger, str(boost::format("Creating one aligned rx streamer for %d outputs.") % noutputs));
-          GR_LOG_DEBUG(d_debug_logger,
-              str(boost::format("cpu: %s  otw: %s  args: %s channels.size: %d ") % d_rfnoccer->_rx.stream_args.cpu_format % d_rfnoccer->_rx.stream_args.otw_format % d_rfnoccer->_rx.stream_args.args.to_string() % d_rfnoccer->_rx.stream_args.channels.size()));
-          assert(noutputs == d_rfnoccer->_rx.stream_args.channels.size());
-          ::uhd::rx_streamer::sptr rx_stream = d_rfnoccer->_dev->get_rx_stream(d_rfnoccer->_rx.stream_args);
-          if (rx_stream) {
-            d_rfnoccer->_rx.streamers.push_back(rx_stream);
-          } else {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % d_rfnoccer->_blk_ctrl->get_block_id().get()));
-            return false;
-          }
-        } else { // Unaligned streamers:
-          for (size_t i = 0; i < size_t(noutputs); i++) {
-            d_rfnoccer->_rx.stream_args.channels = std::vector<size_t>(1, i);
-            GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating rx streamer with: %s") % d_rfnoccer->_rx.stream_args.args.to_string()));
-            ::uhd::rx_streamer::sptr rx_stream = d_rfnoccer->_dev->get_rx_stream(d_rfnoccer->_rx.stream_args);
-            if (rx_stream) {
-              d_rfnoccer->_rx.streamers.push_back(rx_stream);
-            }
-          }
-          if (d_rfnoccer->_rx.streamers.size() != size_t(noutputs)) {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % d_rfnoccer->_blk_ctrl->get_block_id().get()));
-            return false;
-          }
-        }
-      }
-
-      // Wait for all RFNoC streamers to have set up their rx streamers
-      _rx_barrier.wait();
-
-      // Start the streamers
-      if (!d_rfnoccer->_rx.streamers.empty()) {
-        ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
-        stream_cmd.stream_now = true;
-        for (size_t i = 0; i < d_rfnoccer->_rx.streamers.size(); i++) {
-          d_rfnoccer->_rx.streamers[i]->issue_stream_cmd(stream_cmd);
-        }
-      }
-
-      return true;
+      return d_rfnoccer->start(detail()->ninputs(), detail()->noutputs());
     }
 
     bool rfnoc_streamer_impl::stop()
     {
-      boost::recursive_mutex::scoped_lock lock(d_mutex);
-
-      // TX: Send EOB
-      d_rfnoccer->_tx.metadata.start_of_burst = false;
-      d_rfnoccer->_tx.metadata.end_of_burst = true;
-      d_rfnoccer->_tx.metadata.has_time_spec = false;
-      if (d_rfnoccer->_tx.align) {
-        d_rfnoccer->_tx.streamers[0]->send(gr_vector_const_void_star(d_rfnoccer->_tx.streamers[0]->get_num_channels()), 0, d_rfnoccer->_tx.metadata, 1.0);
-      } else {
-        for (size_t i = 0; i < d_rfnoccer->_tx.streamers.size(); i++) {
-          // Always 1 channel per streamer in this case
-          d_rfnoccer->_tx.streamers[i]->send(gr_vector_const_void_star(1), 0, d_rfnoccer->_tx.metadata, 1.0);
-        }
-      }
-
-      _tx_barrier.wait();
-
-      // RX: Stop streaming and empty the buffers
-      for (size_t i = 0; i < d_rfnoccer->_rx.streamers.size(); i++) {
-        d_rfnoccer->_rx.streamers[i]->issue_stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
-        d_rfnoccer->flush(i);
-      }
-
-      return true;
+      return d_rfnoccer->stop();
     }
 
     void

@@ -66,12 +66,19 @@ namespace gr {
         /*********************************************************************
          * GR Block functions
          *********************************************************************/
+        bool check_topology(int ninputs, int noutputs);
+        bool start(size_t ninputs, size_t noutputs);
+        bool stop();
+
         gr::io_signature::sptr get_input_signature();
         gr::io_signature::sptr get_output_signature();
 
         /*********************************************************************
          * RFNoC block related functions.
          *********************************************************************/
+        //! \returns Block ID in string format.
+        std::string get_block_id() const { return _blk_ctrl->get_block_id(); };
+
         //! Returns a shared pointer to the block control
         boost::shared_ptr< ::uhd::rfnoc::block_ctrl_base > get_block_ctrl() const { return _blk_ctrl; };
 
@@ -145,7 +152,6 @@ namespace gr {
         static ::uhd::reusable_barrier _tx_barrier;
         static ::uhd::reusable_barrier _rx_barrier;
         static boost::recursive_mutex s_setup_mutex;
-
 
       }; // class rfnoc_common
 

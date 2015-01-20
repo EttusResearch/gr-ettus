@@ -29,6 +29,15 @@
 using namespace gr::ettus::rfnoc;
 
 /****************************************************************************
+ * Static members
+ ****************************************************************************/
+std::map<std::string, bool> rfnoc_common::_active_streamers;
+::uhd::reusable_barrier rfnoc_common::_tx_barrier;
+::uhd::reusable_barrier rfnoc_common::_rx_barrier;
+boost::recursive_mutex rfnoc_common::s_setup_mutex;
+
+
+/****************************************************************************
  * Helper functions
  ****************************************************************************/
 // Merges args1 and args2. Keys in excluded_keys keys are skipped.
@@ -149,6 +158,11 @@ rfnoc_common::rfnoc_common(
   );
 }
 
+rfnoc_common::~rfnoc_common()
+{
+  /* nop */
+}
+
 /*********************************************************************
  * GR Block functions
  *********************************************************************/
@@ -166,15 +180,167 @@ gr::io_signature::sptr rfnoc_common::get_output_signature()
   return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
 }
 
-rfnoc_common::~rfnoc_common()
+bool rfnoc_common::check_topology(int ninputs, int noutputs)
 {
-  /* nop */
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("check_topology()")));
+  { // scope the mutex:
+    boost::recursive_mutex::scoped_lock lock(s_setup_mutex);
+    std::string blk_id = get_block_id();
+    if (ninputs || noutputs) {
+      _active_streamers[blk_id] = true;
+    } else if (_active_streamers.count(blk_id)) {
+      _active_streamers.erase(blk_id);
+    }
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("RFNoC blocks with streaming ports: %d") % _active_streamers.size()));
+    _tx_barrier.resize(_active_streamers.size());
+    _rx_barrier.resize(_active_streamers.size());
+  }
+
+  // TODO: Check if ninputs and noutputs match the blocks io signatures.
+  return true;
 }
 
 
-/*********************************************************************
- * RFNoC block related functions.
- *********************************************************************/
+bool rfnoc_common::start(size_t ninputs, size_t noutputs)
+{
+  boost::recursive_mutex::scoped_lock lock(d_mutex);
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("start(): ninputs == %d noutputs == %d") % ninputs % noutputs));
+
+  // If the topology changed, we need to clear the old streamers
+  if (_rx.streamers.size() != noutputs) {
+    _rx.streamers.clear();
+  }
+  if (_tx.streamers.size() != ninputs) {
+    _tx.streamers.clear();
+  }
+
+  //////////////////// TX ///////////////////////////////////////////////////////////////
+  // Setup TX streamer.
+  if (ninputs && _tx.streamers.empty()) {
+    // Get a block control for the tx side:
+    ::uhd::rfnoc::sink_block_ctrl_base::sptr tx_blk_ctrl =
+        boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(_blk_ctrl);
+    if (!tx_blk_ctrl) {
+      GR_LOG_FATAL(d_logger, str(boost::format("Not a sink_block_ctrl_base: %s") % _blk_ctrl->unique_id()));
+      return false;
+    }
+    if (_tx.align) { // Aligned streamers:
+      GR_LOG_DEBUG(d_debug_logger, str(boost::format("Creating one aligned tx streamer for %d inputs.") % ninputs));
+      GR_LOG_DEBUG(d_debug_logger,
+          str(boost::format("cpu: %s  otw: %s  args: %s channels.size: %d ") % _tx.stream_args.cpu_format % _tx.stream_args.otw_format % _tx.stream_args.args.to_string() % _tx.stream_args.channels.size()));
+      assert(ninputs == _tx.stream_args.channels.size());
+      ::uhd::tx_streamer::sptr tx_stream = _dev->get_tx_stream(_tx.stream_args);
+      if (tx_stream) {
+        _tx.streamers.push_back(tx_stream);
+      } else {
+        GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+        return false;
+      }
+    } else { // Unaligned streamers:
+      for (size_t i = 0; i < size_t(ninputs); i++) {
+        _tx.stream_args.channels = std::vector<size_t>(1, i);
+        GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating tx streamer with: %s") % _tx.stream_args.args.to_string()));
+        ::uhd::tx_streamer::sptr tx_stream = _dev->get_tx_stream(_tx.stream_args);
+        if (tx_stream) {
+          _tx.streamers.push_back(tx_stream);
+        }
+      }
+      if (_tx.streamers.size() != size_t(ninputs)) {
+        GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+        return false;
+      }
+    }
+  }
+
+  _tx.metadata.start_of_burst = false;
+  _tx.metadata.end_of_burst = false;
+  _tx.metadata.has_time_spec = false;
+
+  // Wait for all RFNoC streamers to have set up their tx streamers
+  _tx_barrier.wait();
+
+  //////////////////// RX ///////////////////////////////////////////////////////////////
+  // Setup RX streamer
+  if (noutputs && _rx.streamers.empty()) {
+    // Get a block control for the rx side:
+    ::uhd::rfnoc::source_block_ctrl_base::sptr rx_blk_ctrl =
+        boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(_blk_ctrl);
+    if (!rx_blk_ctrl) {
+      GR_LOG_FATAL(d_logger, str(boost::format("Not a source_block_ctrl_base: %s") % _blk_ctrl->unique_id()));
+      return false;
+    }
+    if (_rx.align) { // Aligned streamers:
+      GR_LOG_DEBUG(d_debug_logger, str(boost::format("Creating one aligned rx streamer for %d outputs.") % noutputs));
+      GR_LOG_DEBUG(d_debug_logger,
+          str(boost::format("cpu: %s  otw: %s  args: %s channels.size: %d ") % _rx.stream_args.cpu_format % _rx.stream_args.otw_format % _rx.stream_args.args.to_string() % _rx.stream_args.channels.size()));
+      assert(noutputs == _rx.stream_args.channels.size());
+      ::uhd::rx_streamer::sptr rx_stream = _dev->get_rx_stream(_rx.stream_args);
+      if (rx_stream) {
+        _rx.streamers.push_back(rx_stream);
+      } else {
+        GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+        return false;
+      }
+    } else { // Unaligned streamers:
+      for (size_t i = 0; i < size_t(noutputs); i++) {
+        _rx.stream_args.channels = std::vector<size_t>(1, i);
+        GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating rx streamer with: %s") % _rx.stream_args.args.to_string()));
+        ::uhd::rx_streamer::sptr rx_stream = _dev->get_rx_stream(_rx.stream_args);
+        if (rx_stream) {
+          _rx.streamers.push_back(rx_stream);
+        }
+      }
+      if (_rx.streamers.size() != size_t(noutputs)) {
+        GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+        return false;
+      }
+    }
+  }
+
+  // Wait for all RFNoC streamers to have set up their rx streamers
+  _rx_barrier.wait();
+
+  // Start the streamers
+  if (!_rx.streamers.empty()) {
+    ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
+    stream_cmd.stream_now = true;
+    for (size_t i = 0; i < _rx.streamers.size(); i++) {
+      _rx.streamers[i]->issue_stream_cmd(stream_cmd);
+    }
+  }
+
+  return true;
+}
+
+bool rfnoc_common::stop()
+{
+  boost::recursive_mutex::scoped_lock lock(d_mutex);
+
+  // TX: Send EOB
+  _tx.metadata.start_of_burst = false;
+  _tx.metadata.end_of_burst = true;
+  _tx.metadata.has_time_spec = false;
+  // TODO: One loop is enough here
+  if (_tx.align) {
+    _tx.streamers[0]->send(gr_vector_const_void_star(_tx.streamers[0]->get_num_channels()), 0, _tx.metadata, 1.0);
+  } else {
+    for (size_t i = 0; i < _tx.streamers.size(); i++) {
+      // Always 1 channel per streamer in this case
+      _tx.streamers[i]->send(gr_vector_const_void_star(1), 0, _tx.metadata, 1.0);
+    }
+  }
+
+  _tx_barrier.wait();
+
+  // RX: Stop streaming and empty the buffers
+  for (size_t i = 0; i < _rx.streamers.size(); i++) {
+    _rx.streamers[i]->issue_stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
+    flush(i);
+  }
+
+  return true;
+}
+
 void rfnoc_common::flush(size_t streamer_index)
 {
   const size_t nbytes = 4096;

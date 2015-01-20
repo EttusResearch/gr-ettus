@@ -91,14 +91,6 @@ namespace gr {
 
       boost::recursive_mutex d_mutex;
 
-      // Multi-Streamer Sync
-      //! Counts the number of instantiations of this block
-      static std::map<std::string, bool> _active_streamers;
-      static ::uhd::reusable_barrier _tx_barrier;
-      static ::uhd::reusable_barrier _rx_barrier;
-      static boost::recursive_mutex s_setup_mutex;
-
-
       rfnoc::rfnoc_common *d_rfnoccer;
 
     };
