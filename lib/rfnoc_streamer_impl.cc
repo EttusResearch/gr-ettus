@@ -126,58 +126,58 @@ namespace gr {
     void
     rfnoc_streamer_impl::set_register(size_t reg, boost::uint32_t value)
     {
-      d_rfnoccer->_blk_ctrl->sr_write(reg, value);
+      d_rfnoccer->get_block_ctrl()->sr_write(reg, value);
     }
 
     void
     rfnoc_streamer_impl::set_option(const std::string &key, const std::string &val)
     {
-      GR_LOG_DEBUG(d_debug_logger, str(boost::format("Setting rfnoc option on %s %s==%s") % d_rfnoccer->_blk_ctrl->get_block_id() % key % val));
+      GR_LOG_DEBUG(d_debug_logger, str(boost::format("Setting rfnoc option on %s %s==%s") % d_rfnoccer->get_block_ctrl()->get_block_id() % key % val));
       // *throws up* this should not be a hardcoded list of options TODO
-      if (d_rfnoccer->_blk_ctrl->get_block_id().get_block_name() == "Radio") {
-        size_t chan = d_rfnoccer->_blk_ctrl->get_block_id().get_block_count();
+      if (d_rfnoccer->get_block_ctrl()->get_block_id().get_block_name() == "Radio") {
+        size_t chan = d_rfnoccer->get_block_ctrl()->get_block_id().get_block_count();
         if (key == "rx_freq") {
           double freq = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_rx_freq(freq, chan);
+          d_rfnoccer->get_device()->set_rx_freq(freq, chan);
         }
         else if (key == "tx_freq") {
           double freq = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_tx_freq(freq, chan);
+          d_rfnoccer->get_device()->set_tx_freq(freq, chan);
         }
         else if (key == "tx_ant") {
-          d_rfnoccer->_dev->set_tx_antenna(val, chan);
+          d_rfnoccer->get_device()->set_tx_antenna(val, chan);
         }
         else if (key == "rx_ant") {
-          d_rfnoccer->_dev->set_rx_antenna(val, chan);
+          d_rfnoccer->get_device()->set_rx_antenna(val, chan);
         }
         else if (key == "rx_gain") {
           double gain = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_rx_gain(gain, chan);
+          d_rfnoccer->get_device()->set_rx_gain(gain, chan);
         }
         else if (key == "tx_gain") {
           double gain = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_tx_gain(gain, chan);
+          d_rfnoccer->get_device()->set_tx_gain(gain, chan);
         }
         else if (key == "rx_rate") {
           double rate = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_rx_rate(rate, chan);
+          d_rfnoccer->get_device()->set_rx_rate(rate, chan);
         }
         else if (key == "tx_rate") {
           double rate = boost::lexical_cast<double>(val);
-          d_rfnoccer->_dev->set_tx_rate(rate, chan);
+          d_rfnoccer->get_device()->set_tx_rate(rate, chan);
         }
       }
     }
 
     void rfnoc_streamer_impl::set_taps(const std::vector<int> &taps)
     {
-      if (d_rfnoccer->_blk_ctrl->get_block_id().get_block_name() != "FIR") {
+      if (d_rfnoccer->get_block_ctrl()->get_block_id().get_block_name() != "FIR") {
         GR_LOG_ALERT(d_debug_logger, str(boost::format("Calling set_taps() on a non-FIR block!")));
         return;
       }
 
       ::uhd::rfnoc::fir_block_ctrl::sptr fir_ctrl =
-              boost::dynamic_pointer_cast< ::uhd::rfnoc::fir_block_ctrl >(d_rfnoccer->_blk_ctrl);
+              boost::dynamic_pointer_cast< ::uhd::rfnoc::fir_block_ctrl >(d_rfnoccer->get_block_ctrl());
       if (not fir_ctrl) {
         GR_LOG_ALERT(d_debug_logger, str(boost::format("Calling set_taps() on a non-FIR block!")));
         return;
@@ -188,13 +188,13 @@ namespace gr {
 
     void rfnoc_streamer_impl::set_window(const std::vector<int> &coeffs)
     {
-      if (d_rfnoccer->_blk_ctrl->get_block_id().get_block_name() != "Window") {
+      if (d_rfnoccer->get_block_ctrl()->get_block_id().get_block_name() != "Window") {
         std::cout << "[GR] Calling set_window() on a non-Window block!" << std::endl;
         return;
       }
 
       ::uhd::rfnoc::window_block_ctrl::sptr window_ctrl =
-              boost::dynamic_pointer_cast< ::uhd::rfnoc::window_block_ctrl >(d_rfnoccer->_blk_ctrl);
+              boost::dynamic_pointer_cast< ::uhd::rfnoc::window_block_ctrl >(d_rfnoccer->get_block_ctrl());
       if (not window_ctrl) {
         std::cout << "[GR] Calling set_window() on a non-Window block!" << std::endl;
         return;
@@ -206,7 +206,7 @@ namespace gr {
     std::string
     rfnoc_streamer_impl::get_block_id()
     {
-      return d_rfnoccer->_blk_ctrl->get_block_id().get();
+      return d_rfnoccer->get_block_ctrl()->get_block_id().get();
     }
 
   } /* namespace uhd */

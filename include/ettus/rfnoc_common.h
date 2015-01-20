@@ -44,7 +44,7 @@ namespace gr {
   namespace ettus {
     namespace rfnoc {
       class rfnoc_common {
-        public: // yeah, should be private
+        public:
         /*********************************************************************
          * Types
          *********************************************************************/
@@ -82,27 +82,11 @@ namespace gr {
         gr::io_signature::sptr get_input_signature();
         gr::io_signature::sptr get_output_signature();
 
-        void work_tx_a(
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items
-        );
-        void work_tx_u(
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items
-        );
-
-        int work_rx_a(
-            int noutput_items,
-            gr_vector_void_star &output_items
-        );
-        void work_rx_u(
-            int noutput_items,
-            gr_vector_void_star &output_items
-        );
-
         /*********************************************************************
          * RFNoC block related functions.
          *********************************************************************/
+        ::uhd::usrp::multi_usrp::sptr get_device() const { return _dev; };
+
         //! \returns Block ID in string format.
         std::string get_block_id() const { return _blk_ctrl->get_block_id(); };
 
@@ -129,6 +113,29 @@ namespace gr {
             }
             return the_sptr;
         }
+
+        private:
+
+        /*********************************************************************
+         * Workers and Helpers
+         *********************************************************************/
+        void work_tx_a(
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items
+        );
+        void work_tx_u(
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items
+        );
+
+        int work_rx_a(
+            int noutput_items,
+            gr_vector_void_star &output_items
+        );
+        void work_rx_u(
+            int noutput_items,
+            gr_vector_void_star &output_items
+        );
 
         void flush(size_t streamer_index);
 

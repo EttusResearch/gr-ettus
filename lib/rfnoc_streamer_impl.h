@@ -25,12 +25,6 @@
 
 #include <ettus/rfnoc_streamer.h>
 #include <ettus/rfnoc_common.h>
-#include <uhd/usrp/multi_usrp.hpp>
-#include <uhd/utils/atomic.hpp>
-#include <uhd/usrp/multi_usrp.hpp>
-#include <uhd/usrp/rfnoc/block_ctrl_base.hpp>
-#include <boost/thread/mutex.hpp>
-#include <map>
 
 namespace gr {
   //namespace uhd {
@@ -68,28 +62,7 @@ namespace gr {
       bool start();
       bool stop();
 
-      void flush(size_t streamer_index);
-
      private:
-      void work_tx_a(
-          gr_vector_int &ninput_items,
-          gr_vector_const_void_star &input_items
-      );
-      void work_tx_u(
-          gr_vector_int &ninput_items,
-          gr_vector_const_void_star &input_items
-      );
-
-      int work_rx_a(
-          int noutput_items,
-          gr_vector_void_star &output_items
-      );
-      void work_rx_u(
-          int noutput_items,
-          gr_vector_void_star &output_items
-      );
-
-      boost::recursive_mutex d_mutex;
 
       rfnoc::rfnoc_common *d_rfnoccer;
 
