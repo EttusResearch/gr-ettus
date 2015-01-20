@@ -26,6 +26,7 @@
 #include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
 #include <uhd/usrp/rfnoc/source_block_ctrl_base.hpp>
 #include <boost/assign.hpp>
+#include <boost/format.hpp>
 
 using namespace gr::ettus::rfnoc;
 
@@ -110,6 +111,23 @@ static void set_signature_from_block(
   }
 
   return;
+}
+
+std::string make_block_id(
+    const std::string &block_name,
+    const int block_select,
+    const int device_select
+) {
+  std::string dev_str;
+  if (device_select >= 0) {
+    dev_str = str(boost::format("%d/") % device_select);
+  }
+  std::string block_str;
+  if (block_select >= 0) {
+    block_str = str(boost::format("_%d") % block_select);
+  }
+
+  return str(boost::format("%s%s%s") % dev_str % block_name % block_str);
 }
 
 /****************************************************************************
