@@ -4,16 +4,21 @@
   <key>uhd_rfnoc_streamer_window</key>
   <import>import ettus</import>
   <import>import numpy as np</import>
-  <make>ettus.rfnoc_streamer(
+  <make>ettus.rfnoc_window_cci(
+    np.add(np.multiply($coeffs,2**16), $coeffs),
     self.device3,
-    "Window_{0}".format($block_index),
-    uhd.stream_args(
-        cpu_format="fc32", \# TODO: This must be made an option
-        otw_format="sc16",
-        args="window_len=$coeffs_len,spp=$coeffs_len",
-    )
+    #if $block_index()
+    ${block_index},
+    #else
+    -1,
+    #end if
+    #if $device_index()
+    ${device_index},
+    #else
+    -1,
+    #end if
 )
-self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
+</make>
   <callback>set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</callback>
 
   <param>
@@ -36,51 +41,19 @@ self.$(id).set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</make>
   <param>
     <name>Window Select</name>
     <key>block_index</key>
-    <type>enum</type>
-    <option>
-      <name>0</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>1</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>2</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>3</name>
-      <key>3</key>
-    </option>
-    <option>
-      <name>4</name>
-      <key>4</key>
-    </option>
-    <option>
-      <name>5</name>
-      <key>5</key>
-    </option>
-    <option>
-      <name>6</name>
-      <key>6</key>
-    </option>
-    <option>
-      <name>7</name>
-      <key>7</key>
-    </option>
-    <option>
-      <name>8</name>
-      <key>8</key>
-    </option>
-    <option>
-      <name>9</name>
-      <key>9</key>
-    </option>
-    <option>
-      <name>10</name>
-      <key>10</key>
-    </option>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
   </param>
 
   <check>(len($coeffs) == $coeffs_len) and (abs(max($coeffs)) > 2^15-1)</check>

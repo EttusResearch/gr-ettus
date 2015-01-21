@@ -45,8 +45,6 @@ namespace gr {
       ~rfnoc_streamer_impl();
 
       void set_option(const std::string &key, const std::string &val);
-      void set_taps(const std::vector<int> &taps);
-      void set_window(const std::vector<int> &coeff);
 
       // RFNoC-specifics:
       GR_RFNOC_BLOCK_IMPL_H()

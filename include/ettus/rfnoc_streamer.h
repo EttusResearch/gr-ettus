@@ -62,7 +62,6 @@ namespace gr {
       );
 
       virtual void set_option(const std::string &key, const std::string &val) = 0;
-      virtual void set_window(const std::vector<int> &coeffs) = 0;
 
       // Add RFNoC-relevant definitions:
       virtual void set_register(size_t reg, boost::uint32_t value) = 0;
