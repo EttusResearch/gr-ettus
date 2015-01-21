@@ -31,6 +31,7 @@
 #include <gnuradio/types.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/io_signature.h>
+#include <gnuradio/block_detail.h>
 #include <uhd/device3.hpp>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/utils/atomic.hpp>
@@ -56,8 +57,8 @@ namespace gr {
            *********************************************************************/
           static std::string make_block_id(
               const std::string &block_name,
-              const int block_select,
-              const int device_select
+              const int block_select=-1,
+              const int device_select=-1
           );
 
           /*********************************************************************
@@ -65,7 +66,7 @@ namespace gr {
            *********************************************************************/
           rfnoc_common(
               const device3::sptr &dev,
-              const blockid_selector_t &block_id,
+              const std::string &block_id,
               const ::uhd::stream_args_t &tx_stream_args,
               const ::uhd::stream_args_t &rx_stream_args,
               //gr::logger_ptr logger,

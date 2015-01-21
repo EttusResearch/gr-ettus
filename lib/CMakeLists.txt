@@ -29,6 +29,7 @@ list(APPEND ettus_sources
     device3.cc
     rfnoc_common.cc
     rfnoc_streamer_impl.cc
+    rfnoc_fir_cci_impl.cc
 )
 
 set(ettus_sources "${ettus_sources}" PARENT_SCOPE)

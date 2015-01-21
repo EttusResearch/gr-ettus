@@ -49,6 +49,7 @@
 %{
 #include <ettus/device3.h>
 #include <ettus/rfnoc_streamer.h>
+#include <ettus/rfnoc_fir_cci.h>
 %}
 
 ////////////////////////////////////////////////////////////////////////
@@ -130,11 +131,13 @@
 //%include <gnuradio/uhd/rfnoc_streamer.h>
 %include <ettus/device3.h>
 %include <ettus/rfnoc_streamer.h>
+%include <ettus/rfnoc_fir_cci.h>
 
 //GR_SWIG_BLOCK_MAGIC2(uhd, device3)
 //GR_SWIG_BLOCK_MAGIC2(uhd, rfnoc_streamer);
 GR_SWIG_BLOCK_MAGIC2(ettus, device3)
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_streamer);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
 
 ////////////////////////////////////////////////////////////////////////
 // device discovery (no need to %include device.hpp)
