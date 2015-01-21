@@ -108,6 +108,12 @@ namespace gr {
       return d_rfnoccer->stop();
     }
 
+    std::string
+    rfnoc_fir_cci_impl::get_block_id()
+    {
+      return d_rfnoccer->get_block_ctrl()->get_block_id().get();
+    }
+
   } /* namespace ettus */
 } /* namespace gr */
 

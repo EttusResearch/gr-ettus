@@ -36,9 +36,6 @@ namespace gr {
      public:
       typedef boost::shared_ptr<rfnoc_fir_cci> sptr;
 
-      //! Update the filter taps
-      virtual void set_taps(const std::vector<int> &taps) = 0;
-
       /*!
        * \param taps Taps
        * \param dev device3 instance
@@ -51,6 +48,10 @@ namespace gr {
           const int block_select=-1,
           const int device_select=-1
       );
+
+      virtual std::string get_block_id() = 0;
+      //! Update the filter taps
+      virtual void set_taps(const std::vector<int> &taps) = 0;
     };
 
   } // namespace ettus

@@ -6,8 +6,16 @@
   <make>ettus.rfnoc_fir_cci(
     $taps,
     self.device3,
-    #if $block_index() then $block_index, else -1#
-    #if $device_index() then $device_index, else -1#
+    #if $block_index()
+    ${block_index},
+    #else
+    -1,
+    #end if
+    #if $device_index()
+    ${device_index},
+    #else
+    -1,
+    #end if
 )
   </make>
   <callback>set_taps($taps)</callback>
@@ -24,7 +32,7 @@
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
-    <hide>#if $block_index &lt; 0 then 'part' else 'none'#</hide>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
 
@@ -33,7 +41,7 @@
     <key>device_index</key>
     <value>-1</value>
     <type>int</type>
-    <hide>#if $device_index &lt; 0 then 'part' else 'none'#</hide>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
 

@@ -46,6 +46,8 @@ namespace gr {
       bool start();
       bool stop();
 
+      std::string get_block_id();
+
       int general_work(
           int noutput_items,
           gr_vector_int &ninput_items,
