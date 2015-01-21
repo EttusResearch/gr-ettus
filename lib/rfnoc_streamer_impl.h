@@ -24,7 +24,7 @@
 #define INCLUDED_UHD_RFNOC_STREAMER_IMPL_H
 
 #include <ettus/rfnoc_streamer.h>
-#include <ettus/rfnoc_common.h>
+#include "rfnoc_common.h"
 
 namespace gr {
   //namespace uhd {

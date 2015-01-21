@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <ettus/rfnoc_common.h>
+#include "rfnoc_common.h"
 #include <gnuradio/block.h>
 #include <uhd/convert.hpp>
 #include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
@@ -113,7 +113,7 @@ static void set_signature_from_block(
   return;
 }
 
-std::string make_block_id(
+std::string rfnoc_common::make_block_id(
     const std::string &block_name,
     const int block_select,
     const int device_select
