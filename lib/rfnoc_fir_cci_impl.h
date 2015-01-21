@@ -41,6 +41,7 @@ namespace gr {
       ~rfnoc_fir_cci_impl();
 
       void set_taps(const std::vector<int> &taps);
+      void set_register(size_t reg, boost::uint32_t value);
 
       bool check_topology(int ninputs, int noutputs);
       bool start();

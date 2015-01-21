@@ -44,28 +44,12 @@ namespace gr {
       );
       ~rfnoc_streamer_impl();
 
-      void set_register(size_t reg, boost::uint32_t value);
       void set_option(const std::string &key, const std::string &val);
-      std::string get_block_id();
-
       void set_taps(const std::vector<int> &taps);
       void set_window(const std::vector<int> &coeff);
 
-      int general_work(
-          int noutput_items,
-          gr_vector_int &ninput_items,
-          gr_vector_const_void_star &input_items,
-          gr_vector_void_star &output_items
-      );
-
-      bool check_topology(int ninputs, int noutputs);
-      bool start();
-      bool stop();
-
-     private:
-
-      rfnoc::rfnoc_common *d_rfnoccer;
-
+      // RFNoC-specifics:
+      GR_RFNOC_BLOCK_IMPL_H()
     };
   } // namespace uhd
 } // namespace gr

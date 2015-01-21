@@ -17,7 +17,8 @@
     -1,
     #end if
 )
-  </make>
+\# Set them twice just in case:
+self.$(id).set_taps($taps)</make>
   <callback>set_taps($taps)</callback>
 
   <param>

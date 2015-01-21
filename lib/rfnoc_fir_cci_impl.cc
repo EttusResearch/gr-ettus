@@ -114,6 +114,12 @@ namespace gr {
       return d_rfnoccer->get_block_ctrl()->get_block_id().get();
     }
 
+    void
+    rfnoc_fir_cci_impl::set_register(size_t reg, boost::uint32_t value)
+    {
+      d_rfnoccer->get_block_ctrl()->sr_write(reg, value);
+    }
+
   } /* namespace ettus */
 } /* namespace gr */
 

@@ -22,6 +22,7 @@
 
 #include <ettus/api.h>
 #include <ettus/device3.h>
+#include <ettus/rfnoc_utils.h>
 #include <gnuradio/block.h>
 
 namespace gr {
@@ -43,15 +44,15 @@ namespace gr {
        * \param device_select Device select
        */
       static sptr make(
-          const std::vector<int> &taps,
-          const device3::sptr &dev,
-          const int block_select=-1,
-          const int device_select=-1
+          const std::vector<int> &taps, const device3::sptr &dev, const int block_select=-1, const int device_select=-1
       );
 
-      virtual std::string get_block_id() = 0;
       //! Update the filter taps
       virtual void set_taps(const std::vector<int> &taps) = 0;
+
+      // Add RFNoC-relevant declarations:
+      virtual void set_register(size_t reg, boost::uint32_t value) = 0;
+      virtual std::string get_block_id() = 0;
     };
 
   } // namespace ettus

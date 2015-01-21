@@ -40,6 +40,57 @@
 #include <boost/function.hpp>
 #include <map>
 
+// Add this to the end of your class declaration:
+#define GR_RFNOC_BLOCK_IMPL_H() \
+     public: \
+      int general_work( \
+          int noutput_items, \
+          gr_vector_int &ninput_items, \
+          gr_vector_const_void_star &input_items, \
+          gr_vector_void_star &output_items \
+      ) { \
+        return d_rfnoccer->general_work( \
+            noutput_items, \
+            ninput_items, \
+            input_items, \
+            output_items \
+        ); \
+      } \
+      bool check_topology(int ninputs, int noutputs) { return d_rfnoccer->check_topology(ninputs, noutputs); } \
+      bool start() { return d_rfnoccer->start(detail()->ninputs(), detail()->noutputs()); } \
+      bool stop() { return d_rfnoccer->stop(); } \
+      void set_register(size_t reg, boost::uint32_t value) { d_rfnoccer->get_block_ctrl()->sr_write(reg, value); } \
+      std::string get_block_id() { return d_rfnoccer->get_block_ctrl()->get_block_id().get(); } \
+      ::uhd::usrp::multi_usrp::sptr get_device() const { return d_rfnoccer->get_device(); }; \
+      boost::shared_ptr< ::uhd::rfnoc::block_ctrl_base > get_block_ctrl() const { return d_rfnoccer->get_block_ctrl(); }; \
+      template <typename T> boost::shared_ptr<T> get_block_ctrl() const { return d_rfnoccer->get_block_ctrl<T>(); } \
+      template <typename T> boost::shared_ptr<T> get_block_ctrl_throw() const { return d_rfnoccer->get_block_ctrl_throw<T>(); } \
+     private: \
+      rfnoc::rfnoc_common::sptr d_rfnoccer;
+
+// Have your ctor call this ctor macro:
+#define GR_RFNOC_BLOCK_SUPER_CTOR(name) \
+    gr::block(name, \
+          /* Default IO signatures: These will be overridden in the constructor */ \
+          gr::io_signature::make(0, 0, 1), \
+          gr::io_signature::make(0, 0, 1) \
+       )
+
+// Plonk this into your constructor:
+#define GR_RFNOC_BLOCK_INIT(dev, block_id, tx_stream_args, rx_stream_args) \
+      /***** Set up block control ********************************/ \
+      d_rfnoccer = rfnoc::rfnoc_common::sptr(new rfnoc::rfnoc_common( \
+          dev, block_id, \
+          tx_stream_args, rx_stream_args, \
+          boost::bind(&gr::block::consume,      this, _1, _2), \
+          boost::bind(&gr::block::consume_each, this, _1), \
+          boost::bind(&gr::block::produce,      this, _1, _2) \
+      )); \
+      /***** Finalize I/O signatures and configure GR block ******/ \
+      set_input_signature(d_rfnoccer->get_input_signature()); \
+      set_output_signature(d_rfnoccer->get_output_signature()); \
+      set_tag_propagation_policy(TPP_DONT); \
+
 namespace gr {
   //namespace uhd {
   namespace ettus {
@@ -49,6 +100,7 @@ namespace gr {
           /*********************************************************************
            * Types
            *********************************************************************/
+          typedef boost::shared_ptr<rfnoc_common> sptr;
           typedef boost::function<void(int, int)> block_func_t;
           typedef boost::function<void(int)> block_func1_t;
 
