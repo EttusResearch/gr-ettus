@@ -21,7 +21,7 @@
 #define INCLUDED_ETTUS_RFNOC_FIR_CCI_IMPL_H
 
 #include <ettus/rfnoc_fir_cci.h>
-#include "rfnoc_common.h"
+#include <ettus/rfnoc_common.h>
 
 namespace gr {
   namespace ettus {

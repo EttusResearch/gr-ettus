@@ -44,7 +44,7 @@ namespace gr {
   //namespace uhd {
   namespace ettus {
     namespace rfnoc {
-      class rfnoc_common {
+      class ETTUS_API rfnoc_common {
         public:
           /*********************************************************************
            * Types

@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "rfnoc_common.h"
+#include <ettus/rfnoc_common.h>
 #include <gnuradio/block.h>
 #include <uhd/convert.hpp>
 #include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
