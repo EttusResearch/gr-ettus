@@ -3,70 +3,23 @@
   <name>RFNoC: FIFO</name>
   <key>uhd_rfnoc_streamer_fifo</key>
   <import>import ettus</import>
-  <make>ettus.rfnoc_streamer(
+  <make>ettus.rfnoc_generic(
     self.device3,
-    "FIFO_{0}".format($block_index),
-    uhd.stream_args(
+    uhd.stream_args( \# TX Stream Args
         cpu_format="$type",
-        #if $otw()
         otw_format="$otw",
-        #end if
-        args="gr_vlen={0},{1}".format($grvlen, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
-    )
+        args="gr_vlen=${grvlen},{0}".format("" if $grvlen == 1 else "spp={0}".format($grvlen)),
+    ),
+    uhd.stream_args( \# RX Stream Args
+        cpu_format="$type",
+        otw_format="$otw",
+        args="gr_vlen=${grvlen},{0}".format("" if $grvlen == 1 else "spp={0}".format($grvlen)),
+    ),
+    "FIFO", $block_index, $device_index,
 )</make>
 
   <param>
-    <name>FIFO Select</name>
-    <key>block_index</key>
-    <type>enum</type>
-    <option>
-      <name>0</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>1</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>2</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>3</name>
-      <key>3</key>
-    </option>
-    <option>
-      <name>4</name>
-      <key>4</key>
-    </option>
-    <option>
-      <name>5</name>
-      <key>5</key>
-    </option>
-    <option>
-      <name>6</name>
-      <key>6</key>
-    </option>
-    <option>
-      <name>7</name>
-      <key>7</key>
-    </option>
-    <option>
-      <name>8</name>
-      <key>8</key>
-    </option>
-    <option>
-      <name>9</name>
-      <key>9</key>
-    </option>
-    <option>
-      <name>10</name>
-      <key>10</key>
-    </option>
-  </param>
-
-  <param>
-    <name>Data Type</name>
+    <name>Host Data Type</name>
     <key>type</key>
     <type>enum</type>
     <option>
@@ -92,7 +45,7 @@
   </param>
 
   <param>
-    <name>Wire Format</name>
+    <name>Device Format</name>
     <key>otw</key>
     <type>enum</type>
     <option>
@@ -107,6 +60,23 @@
       <name>Byte</name>
       <key>u8</key>
     </option>
+  </param>
+
+  <param>
+    <name>FIFO Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
   </param>
 
   <param>

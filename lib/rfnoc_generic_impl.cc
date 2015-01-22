@@ -22,51 +22,45 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "rfnoc_fir_cci_impl.h"
-#include <uhd/usrp/rfnoc/fir_block_ctrl.hpp>
+#include "rfnoc_generic_impl.h"
+#include <boost/format.hpp>
 
 namespace gr {
   namespace ettus {
 
-    rfnoc_fir_cci::sptr
-    rfnoc_fir_cci::make(
-        const std::vector<int> &taps,
-        const device3::sptr &dev,
-        const int block_select,
-        const int device_select
+    rfnoc_generic::sptr
+      rfnoc_generic::make(
+          const device3::sptr &dev,
+          const ::uhd::stream_args_t &tx_stream_args,
+          const ::uhd::stream_args_t &rx_stream_args,
+          const std::string &block_name,
+          const int block_select,
+          const int device_select
     ) {
       return gnuradio::get_initial_sptr(
-          new rfnoc_fir_cci_impl(
-            taps, dev, block_select, device_select
-          )
+          new rfnoc_generic_impl(dev, tx_stream_args, rx_stream_args, block_name, block_select, device_select)
       );
     }
 
-
-    rfnoc_fir_cci_impl::rfnoc_fir_cci_impl(
-        const std::vector<int> &taps,
+    rfnoc_generic_impl::rfnoc_generic_impl(
         const device3::sptr &dev,
+        const ::uhd::stream_args_t &tx_stream_args,
+        const ::uhd::stream_args_t &rx_stream_args,
+        const std::string &block_name,
         const int block_select,
         const int device_select
-    ) : gr::block("rfnoc_fir_cci",
-              gr::io_signature::make(0, 1, sizeof(gr_complex)),
-              gr::io_signature::make(0, 1, sizeof(gr_complex)))
+    ) : GR_RFNOC_BLOCK_SUPER_CTOR(str(boost::format("uhd_rfnoc_%s") % block_name))
     {
-      ::uhd::stream_args_t stream_args("fc32", "sc16");
       GR_RFNOC_BLOCK_INIT(
-          dev, rfnoc::rfnoc_common::make_block_id("FIR", block_select, device_select),
-          stream_args, stream_args
+          dev,
+          rfnoc::rfnoc_common::make_block_id(block_name, block_select, device_select),
+          tx_stream_args, rx_stream_args
       );
     }
 
-    rfnoc_fir_cci_impl::~rfnoc_fir_cci_impl()
+    rfnoc_generic_impl::~rfnoc_generic_impl()
     {
       /* nop */
-    }
-
-    void rfnoc_fir_cci_impl::set_taps(const std::vector<int> &taps)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fir_block_ctrl >()->set_taps(taps);
     }
 
   } /* namespace ettus */

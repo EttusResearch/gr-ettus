@@ -3,71 +3,25 @@
   <name>RFNoC: Adder/Subtractor</name>
   <key>uhd_rfnoc_streamer_adder</key>
   <import>import ettus</import>
-  <make>ettus.rfnoc_streamer(
+  <make>ettus.rfnoc_generic(
     self.device3,
-    "AddSub_{0}".format($block_index),
-    uhd.stream_args(
+    uhd.stream_args( \# TX Stream Args
+        cpu_format="$type", \# TODO: This must be made an option
+        otw_format="sc16",
+	channels=(0,1),
+        args="align=1",
+    ),
+    uhd.stream_args( \# RX Stream Args
         cpu_format="$type",
         otw_format="sc16",
-        channels=(0,1),
-        args="",
+	channels=(0,1),
+        args="align=1",
     ),
-    2, 2,
-    True, True,
-)
-</make>
-  <param>
-    <name>Adder Select</name>
-    <key>block_index</key>
-    <type>enum</type>
-    <option>
-      <name>0</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>1</name>
-      <key>1</key>
-    </option>
-    <option>
-      <name>2</name>
-      <key>2</key>
-    </option>
-    <option>
-      <name>3</name>
-      <key>3</key>
-    </option>
-    <option>
-      <name>4</name>
-      <key>4</key>
-    </option>
-    <option>
-      <name>5</name>
-      <key>5</key>
-    </option>
-    <option>
-      <name>6</name>
-      <key>6</key>
-    </option>
-    <option>
-      <name>7</name>
-      <key>7</key>
-    </option>
-    <option>
-      <name>8</name>
-      <key>8</key>
-    </option>
-    <option>
-      <name>9</name>
-      <key>9</key>
-    </option>
-    <option>
-      <name>10</name>
-      <key>10</key>
-    </option>
-  </param>
+    "AddSub", $block_index, $device_index,
+)</make>
 
   <param>
-    <name>Data Type</name>
+    <name>Host Data Type</name>
     <key>type</key>
     <type>enum</type>
     <option>
@@ -80,6 +34,23 @@
       <key>sc16</key>
       <opt>type:sc16</opt>
     </option>
+  </param>
+
+  <param>
+    <name>AddSub Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
   </param>
 
   <sink>

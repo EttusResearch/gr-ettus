@@ -17,33 +17,34 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_ETTUS_RFNOC_FIR_CCI_IMPL_H
-#define INCLUDED_ETTUS_RFNOC_FIR_CCI_IMPL_H
+#ifndef INCLUDED_ETTUS_RFNOC_GENERIC_IMPL_H
+#define INCLUDED_ETTUS_RFNOC_GENERIC_IMPL_H
 
-#include <ettus/rfnoc_fir_cci.h>
+#include <ettus/rfnoc_generic.h>
 #include <ettus/rfnoc_common.h>
 
 namespace gr {
   namespace ettus {
 
-    class rfnoc_fir_cci_impl : public rfnoc_fir_cci
+    class rfnoc_generic_impl : public rfnoc_generic
     {
      public:
-      rfnoc_fir_cci_impl(
-          const std::vector<int> &taps,
+      rfnoc_generic_impl(
           const device3::sptr &dev,
+          const ::uhd::stream_args_t &tx_stream_args,
+          const ::uhd::stream_args_t &rx_stream_args,
+          const std::string &block_name,
           const int block_select,
           const int device_select
       );
-      ~rfnoc_fir_cci_impl();
+      ~rfnoc_generic_impl();
 
-      void set_taps(const std::vector<int> &taps);
-
+      // RFNoC-specifics (this includes set_register)
       GR_RFNOC_BLOCK_IMPL_H()
     };
 
   } // namespace ettus
 } // namespace gr
 
-#endif /* INCLUDED_ETTUS_RFNOC_FIR_CCI_IMPL_H */
+#endif /* INCLUDED_ETTUS_RFNOC_GENERIC_IMPL_H */
 

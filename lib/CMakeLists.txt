@@ -24,14 +24,13 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND ettus_sources
     device3.cc
     rfnoc_common.cc
-    rfnoc_streamer_impl.cc
     rfnoc_fir_cci_impl.cc
     rfnoc_window_cci_impl.cc
     rfnoc_radio_impl.cc
+    rfnoc_generic_impl.cc
 )
 
 set(ettus_sources "${ettus_sources}" PARENT_SCOPE)
