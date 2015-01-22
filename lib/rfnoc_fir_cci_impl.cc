@@ -48,9 +48,7 @@ namespace gr {
         const device3::sptr &dev,
         const int block_select,
         const int device_select
-    ) : gr::block("rfnoc_fir_cci",
-              gr::io_signature::make(0, 1, sizeof(gr_complex)),
-              gr::io_signature::make(0, 1, sizeof(gr_complex)))
+    ) : GR_RFNOC_BLOCK_SUPER_CTOR("rfnoc_fir_cci")
     {
       ::uhd::stream_args_t stream_args("fc32", "sc16");
       GR_RFNOC_BLOCK_INIT(

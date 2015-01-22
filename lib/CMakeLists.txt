@@ -31,6 +31,7 @@ list(APPEND ettus_sources
     rfnoc_window_cci_impl.cc
     rfnoc_radio_impl.cc
     rfnoc_generic_impl.cc
+    rfnoc_vector_iir_cc_impl.cc
 )
 
 set(ettus_sources "${ettus_sources}" PARENT_SCOPE)

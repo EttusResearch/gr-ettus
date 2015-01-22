@@ -27,5 +27,6 @@ install(FILES
     rfnoc_fir_cci.h
     rfnoc_window_cci.h
     rfnoc_radio.h
-    rfnoc_generic.h DESTINATION include/ettus
+    rfnoc_generic.h
+    rfnoc_vector_iir_cc.h DESTINATION include/ettus
 )

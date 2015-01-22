@@ -48,11 +48,11 @@
 %ignore gr::uhd::device3::get_device;
 %{
 #include <ettus/device3.h>
-#include <ettus/rfnoc_streamer.h>
 #include <ettus/rfnoc_fir_cci.h>
 #include "ettus/rfnoc_window_cci.h"
 #include "ettus/rfnoc_radio.h"
 #include "ettus/rfnoc_generic.h"
+#include "ettus/rfnoc_vector_iir_cc.h"
 %}
 
 ////////////////////////////////////////////////////////////////////////
@@ -131,13 +131,10 @@
 // block magic
 ////////////////////////////////////////////////////////////////////////
 //%include <gnuradio/uhd/device3.h>
-//%include <gnuradio/uhd/rfnoc_streamer.h>
 %include <ettus/device3.h>
-%include <ettus/rfnoc_streamer.h>
 %include <ettus/rfnoc_fir_cci.h>
 
 //GR_SWIG_BLOCK_MAGIC2(uhd, device3)
-//GR_SWIG_BLOCK_MAGIC2(uhd, rfnoc_streamer);
 GR_SWIG_BLOCK_MAGIC2(ettus, device3)
 
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
@@ -176,3 +173,5 @@ GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window_cci);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_radio);
 %include "ettus/rfnoc_generic.h"
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_generic);
+%include "ettus/rfnoc_vector_iir_cc.h"
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_vector_iir_cc);
