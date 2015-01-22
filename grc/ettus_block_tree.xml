@@ -12,11 +12,13 @@
 			<name>RFNoC</name>
 			<block>variable_uhd_device3</block>
 			<block>uhd_rfnoc_streamer</block>
-			<block>uhd_rfnoc_streamer_radio</block>
+			<block>uhd_rfnoc_streamer_adder</block>
 			<block>uhd_rfnoc_streamer_fifo</block>
 			<block>uhd_rfnoc_streamer_fft</block>
 			<block>uhd_rfnoc_streamer_fir</block>
-			<block>uhd_rfnoc_streamer_adder</block>
+			<block>uhd_rfnoc_streamer_keep_one_in_n</block>
+			<block>uhd_rfnoc_streamer_radio</block>
+			<block>uhd_rfnoc_streamer_vector_iir</block>
 			<block>uhd_rfnoc_streamer_window</block>
 		</cat>
 	</cat>

@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Vector IIR</name>
+  <key>uhd_rfnoc_streamer_vector_iir</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_vector_iir_cc(
+      $vlen,
+      $alpha, $beta,
+      self.device3,
+      $block_select, $device_select,
+)</make>
+  <callback>set_vector_iir_alpha($alpha)</callback>
+  <callback>set_vector_iir_beta($beta)</callback>
+
+  <param>
+    <name>Vector Length</name>
+    <key>vlen</key>
+    <value>256</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Alpha</name>
+    <key>alpha</key>
+    <value>0.984375</value>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>Beta</name>
+    <key>beta</key>
+    <value>0.015625</value>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>Vector-IIR Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <!--<check>($vector_len > 0 and $vector_len <= 4096)</check>-->
+  <!--<check>($alpha >= 0.0 and $alpha <= 1.0)</check>-->
+  <!--<check>($beta >= 0.0 and $beta <= 1.0)</check>-->
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$vlen</vlen>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$vlen</vlen>
+    <domain>rfnoc</domain>
+  </source>
+</block>

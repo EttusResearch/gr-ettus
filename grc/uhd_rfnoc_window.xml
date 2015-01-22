@@ -3,32 +3,19 @@
   <name>RFNoC: Window</name>
   <key>uhd_rfnoc_streamer_window</key>
   <import>import ettus</import>
-  <import>import numpy as np</import>
   <make>ettus.rfnoc_window_cci(
-    np.add(np.multiply($coeffs,2**16), $coeffs),
+    $coeffs,
     self.device3,
-    #if $block_index()
-    ${block_index},
-    #else
-    -1,
-    #end if
-    #if $device_index()
-    ${device_index},
-    #else
-    -1,
-    #end if
+    $block_index, $device_index
 )
 </make>
-  <callback>set_window(np.add(np.multiply($coeffs,2**16), $coeffs))</callback>
+  <callback>set_window($coeffs)</callback>
 
   <param>
     <name>Number of Coeffs</name>
     <key>coeffs_len</key>
-    <type>enum</type>
-    <option>
-      <name>256</name>
-      <key>256</key>
-    </option>
+    <value>256</value>
+    <type>int</type>
   </param>
 
   <param>
@@ -55,8 +42,6 @@
     <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
-
-  <check>(len($coeffs) == $coeffs_len) and (abs(max($coeffs)) > 2^15-1)</check>
 
   <sink>
     <name>in</name>
