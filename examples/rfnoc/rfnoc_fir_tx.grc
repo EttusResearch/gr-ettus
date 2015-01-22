@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='ASCII'?>
-<?grc format='1' created='3.7.6'?>
+<?grc format='1' created='3.7.7'?>
 <flow_graph>
   <timestamp>Tue Nov 11 15:11:07 2014</timestamp>
   <block>
@@ -637,6 +637,10 @@
       <value>0</value>
     </param>
     <param>
+      <key>device_index</key>
+      <value>-1</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -654,7 +658,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(416, 208)</value>
+      <value>(408, 196)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -673,39 +677,43 @@
     </param>
     <param>
       <key>radio_index</key>
-      <value>0</value>
+      <value>1</value>
+    </param>
+    <param>
+      <key>direction</key>
+      <value>tx</value>
+    </param>
+    <param>
+      <key>cpu_format</key>
+      <value>fc32</value>
+    </param>
+    <param>
+      <key>otw_format</key>
+      <value>sc16</value>
     </param>
     <param>
       <key>stream_args</key>
       <value></value>
     </param>
     <param>
-      <key>tx_freq</key>
-      <value>tx_freq</value>
+      <key>freq</key>
+      <value>1.982e9</value>
     </param>
     <param>
-      <key>tx_rate</key>
-      <value>samp_rate</value>
+      <key>rate</key>
+      <value>1e6</value>
     </param>
     <param>
-      <key>tx_gain</key>
-      <value>tx_gain</value>
+      <key>gain</key>
+      <value>20</value>
     </param>
     <param>
-      <key>rx_ant</key>
+      <key>ant</key>
       <value>"TX/RX"</value>
     </param>
     <param>
-      <key>rx_freq</key>
-      <value>920e6</value>
-    </param>
-    <param>
-      <key>rx_rate</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>rx_gain</key>
-      <value>70</value>
+      <key>device_index</key>
+      <value>-1</value>
     </param>
     <param>
       <key>alias</key>
@@ -725,7 +733,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(664, 159)</value>
+      <value>(648, 158)</value>
     </param>
     <param>
       <key>_rotation</key>

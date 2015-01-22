@@ -51,6 +51,7 @@
 #include <ettus/rfnoc_streamer.h>
 #include <ettus/rfnoc_fir_cci.h>
 #include "ettus/rfnoc_window_cci.h"
+#include "ettus/rfnoc_radio.h"
 %}
 
 ////////////////////////////////////////////////////////////////////////
@@ -170,3 +171,5 @@ GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
 //#endif  [> GR_HAVE_UHD <]
 %include "ettus/rfnoc_window_cci.h"
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window_cci);
+%include "ettus/rfnoc_radio.h"
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_radio);

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='ASCII'?>
-<?grc format='1' created='3.7.6'?>
+<?grc format='1' created='3.7.7'?>
 <flow_graph>
   <timestamp>Wed Sep 10 20:11:20 2014</timestamp>
   <block>
@@ -176,6 +176,65 @@
     <param>
       <key>_coordinate</key>
       <value>(488, -4)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_range</key>
+    <param>
+      <key>id</key>
+      <value>rx_freq</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1.982e9</value>
+    </param>
+    <param>
+      <key>start</key>
+      <value>1e9</value>
+    </param>
+    <param>
+      <key>stop</key>
+      <value>2.5e9</value>
+    </param>
+    <param>
+      <key>step</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>counter_slider</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.Horizontal</value>
+    </param>
+    <param>
+      <key>min_len</key>
+      <value>200</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value></value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(240, -3)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -450,66 +509,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(280, 180)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>id</key>
-      <value>rx_freq</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>1.982e9</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>1e9</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>2.5e9</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(240, -3)</value>
+      <value>(384, 180)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -531,36 +531,40 @@
       <value>0</value>
     </param>
     <param>
+      <key>direction</key>
+      <value>rx</value>
+    </param>
+    <param>
+      <key>cpu_format</key>
+      <value>fc32</value>
+    </param>
+    <param>
+      <key>otw_format</key>
+      <value>sc16</value>
+    </param>
+    <param>
       <key>stream_args</key>
       <value></value>
     </param>
     <param>
-      <key>tx_freq</key>
+      <key>freq</key>
       <value>1.982e9</value>
     </param>
     <param>
-      <key>tx_rate</key>
+      <key>rate</key>
       <value>1e6</value>
     </param>
     <param>
-      <key>tx_gain</key>
+      <key>gain</key>
       <value>20</value>
     </param>
     <param>
-      <key>rx_ant</key>
-      <value>"TX/RX"</value>
+      <key>ant</key>
+      <value>"RX2"</value>
     </param>
     <param>
-      <key>rx_freq</key>
-      <value>rx_freq</value>
-    </param>
-    <param>
-      <key>rx_rate</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>rx_gain</key>
-      <value>rx_gain</value>
+      <key>device_index</key>
+      <value>-1</value>
     </param>
     <param>
       <key>alias</key>
@@ -580,7 +584,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(-8, 151)</value>
+      <value>(48, 150)</value>
     </param>
     <param>
       <key>_rotation</key>

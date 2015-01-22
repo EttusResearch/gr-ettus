@@ -4,30 +4,37 @@
   <key>uhd_rfnoc_streamer_radio</key>
   <throttle>1</throttle>
   <import>import ettus</import>
-  <make>ettus.rfnoc_streamer(
+  <make>ettus.rfnoc_radio(
     self.device3,
-    "Radio_{0}".format($radio_index),
-    uhd.stream_args(
-        cpu_format="fc32", \# TODO: This must be made an option
-        otw_format="sc16",
-        args=$stream_args,
-    )
+    uhd.stream_args( \# Tx Stream Args
+        cpu_format="$cpu_format",
+        otw_format="$otw_format",
+	#if str($direction) == "tx"
+	args=${stream_args},
+	#else
+        args="", \# empty
+	#end if
+    ),
+    uhd.stream_args( \# Rx Stream Args
+        cpu_format="$cpu_format",
+        otw_format="$otw_format",
+	#if str($direction) == "rx"
+	args=${stream_args},
+	#else
+        args="", \# empty
+	#end if
+    ),
+    $radio_index, $device_index
 )
-self.$(id).set_option("tx_freq", str($tx_freq))
-self.$(id).set_option("tx_rate", str($tx_rate))
-self.$(id).set_option("tx_gain", str($tx_gain))
-self.$(id).set_option("rx_ant", $rx_ant)
-self.$(id).set_option("rx_freq", str($rx_freq))
-self.$(id).set_option("rx_rate", str($rx_rate))
-self.$(id).set_option("rx_gain", str($rx_gain))
+self.$(id).set_${direction}_freq($freq)
+self.$(id).set_${direction}_rate($rate)
+self.$(id).set_${direction}_gain($gain)
+self.$(id).set_${direction}_antenna($ant)
 </make>
-<callback>set_option("tx_freq", str($tx_freq))</callback>
-<callback>set_option("tx_rate", str($tx_rate))</callback>
-<callback>set_option("tx_gain", str($tx_gain))</callback>
-<callback>set_option("rx_ant", $rx_ant)</callback>
-<callback>set_option("rx_freq", str($rx_freq))</callback>
-<callback>set_option("rx_rate", str($rx_rate))</callback>
-<callback>set_option("rx_gain", str($rx_gain))</callback>
+<callback>self.$(id).set_${direction}_freq($freq)</callback>
+<callback>self.$(id).set_${direction}_rate($rate)</callback>
+<callback>self.$(id).set_${direction}_gain($gain)</callback>
+<callback>self.$(id).set_${direction}_antenna($ant)</callback>
 
   <param>
     <name>Radio Select</name>
@@ -44,33 +51,84 @@ self.$(id).set_option("rx_gain", str($rx_gain))
   </param>
 
   <param>
+    <name>Mode</name>
+    <key>direction</key>
+    <type>enum</type>
+    <option>
+      <name>Tx</name>
+      <key>tx</key>
+      <opt>hide_source:all</opt>
+      <opt>hide_sink:</opt>
+    </option>
+    <option>
+      <name>Rx</name>
+      <key>rx</key>
+      <opt>hide_source:</opt>
+      <opt>hide_sink:all</opt>
+    </option>
+  </param>
+
+  <param>
+    <name>Host Format</name>
+    <key>cpu_format</key>
+    <type>enum</type>
+    <option>
+      <name>Complex float32</name>
+      <key>fc32</key>
+      <opt>type:fc32</opt>
+    </option>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+      <opt>type:sc16</opt>
+    </option>
+    <option>
+      <name>VITA word32</name>
+      <key>item32</key>
+      <opt>type:s32</opt>
+    </option>
+  </param>
+  <param>
+    <name>Device Format</name>
+    <key>otw_format</key>
+    <type>enum</type>
+    <hide>part</hide>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+      <opt>type:sc16</opt>
+    </option>
+  </param>
+  <param>
     <name>Stream Args</name>
     <key>stream_args</key>
     <type>string</type>
   </param>
 
   <param>
-    <name>Tx Frequency</name>
-    <key>tx_freq</key>
+    <name>Center Frequency</name>
+    <key>freq</key>
     <value>1.982e9</value>
     <type>real</type>
+    <tab>RF Options</tab>
   </param>
   <param>
-    <name>Tx Rate</name>
-    <key>tx_rate</key>
+    <name>Sampling Rate</name>
+    <key>rate</key>
     <value>1e6</value>
     <type>real</type>
+    <tab>RF Options</tab>
   </param>
   <param>
-    <name>Tx Gain</name>
-    <key>tx_gain</key>
+    <name>Gain</name>
+    <key>gain</key>
     <value>20</value>
     <type>real</type>
+    <tab>RF Options</tab>
   </param>
-
   <param>
-    <name>Rx Antenna</name>
-    <key>rx_ant</key>
+    <name>Antenna</name>
+    <key>ant</key>
     <type>enum</type>
     <option>
       <name>TX/RX</name>
@@ -80,37 +138,31 @@ self.$(id).set_option("rx_gain", str($rx_gain))
       <name>RX2</name>
       <key>"RX2"</key>
     </option>
+    <tab>RF Options</tab>
   </param>
+
   <param>
-    <name>Rx Frequency</name>
-    <key>rx_freq</key>
-    <value>1.982e9</value>
-    <type>real</type>
-  </param>
-  <param>
-    <name>Rx Rate</name>
-    <key>rx_rate</key>
-    <value>1e6</value>
-    <type>real</type>
-  </param>
-  <param>
-    <name>Rx Gain</name>
-    <key>rx_gain</key>
-    <value>20</value>
-    <type>real</type>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
   </param>
 
   <sink>
     <name>in</name>
-    <type>complex</type>
+    <type>$cpu_format.type</type>
     <domain>rfnoc</domain>
     <optional>1</optional>
+    <hide>$direction.hide_sink</hide>
   </sink>
 
   <source>
     <name>out</name>
-    <type>complex</type>
+    <type>$cpu_format.type</type>
     <domain>rfnoc</domain>
     <optional>1</optional>
+    <hide>$direction.hide_source</hide>
   </source>
 </block>

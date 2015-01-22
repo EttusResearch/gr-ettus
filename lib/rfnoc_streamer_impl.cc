@@ -75,47 +75,6 @@ namespace gr {
       /* nop */
     }
 
-    void
-    rfnoc_streamer_impl::set_option(const std::string &key, const std::string &val)
-    {
-      GR_LOG_DEBUG(d_debug_logger, str(boost::format("Setting rfnoc option on %s %s==%s") % d_rfnoccer->get_block_ctrl()->get_block_id() % key % val));
-      // *throws up* this should not be a hardcoded list of options TODO
-      if (get_block_ctrl()->get_block_id().get_block_name() == "Radio") {
-        size_t chan = get_block_ctrl()->get_block_id().get_block_count();
-        if (key == "rx_freq") {
-          double freq = boost::lexical_cast<double>(val);
-          get_device()->set_rx_freq(freq, chan);
-        }
-        else if (key == "tx_freq") {
-          double freq = boost::lexical_cast<double>(val);
-          get_device()->set_tx_freq(freq, chan);
-        }
-        else if (key == "tx_ant") {
-          get_device()->set_tx_antenna(val, chan);
-        }
-        else if (key == "rx_ant") {
-          get_device()->set_rx_antenna(val, chan);
-        }
-        else if (key == "rx_gain") {
-          double gain = boost::lexical_cast<double>(val);
-          get_device()->set_rx_gain(gain, chan);
-        }
-        else if (key == "tx_gain") {
-          double gain = boost::lexical_cast<double>(val);
-          get_device()->set_tx_gain(gain, chan);
-        }
-        else if (key == "rx_rate") {
-          double rate = boost::lexical_cast<double>(val);
-          get_device()->set_rx_rate(rate, chan);
-        }
-        else if (key == "tx_rate") {
-          double rate = boost::lexical_cast<double>(val);
-          get_device()->set_tx_rate(rate, chan);
-        }
-      }
-    }
-
-
   } /* namespace uhd */
 } /* namespace gr */
 

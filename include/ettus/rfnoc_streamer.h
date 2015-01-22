@@ -61,8 +61,6 @@ namespace gr {
           bool align_outputs=false
       );
 
-      virtual void set_option(const std::string &key, const std::string &val) = 0;
-
       // Add RFNoC-relevant definitions:
       virtual void set_register(size_t reg, boost::uint32_t value) = 0;
       virtual std::string get_block_id() = 0;
