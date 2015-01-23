@@ -50,8 +50,6 @@ namespace gr {
       d_window_size(coeffs.size())
     {
       ::uhd::stream_args_t stream_args("fc32", "sc16");
-      stream_args.args["spp"] = str(boost::format("%s") % d_window_size);
-      // Don't think we actually need this, but hey:
       stream_args.args["window_len"] = str(boost::format("%s") % d_window_size);
       GR_RFNOC_BLOCK_INIT(
           dev, rfnoc::rfnoc_common::make_block_id("Window", block_select, device_select),

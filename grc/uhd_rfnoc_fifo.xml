@@ -8,12 +8,12 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="$type",
         otw_format="$otw",
-        args="gr_vlen=${grvlen},{0}".format("" if $grvlen == 1 else "spp={0}".format($grvlen)),
+        args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="$type",
         otw_format="$otw",
-        args="gr_vlen=${grvlen},{0}".format("" if $grvlen == 1 else "spp={0}".format($grvlen)),
+        args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
     ),
     "FIFO", $block_index, $device_index,
 )</make>

@@ -3,18 +3,54 @@
 <flow_graph>
   <timestamp>Fri Nov  7 10:40:33 2014</timestamp>
   <block>
-    <key>variable</key>
+    <key>options</key>
     <param>
       <key>id</key>
-      <value>samp_rate</value>
+      <value>rfnoc_window</value>
     </param>
     <param>
       <key>_enabled</key>
       <value>True</value>
     </param>
     <param>
-      <key>value</key>
-      <value>1e6</value>
+      <key>title</key>
+      <value></value>
+    </param>
+    <param>
+      <key>author</key>
+      <value></value>
+    </param>
+    <param>
+      <key>description</key>
+      <value></value>
+    </param>
+    <param>
+      <key>window_size</key>
+      <value>1280, 1024</value>
+    </param>
+    <param>
+      <key>generate_options</key>
+      <value>qt_gui</value>
+    </param>
+    <param>
+      <key>category</key>
+      <value>Custom</value>
+    </param>
+    <param>
+      <key>run_options</key>
+      <value>prompt</value>
+    </param>
+    <param>
+      <key>run</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>max_nouts</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>realtime_scheduling</key>
+      <value></value>
     </param>
     <param>
       <key>alias</key>
@@ -22,7 +58,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 75)</value>
+      <value>(10, 10)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -50,6 +86,33 @@
     <param>
       <key>_coordinate</key>
       <value>(104, 75)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>id</key>
+      <value>samp_rate</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1e6</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 75)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -972,7 +1035,7 @@
     </param>
     <param>
       <key>block_index</key>
-      <value>0</value>
+      <value>-1</value>
     </param>
     <param>
       <key>device_index</key>
@@ -1000,7 +1063,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(568, 164)</value>
+      <value>(560, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1018,16 +1081,12 @@
       <value>True</value>
     </param>
     <param>
-      <key>coeffs_len</key>
-      <value>256</value>
-    </param>
-    <param>
       <key>coeffs</key>
       <value>window_coeff</value>
     </param>
     <param>
       <key>block_index</key>
-      <value>0</value>
+      <value>-1</value>
     </param>
     <param>
       <key>device_index</key>
@@ -1051,70 +1110,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 164)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>options</key>
-    <param>
-      <key>id</key>
-      <value>rfnoc_window</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>title</key>
-      <value></value>
-    </param>
-    <param>
-      <key>author</key>
-      <value></value>
-    </param>
-    <param>
-      <key>description</key>
-      <value></value>
-    </param>
-    <param>
-      <key>window_size</key>
-      <value>1280, 1024</value>
-    </param>
-    <param>
-      <key>generate_options</key>
-      <value>qt_gui</value>
-    </param>
-    <param>
-      <key>category</key>
-      <value>Custom</value>
-    </param>
-    <param>
-      <key>run_options</key>
-      <value>prompt</value>
-    </param>
-    <param>
-      <key>run</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>max_nouts</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>realtime_scheduling</key>
-      <value></value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(10, 10)</value>
+      <value>(832, 179)</value>
     </param>
     <param>
       <key>_rotation</key>
