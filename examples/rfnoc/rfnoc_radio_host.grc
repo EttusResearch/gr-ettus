@@ -77,7 +77,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>1e6</value>
+      <value>20e6</value>
     </param>
     <param>
       <key>alias</key>
@@ -548,7 +548,7 @@
     </param>
     <param>
       <key>freq</key>
-      <value>1.982e9</value>
+      <value>rx_freq</value>
     </param>
     <param>
       <key>rate</key>
@@ -556,7 +556,7 @@
     </param>
     <param>
       <key>gain</key>
-      <value>20</value>
+      <value>rx_gain</value>
     </param>
     <param>
       <key>ant</key>
