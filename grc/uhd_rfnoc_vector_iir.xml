@@ -7,7 +7,7 @@
       $vlen,
       $alpha, $beta,
       self.device3,
-      $block_select, $device_select,
+      $block_index, $device_index,
 )</make>
   <callback>set_vector_iir_alpha($alpha)</callback>
   <callback>set_vector_iir_beta($beta)</callback>
