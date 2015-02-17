@@ -8,7 +8,7 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="fftsize=$fft_size,magnitude_out=$magnitude_out",
+        args="spp=$fft_size,magnitude_out=$magnitude_out",
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
