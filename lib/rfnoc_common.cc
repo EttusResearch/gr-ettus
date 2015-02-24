@@ -162,22 +162,7 @@ rfnoc_common::rfnoc_common(
   _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
   _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
 
-  // Determine the stream signatures
-  // Will throw if args are invalid
-  // Input signature / Tx:
-  set_signature_from_block(
-      tx_stream_args,
-      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
-      _tx.itemsize, _tx.nchans, _tx.vlen,
-      true
-  );
-  // Output signature / Rx:
-  set_signature_from_block(
-      rx_stream_args,
-      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
-      _rx.itemsize, _rx.nchans, _rx.vlen,
-      false
-  );
+  update_io_signature();
 }
 
 rfnoc_common::~rfnoc_common()
@@ -200,6 +185,23 @@ gr::io_signature::sptr rfnoc_common::get_output_signature()
   const int min_streams = 0;
   const int max_streams = gr::io_signature::IO_INFINITE; // TODO
   return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
+}
+
+void rfnoc_common::update_io_signature()
+{
+  set_signature_from_block(
+      _tx.stream_args,
+      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
+      _tx.itemsize, _tx.nchans, _tx.vlen,
+      true
+  );
+  // Output signature / Rx:
+  set_signature_from_block(
+      _rx.stream_args,
+      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
+      _rx.itemsize, _rx.nchans, _rx.vlen,
+      false
+  );
 }
 
 bool rfnoc_common::check_topology(int ninputs, int noutputs)

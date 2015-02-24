@@ -91,6 +91,23 @@
       set_output_signature(d_rfnoccer->get_output_signature()); \
       set_tag_propagation_policy(TPP_DONT); \
 
+#define GR_RFNOC_BLOCK_INIT_CFG(dev, block_id, tx_stream_args, rx_stream_args, cfg_command) \
+      /***** Set up block control ********************************/ \
+      d_rfnoccer = rfnoc::rfnoc_common::sptr(new rfnoc::rfnoc_common( \
+          dev, block_id, \
+          tx_stream_args, rx_stream_args, \
+          boost::bind(&gr::block::consume,      this, _1, _2), \
+          boost::bind(&gr::block::consume_each, this, _1), \
+          boost::bind(&gr::block::produce,      this, _1, _2) \
+      )); \
+      /***** Run configuration command ***************************/ \
+      cfg_command ; \
+      d_rfnoccer->update_io_signature(); \
+      /***** Finalize I/O signatures and configure GR block ******/ \
+      set_input_signature(d_rfnoccer->get_input_signature()); \
+      set_output_signature(d_rfnoccer->get_output_signature()); \
+      set_tag_propagation_policy(TPP_DONT); \
+
 namespace gr {
   //namespace uhd {
   namespace ettus {
@@ -143,6 +160,9 @@ namespace gr {
 
           gr::io_signature::sptr get_input_signature();
           gr::io_signature::sptr get_output_signature();
+
+          //! Call this after a command you called changes the I/O signature
+          void update_io_signature();
 
           /*********************************************************************
            * RFNoC block related functions.

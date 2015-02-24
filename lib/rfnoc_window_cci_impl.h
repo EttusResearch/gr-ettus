@@ -40,6 +40,7 @@ namespace gr {
       void set_window(const std::vector<int> &coeff);
      private:
       size_t d_window_size;
+      bool d_setup; //!< True when block is set up
 
       // RFNoC-specifics:
       GR_RFNOC_BLOCK_IMPL_H()

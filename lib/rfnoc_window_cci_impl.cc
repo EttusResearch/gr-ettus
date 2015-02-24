@@ -50,12 +50,11 @@ namespace gr {
       d_window_size(coeffs.size())
     {
       ::uhd::stream_args_t stream_args("fc32", "sc16");
-      stream_args.args["window_len"] = str(boost::format("%s") % d_window_size);
-      GR_RFNOC_BLOCK_INIT(
+      stream_args.args["spp"] = str(boost::format("%s") % d_window_size);
+      GR_RFNOC_BLOCK_INIT_CFG(
           dev, rfnoc::rfnoc_common::make_block_id("Window", block_select, device_select),
-          stream_args, stream_args
+          stream_args, stream_args, set_window(coeffs)
       );
-      set_window(coeffs);
     }
 
     rfnoc_window_cci_impl::~rfnoc_window_cci_impl()
@@ -69,6 +68,7 @@ namespace gr {
         throw std::runtime_error("Cannot change window size of running flow graph!");
       }
       get_block_ctrl_throw< ::uhd::rfnoc::window_block_ctrl >()->set_window(coeffs);
+      d_window_size = coeffs.size();
     }
 
   } /* namespace ettus */
