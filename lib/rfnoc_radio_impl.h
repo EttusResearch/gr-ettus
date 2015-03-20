@@ -22,11 +22,13 @@
 
 #include <ettus/rfnoc_radio.h>
 #include <ettus/rfnoc_common.h>
+#include "rfnoc_block_impl.h"
 
 namespace gr {
   namespace ettus {
 
-    class rfnoc_radio_impl : public rfnoc_radio
+    class rfnoc_radio_impl : public rfnoc_radio, public rfnoc_block_impl
+
     {
      private:
        size_t d_chan;
@@ -49,9 +51,6 @@ namespace gr {
       void set_rx_gain(double gain);
       void set_tx_antenna(const std::string &ant);
       void set_rx_antenna(const std::string &ant);
-
-      // RFNoC-specifics:
-      GR_RFNOC_BLOCK_IMPL_H()
     };
 
   } // namespace ettus

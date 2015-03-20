@@ -22,7 +22,7 @@
 
 #include <ettus/api.h>
 #include <ettus/device3.h>
-#include <gnuradio/block.h>
+#include <ettus/rfnoc_block.h>
 #include <uhd/stream.hpp>
 
 namespace gr {
@@ -48,7 +48,7 @@ namespace gr {
      * setter/getter methods need to be defined, a dedicated RFNoC block
      * class is recommended.
      */
-    class ETTUS_API rfnoc_generic : virtual public gr::block
+    class ETTUS_API rfnoc_generic : virtual public rfnoc_block
     {
      public:
       typedef boost::shared_ptr<rfnoc_generic> sptr;
@@ -69,12 +69,6 @@ namespace gr {
           const int block_select=-1,
           const int device_select=-1
       );
-
-      // Add RFNoC-relevant definitions:
-      //! Allows setting a register on the settings bus
-      virtual void set_register(size_t reg, boost::uint32_t value) = 0;
-      //! Return the full actual block ID of this block (e.g. 0/FFT_0)
-      virtual std::string get_block_id() = 0;
     };
 
   } // namespace ettus

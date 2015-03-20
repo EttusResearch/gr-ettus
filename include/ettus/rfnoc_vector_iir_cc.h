@@ -23,7 +23,7 @@
 
 #include <ettus/api.h>
 #include <ettus/device3.h>
-#include <gnuradio/block.h>
+#include <ettus/rfnoc_block.h>
 
 namespace gr {
   namespace ettus {
@@ -31,7 +31,7 @@ namespace gr {
     /*!
      * \brief RFNoC: Vector IIR
      */
-    class ETTUS_API rfnoc_vector_iir_cc : virtual public gr::block
+    class ETTUS_API rfnoc_vector_iir_cc : virtual public rfnoc_block
     {
      public:
       typedef boost::shared_ptr<rfnoc_vector_iir_cc> sptr;
@@ -40,9 +40,6 @@ namespace gr {
 
       virtual void set_vector_iir_alpha(const double alpha) = 0;
       virtual void set_vector_iir_beta(const double beta) = 0;
-
-      // Add RFNoC-relevant declarations:
-      virtual std::string get_block_id() = 0;
     };
 
   } // namespace ettus

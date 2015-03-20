@@ -48,13 +48,15 @@ namespace gr {
         const device3::sptr &dev,
         const int block_select,
         const int device_select
-    ) : GR_RFNOC_BLOCK_SUPER_CTOR("rfnoc_fir_cci")
+    ) : rfnoc_block("rfnoc_fir_cci"),
+        rfnoc_block_impl(
+            dev,
+            rfnoc_block_impl::make_block_id("FIR", block_select, device_select),
+            ::uhd::stream_args_t("fc32", "sc16"),
+            ::uhd::stream_args_t("fc32", "sc16")
+        )
+
     {
-      ::uhd::stream_args_t stream_args("fc32", "sc16");
-      GR_RFNOC_BLOCK_INIT(
-          dev, rfnoc::rfnoc_common::make_block_id("FIR", block_select, device_select),
-          stream_args, stream_args
-      );
     }
 
     rfnoc_fir_cci_impl::~rfnoc_fir_cci_impl()

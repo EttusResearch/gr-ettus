@@ -22,11 +22,13 @@
 
 #include <ettus/rfnoc_vector_iir_cc.h>
 #include <ettus/rfnoc_common.h>
+#include "rfnoc_block_impl.h"
 
 namespace gr {
   namespace ettus {
 
-    class rfnoc_vector_iir_cc_impl : public rfnoc_vector_iir_cc
+    class rfnoc_vector_iir_cc_impl : public rfnoc_vector_iir_cc, public rfnoc_block_impl
+
     {
      public:
       rfnoc_vector_iir_cc_impl(int vlen, double alpha, double beta, const device3::sptr &dev, const int block_select, const int device_select);
@@ -34,8 +36,6 @@ namespace gr {
 
       void set_vector_iir_alpha(const double alpha);
       void set_vector_iir_beta(const double beta);
-
-      GR_RFNOC_BLOCK_IMPL_H()
     };
 
   } // namespace ettus

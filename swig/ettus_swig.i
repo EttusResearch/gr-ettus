@@ -55,6 +55,8 @@
 #include "ettus/rfnoc_vector_iir_cc.h"
 %}
 
+%include "ettus/rfnoc_block.h"
+
 ////////////////////////////////////////////////////////////////////////
 // used types
 ////////////////////////////////////////////////////////////////////////
@@ -139,34 +141,6 @@ GR_SWIG_BLOCK_MAGIC2(ettus, device3)
 
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
 
-////////////////////////////////////////////////////////////////////////
-// device discovery (no need to %include device.hpp)
-////////////////////////////////////////////////////////////////////////
-//%{
-//static uhd::device_addrs_t find_devices_raw(const uhd::device_addr_t &dev_addr = uhd::device_addr_t()){
-    //return uhd::device::find(dev_addr);
-//}
-//%}
-
-//static uhd::device_addrs_t find_devices_raw(const uhd::device_addr_t &dev_addr = uhd::device_addr_t());
-
-////////////////////////////////////////////////////////////////////////
-// helpful constants
-////////////////////////////////////////////////////////////////////////
-//%{
-//static const size_t ALL_MBOARDS = uhd::usrp::multi_usrp::ALL_MBOARDS;
-//%}
-//static const size_t ALL_MBOARDS;
-
-//%{
-//#include <uhd/version.hpp>
-//std::string get_version_string(void){
-    //return uhd::get_version_string();
-//}
-//%}
-//std::string get_version_string(void);
-
-//#endif  [> GR_HAVE_UHD <]
 %include "ettus/rfnoc_window_cci.h"
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window_cci);
 %include "ettus/rfnoc_radio.h"

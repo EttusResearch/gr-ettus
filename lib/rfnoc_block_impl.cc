@@ -1,43 +1,26 @@
 /* -*- c++ -*- */
-/*
- * Copyright 2015 Free Software Foundation, Inc.
- *
- * This file is part of GNU Radio
- *
- * GNU Radio is free software; you can redistribute it and/or modify
+/* Copyright 2015 Ettus Research
+ * 
+ * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- *
- * GNU Radio is distributed in the hope that it will be useful,
+ * 
+ * gr-ettus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
- * along with GNU Radio; see the file COPYING.  If not, write to
+ * along with gr-ettus; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
 
-#include <ettus/rfnoc_common.h>
-#include <gnuradio/block.h>
-#include <uhd/convert.hpp>
-#include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
-#include <uhd/usrp/rfnoc/source_block_ctrl_base.hpp>
-#include <boost/assign.hpp>
-#include <boost/format.hpp>
+#include "rfnoc_block_impl.h"
+#include <gnuradio/block_detail.h>
 
-using namespace gr::ettus::rfnoc;
-
-/****************************************************************************
- * Static members
- ****************************************************************************/
-std::map<std::string, bool> rfnoc_common::_active_streamers;
-::uhd::reusable_barrier rfnoc_common::_tx_barrier;
-::uhd::reusable_barrier rfnoc_common::_rx_barrier;
-boost::recursive_mutex rfnoc_common::s_setup_mutex;
-
+using namespace gr::ettus;
 
 /****************************************************************************
  * Helper functions
@@ -113,7 +96,10 @@ static void set_signature_from_block(
   return;
 }
 
-std::string rfnoc_common::make_block_id(
+/*********************************************************************
+ * Statics
+ *********************************************************************/
+std::string rfnoc_block_impl::make_block_id(
     const std::string &block_name,
     const int block_select,
     const int device_select
@@ -130,81 +116,68 @@ std::string rfnoc_common::make_block_id(
   return str(boost::format("%s%s%s") % dev_str % block_name % block_str);
 }
 
-/****************************************************************************
- * Structors
- ****************************************************************************/
-rfnoc_common::rfnoc_common(
-            const device3::sptr &dev,
-            const std::string &block_id,
-            const ::uhd::stream_args_t &tx_stream_args,
-            const ::uhd::stream_args_t &rx_stream_args,
-            //gr::logger_ptr logger,
-            block_func_t consumer, block_func1_t consumer_each,
-            block_func_t producer
-) :
-  _dev(dev->get_device()),
-  _blk_ctrl(dev->get_device()->get_device3()->find_block_ctrl(block_id)),
-  _tx(tx_stream_args),
-  _consume(consumer), _consume_each(consumer_each),
-  _rx(rx_stream_args),
-  _produce(producer)
+
+/**********************************************************************
+* Structors
+*********************************************************************/
+rfnoc_block::rfnoc_block(const std::string &name) :
+    gr::block(name,
+        /* Default IO signatures: These will be overridden later */
+        gr::io_signature::make(0, 0, 1),
+        gr::io_signature::make(0, 0, 1)
+    )
 {
+    // nop
+}
+
+rfnoc_block_impl::rfnoc_block_impl(
+    const device3::sptr &dev,
+    const std::string &block_id,
+    const ::uhd::stream_args_t &tx_stream_args,
+    const ::uhd::stream_args_t &rx_stream_args
+) : _dev(dev->get_device()),
+    _blk_ctrl(dev->get_device()->get_device3()->find_block_ctrl(block_id)),
+    _tx(tx_stream_args),
+    _rx(rx_stream_args)
+{
+  //// Set up the RFNoC block:
   // Make sure the current device actually has the requested block:
   if (not _blk_ctrl) {
     throw std::runtime_error(str(boost::format("Cannot find a block for ID: %s") % block_id));
   }
 
   // Configure the block
-  std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
+  const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
   _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
   GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
   _blk_ctrl->set_args(_merged_args);
   _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
   _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
 
-  update_io_signature();
+  //// Final configuration for the GNU Radio block:
+  set_tag_propagation_policy(TPP_DONT);
+  update_gr_io_signature();
 }
 
-rfnoc_common::~rfnoc_common()
+rfnoc_block_impl::~rfnoc_block_impl()
 {
-  /* nop */
+    // nop
 }
+
+
+/****************************************************************************
+ * Static members
+ ****************************************************************************/
+std::map<std::string, bool> rfnoc_block_impl::_active_streamers;
+::uhd::reusable_barrier rfnoc_block_impl::_tx_barrier;
+::uhd::reusable_barrier rfnoc_block_impl::_rx_barrier;
+boost::recursive_mutex rfnoc_block_impl::s_setup_mutex;
+
 
 /*********************************************************************
  * GR Block functions
  *********************************************************************/
-gr::io_signature::sptr rfnoc_common::get_input_signature()
-{
-  const int min_streams = 0;
-  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
-  return gr::io_signature::make(min_streams, max_streams, _tx.itemsize * _tx.vlen);
-}
-
-gr::io_signature::sptr rfnoc_common::get_output_signature()
-{
-  const int min_streams = 0;
-  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
-  return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
-}
-
-void rfnoc_common::update_io_signature()
-{
-  set_signature_from_block(
-      _tx.stream_args,
-      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
-      _tx.itemsize, _tx.nchans, _tx.vlen,
-      true
-  );
-  // Output signature / Rx:
-  set_signature_from_block(
-      _rx.stream_args,
-      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
-      _rx.itemsize, _rx.nchans, _rx.vlen,
-      false
-  );
-}
-
-bool rfnoc_common::check_topology(int ninputs, int noutputs)
+bool rfnoc_block_impl::check_topology(int ninputs, int noutputs)
 {
   GR_LOG_DEBUG(d_debug_logger, str(boost::format("check_topology()")));
   { // scope the mutex:
@@ -224,9 +197,11 @@ bool rfnoc_common::check_topology(int ninputs, int noutputs)
   return true;
 }
 
-bool rfnoc_common::start(size_t ninputs, size_t noutputs)
+bool rfnoc_block_impl::start()
 {
   boost::recursive_mutex::scoped_lock lock(d_mutex);
+  size_t ninputs  = detail()->ninputs();
+  size_t noutputs = detail()->noutputs();
   GR_LOG_DEBUG(d_debug_logger, str(boost::format("start(): ninputs == %d noutputs == %d") % ninputs % noutputs));
 
   // If the topology changed, we need to clear the old streamers
@@ -335,7 +310,7 @@ bool rfnoc_common::start(size_t ninputs, size_t noutputs)
   return true;
 }
 
-bool rfnoc_common::stop()
+bool rfnoc_block_impl::stop()
 {
   boost::recursive_mutex::scoped_lock lock(d_mutex);
 
@@ -364,7 +339,7 @@ bool rfnoc_common::stop()
   return true;
 }
 
-void rfnoc_common::flush(size_t streamer_index)
+void rfnoc_block_impl::flush(size_t streamer_index)
 {
   const size_t nbytes = 4096;
   size_t nchan = 1;
@@ -385,9 +360,52 @@ void rfnoc_common::flush(size_t streamer_index)
   }
 }
 
+/*********************************************************************
+ * I/O Signatures
+ ********************************************************************/
+void rfnoc_block_impl::update_rfnoc_io_signature()
+{
+  set_signature_from_block(
+      _tx.stream_args,
+      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
+      _tx.itemsize, _tx.nchans, _tx.vlen,
+      true
+  );
+  // Output signature / Rx:
+  set_signature_from_block(
+      _rx.stream_args,
+      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
+      _rx.itemsize, _rx.nchans, _rx.vlen,
+      false
+  );
+}
 
+void rfnoc_block_impl::update_gr_io_signature()
+{
+  update_rfnoc_io_signature();
+  set_input_signature(get_rfnoc_input_signature());
+  set_output_signature(get_rfnoc_output_signature());
+}
+
+gr::io_signature::sptr rfnoc_block_impl::get_rfnoc_input_signature()
+{
+  const int min_streams = 0;
+  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  return gr::io_signature::make(min_streams, max_streams, _tx.itemsize * _tx.vlen);
+}
+
+gr::io_signature::sptr rfnoc_block_impl::get_rfnoc_output_signature()
+{
+  const int min_streams = 0;
+  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
+}
+
+/*********************************************************************
+ * Streaming
+ *********************************************************************/
 int
-rfnoc_common::general_work (
+rfnoc_block_impl::general_work (
     int noutput_items,
     gr_vector_int &ninput_items,
     gr_vector_const_void_star &input_items,
@@ -418,7 +436,7 @@ rfnoc_common::general_work (
 }
 
 void
-rfnoc_common::work_tx_a(
+rfnoc_block_impl::work_tx_a(
     gr_vector_int &ninput_items,
     gr_vector_const_void_star &input_items
 ) {
@@ -434,11 +452,11 @@ rfnoc_common::work_tx_a(
       1.0
   );
 
-  _consume_each(num_sent / _tx.vlen);
+  consume_each(num_sent / _tx.vlen);
 }
 
 void
-rfnoc_common::work_tx_u(
+rfnoc_block_impl::work_tx_u(
     gr_vector_int &ninput_items,
     gr_vector_const_void_star &input_items
 ) {
@@ -457,12 +475,12 @@ rfnoc_common::work_tx_u(
         _tx.metadata,
         1.0
     );
-    _consume(i, num_sent / _tx.vlen);
+    consume(i, num_sent / _tx.vlen);
   }
 }
 
 int
-rfnoc_common::work_rx_a(
+rfnoc_block_impl::work_rx_a(
     int noutput_items,
     gr_vector_void_star &output_items
 ) {
@@ -497,7 +515,7 @@ rfnoc_common::work_rx_a(
 }
 
 void
-rfnoc_common::work_rx_u(
+rfnoc_block_impl::work_rx_u(
     int noutput_items,
     gr_vector_void_star &output_items
 ) {
@@ -515,7 +533,7 @@ rfnoc_common::work_rx_u(
         num_vectors_to_recv * _rx.vlen,
         _rx.metadata, 0.1
     );
-    _produce(i, num_samps / _rx.vlen);
+    produce(i, num_samps / _rx.vlen);
 
     switch(_rx.metadata.error_code) {
       case ::uhd::rx_metadata_t::ERROR_CODE_NONE:

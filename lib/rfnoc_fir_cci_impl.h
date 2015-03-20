@@ -22,11 +22,12 @@
 
 #include <ettus/rfnoc_fir_cci.h>
 #include <ettus/rfnoc_common.h>
+#include "rfnoc_block_impl.h"
 
 namespace gr {
   namespace ettus {
 
-    class rfnoc_fir_cci_impl : public rfnoc_fir_cci
+    class rfnoc_fir_cci_impl : public rfnoc_fir_cci, public rfnoc_block_impl
     {
      public:
       rfnoc_fir_cci_impl(
@@ -38,12 +39,9 @@ namespace gr {
       ~rfnoc_fir_cci_impl();
 
       void set_taps(const std::vector<int> &taps);
-
-      GR_RFNOC_BLOCK_IMPL_H()
     };
 
   } // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_RFNOC_FIR_CCI_IMPL_H */
-

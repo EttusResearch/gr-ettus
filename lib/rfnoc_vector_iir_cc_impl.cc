@@ -35,17 +35,24 @@ namespace gr {
         (new rfnoc_vector_iir_cc_impl(vlen, alpha, beta, dev, block_select, device_select));
     }
 
-    rfnoc_vector_iir_cc_impl::rfnoc_vector_iir_cc_impl(int vlen, double alpha, double beta, const device3::sptr &dev, const int block_select, const int device_select)
-      : GR_RFNOC_BLOCK_SUPER_CTOR("rfnoc_vector_iir_cc")
+    static ::uhd::stream_args_t _make_vectoriir_stream_args(size_t vlen, double alpha, double beta)
     {
       ::uhd::stream_args_t stream_args("fc32", "sc16");
       stream_args.args["vector_len"] = str(boost::format("%s") % vlen);
       stream_args.args["alpha"]      = str(boost::format("%s") % alpha);
       stream_args.args["beta"]       = str(boost::format("%s") % beta);
-      GR_RFNOC_BLOCK_INIT(
-          dev, rfnoc::rfnoc_common::make_block_id("VectorIIR", block_select, device_select),
-          stream_args, stream_args
-      );
+      return stream_args;
+    }
+
+    rfnoc_vector_iir_cc_impl::rfnoc_vector_iir_cc_impl(int vlen, double alpha, double beta, const device3::sptr &dev, const int block_select, const int device_select)
+      : rfnoc_block("rfnoc_vector_iir_cc"),
+        rfnoc_block_impl(
+            dev,
+            rfnoc_block_impl::make_block_id("VectorIIR", block_select, device_select),
+            _make_vectoriir_stream_args(vlen, alpha, beta),
+            _make_vectoriir_stream_args(vlen, alpha, beta)
+        )
+    {
     }
 
     rfnoc_vector_iir_cc_impl::~rfnoc_vector_iir_cc_impl()

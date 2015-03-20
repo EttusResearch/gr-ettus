@@ -22,11 +22,12 @@
 
 #include <ettus/rfnoc_generic.h>
 #include <ettus/rfnoc_common.h>
+#include "rfnoc_block_impl.h"
 
 namespace gr {
   namespace ettus {
 
-    class rfnoc_generic_impl : public rfnoc_generic
+    class rfnoc_generic_impl : public rfnoc_generic, public rfnoc_block_impl
     {
      public:
       rfnoc_generic_impl(
@@ -38,9 +39,6 @@ namespace gr {
           const int device_select
       );
       ~rfnoc_generic_impl();
-
-      // RFNoC-specifics (this includes set_register)
-      GR_RFNOC_BLOCK_IMPL_H()
     };
 
   } // namespace ettus

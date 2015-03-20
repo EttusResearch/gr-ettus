@@ -23,7 +23,7 @@
 
 #include <ettus/api.h>
 #include <ettus/device3.h>
-#include <gnuradio/block.h>
+#include <ettus/rfnoc_block.h>
 #include <uhd/stream.hpp>
 
 namespace gr {
@@ -34,7 +34,7 @@ namespace gr {
      * \ingroup ettus
      *
      */
-    class ETTUS_API rfnoc_radio : virtual public gr::block
+    class ETTUS_API rfnoc_radio : virtual public rfnoc_block
     {
      public:
       typedef boost::shared_ptr<rfnoc_radio> sptr;
@@ -63,9 +63,6 @@ namespace gr {
       virtual void set_rx_gain(double gain) = 0;
       virtual void set_tx_antenna(const std::string &ant) = 0;
       virtual void set_rx_antenna(const std::string &ant) = 0;
-
-      // Add RFNoC-relevant definitions:
-      virtual std::string get_block_id() = 0;
     };
 
   } // namespace ettus

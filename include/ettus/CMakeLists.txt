@@ -23,7 +23,7 @@
 install(FILES
     api.h
     device3.h
-    rfnoc_common.h
+    rfnoc_block.h
     rfnoc_fir_cci.h
     rfnoc_window_cci.h
     rfnoc_radio.h

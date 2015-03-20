@@ -41,20 +41,28 @@ namespace gr {
       );
     }
 
+    static ::uhd::stream_args_t _make_window_stream_args(size_t spp)
+    {
+      ::uhd::stream_args_t stream_args("fc32", "sc16");
+      stream_args.args["spp"] = str(boost::format("%s") % spp);
+      return stream_args;
+    }
+
     rfnoc_window_cci_impl::rfnoc_window_cci_impl(
               const std::vector<int> &coeffs,
               const device3::sptr &dev,
               const int block_select,
               const int device_select
-    ) : GR_RFNOC_BLOCK_SUPER_CTOR("rfnoc_window_cci"),
-      d_window_size(coeffs.size())
+    ) : rfnoc_block("rfnoc_window_cci"),
+        rfnoc_block_impl(
+            dev,
+            rfnoc_block_impl::make_block_id("Window", block_select, device_select),
+            _make_window_stream_args(coeffs.size()),
+            _make_window_stream_args(coeffs.size())
+        ),
+        d_window_size(coeffs.size())
     {
-      ::uhd::stream_args_t stream_args("fc32", "sc16");
-      stream_args.args["spp"] = str(boost::format("%s") % d_window_size);
-      GR_RFNOC_BLOCK_INIT_CFG(
-          dev, rfnoc::rfnoc_common::make_block_id("Window", block_select, device_select),
-          stream_args, stream_args, set_window(coeffs)
-      );
+      set_window(coeffs);
     }
 
     rfnoc_window_cci_impl::~rfnoc_window_cci_impl()
