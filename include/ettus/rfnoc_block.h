@@ -44,6 +44,11 @@ namespace gr {
      *   GNU Radio.
      * - Set the tag propagation to TPP_DONT. This can of course be overridden
      *   in the derived block's constructor.
+     *
+     * \section rfnoc_block_impl Block implementation
+     *
+     * Note that not only does your custom C++ block need to be derived from
+     * this class, but the impl file must also be derived from rfnoc_block_impl.
      */
     class ETTUS_API rfnoc_block : public gr::block
     {

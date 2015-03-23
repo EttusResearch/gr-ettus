@@ -19,6 +19,7 @@
 
 #include "rfnoc_block_impl.h"
 #include <gnuradio/block_detail.h>
+#include <uhd/usrp/rfnoc/terminator_node_ctrl.hpp>
 
 using namespace gr::ettus;
 
@@ -147,7 +148,7 @@ rfnoc_block_impl::rfnoc_block_impl(
   }
 
   // Configure the block
-  const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
+  const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen")("issue_stream_cmd");
   _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
   GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
   _blk_ctrl->set_args(_merged_args);
@@ -298,13 +299,27 @@ bool rfnoc_block_impl::start()
   // Wait for all RFNoC streamers to have set up their rx streamers
   _rx_barrier.wait();
 
-  // Start the streamers
+  // Start the streaming. There's two ways to do do this. If we actually
+  // have an rx streamer, then that's the one to initiate the stream.
   if (!_rx.streamers.empty()) {
     ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
     stream_cmd.stream_now = true;
     for (size_t i = 0; i < _rx.streamers.size(); i++) {
       _rx.streamers[i]->issue_stream_cmd(stream_cmd);
     }
+  }
+  // If there are no streamers at all (i.e. the flow graph is 100% on the FPGA),
+  // then we still might have to initiate streaming IFF we're a terminating sink.
+  else if (
+      _active_streamers.empty()
+      && get_block_ctrl< ::uhd::rfnoc::terminator_node_ctrl >()
+      && get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >()
+      && (_tx.stream_args.args.has_key("issue_stream_cmd") || _rx.stream_args.args.has_key("issue_stream_cmd"))
+  ) {
+    ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
+    stream_cmd.stream_now = true;
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Starting streaming on block: ") % get_block_id()));
+    get_block_ctrl_throw< ::uhd::rfnoc::source_block_ctrl_base >()->issue_stream_cmd(stream_cmd);
   }
 
   return true;
@@ -334,6 +349,19 @@ bool rfnoc_block_impl::stop()
   for (size_t i = 0; i < _rx.streamers.size(); i++) {
     _rx.streamers[i]->issue_stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
     flush(i);
+  }
+
+  // Manual stream command setting -- see the end of start()
+  if (
+      _active_streamers.empty()
+      && get_block_ctrl< ::uhd::rfnoc::terminator_node_ctrl >()
+      && get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >()
+      && (_tx.stream_args.args.has_key("issue_stream_cmd") || _rx.stream_args.args.has_key("issue_stream_cmd"))
+  ) {
+    ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
+    stream_cmd.stream_now = true;
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Stopping streaming on block: ") % get_block_id()));
+    get_block_ctrl_throw< ::uhd::rfnoc::source_block_ctrl_base >()->issue_stream_cmd(stream_cmd);
   }
 
   return true;
@@ -390,14 +418,18 @@ void rfnoc_block_impl::update_gr_io_signature()
 gr::io_signature::sptr rfnoc_block_impl::get_rfnoc_input_signature()
 {
   const int min_streams = 0;
-  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  //const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  const int max_streams = _merged_args.has_key("disc") ? 0 : gr::io_signature::IO_INFINITE; // TODO
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("%s: input max streams: %s") % get_block_id() % max_streams));
   return gr::io_signature::make(min_streams, max_streams, _tx.itemsize * _tx.vlen);
 }
 
 gr::io_signature::sptr rfnoc_block_impl::get_rfnoc_output_signature()
 {
   const int min_streams = 0;
-  const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  //const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  const int max_streams = _merged_args.has_key("disc") ? 0 : gr::io_signature::IO_INFINITE; // TODO
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("%s: output max streams: %s") % get_block_id() % max_streams));
   return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
 }
 
