@@ -35,6 +35,8 @@
 #include <boost/function.hpp>
 #include <map>
 
+static const pmt::pmt_t EOB_KEY = pmt::string_to_symbol("rx_eob");
+
 namespace gr {
   namespace ettus {
 

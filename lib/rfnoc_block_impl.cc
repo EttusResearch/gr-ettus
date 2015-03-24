@@ -22,6 +22,7 @@
 
 using namespace gr::ettus;
 
+
 /****************************************************************************
  * Helper functions
  ****************************************************************************/
@@ -510,6 +511,16 @@ rfnoc_block_impl::work_rx_a(
         % _rx.metadata.strerror() % _rx.metadata.error_code << std::endl;
   }
 
+  if (_rx.metadata.end_of_burst) {
+      for (size_t i = 0; i < output_items.size(); i++) {
+          add_item_tag(
+              i,
+              nitems_written(i) + num_samps - 1,
+              EOB_KEY, pmt::PMT_T
+            );
+      }
+  }
+
   // There's no 'produce_each()', unfortunately
   return num_samps / _rx.vlen;
 }
@@ -553,6 +564,16 @@ rfnoc_block_impl::work_rx_u(
         std::cout << boost::format("RFNoC Streamer block received error %s (Code: 0x%x)")
           % _rx.metadata.strerror() % _rx.metadata.error_code << std::endl;
     }
-  }
+
+    if (_rx.metadata.end_of_burst) {
+      for (size_t i = 0; i < output_items.size(); i++) {
+        add_item_tag(
+            i,
+            nitems_written(i) + num_samps - 1,
+            EOB_KEY, pmt::PMT_T
+        );
+      }
+    }
+  } /* end for (chans) */
 }
 
