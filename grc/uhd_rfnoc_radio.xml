@@ -150,9 +150,18 @@ self.$(id).set_${direction}_antenna($ant)
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>Force Vector Length</name>
+    <key>grvlen</key>
+    <value>1</value>
+    <type>int</type>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <sink>
     <name>in</name>
     <type>$cpu_format.type</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
     <optional>1</optional>
     <hide>$direction.hide_sink</hide>
@@ -161,6 +170,7 @@ self.$(id).set_${direction}_antenna($ant)
   <source>
     <name>out</name>
     <type>$cpu_format.type</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
     <optional>1</optional>
     <hide>$direction.hide_source</hide>
