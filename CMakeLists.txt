@@ -108,6 +108,20 @@ if(NOT UHD_RFNOC_FOUND)
     message(FATAL_ERROR "RFNoC not found.")
 endif(NOT UHD_RFNOC_FOUND)
 
+find_package(PythonLibs 2)
+if(NOT PYTHONLIBS_FOUND)
+    message(FATAL_ERROR "Python Libs not found.")
+endif(NOT PYTHONLIBS_FOUND)
+
+find_package(Qt4 4.2.0 COMPONENTS QtCore QtGui QtOpenGL)
+if(NOT QT_FOUND)
+    message(FATAL_ERROR "Qt not found.")
+endif(NOT QT_FOUND)
+if (QT_FOUND)
+    include(GrSetupQt4)
+endif (QT_FOUND)
+
+
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################

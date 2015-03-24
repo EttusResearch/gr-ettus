@@ -23,6 +23,7 @@
 install(FILES
     api.h
     device3.h
+    fosphor_display.h
     rfnoc_block.h
     rfnoc_fir_cci.h
     rfnoc_fosphor_c.h

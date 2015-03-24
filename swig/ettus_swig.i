@@ -48,6 +48,7 @@
 %ignore gr::uhd::device3::get_device;
 %{
 #include "ettus/device3.h"
+#include "ettus/fosphor_display.h"
 #include "ettus/rfnoc_fir_cci.h"
 #include "ettus/rfnoc_fosphor_c.h"
 #include "ettus/rfnoc_window_cci.h"
@@ -136,6 +137,8 @@
 
 %include "ettus/device3.h"
 GR_SWIG_BLOCK_MAGIC2(ettus, device3)
+%include "ettus/fosphor_display.h"
+GR_SWIG_BLOCK_MAGIC2(ettus, fosphor_display);
 %include "ettus/rfnoc_fir_cci.h"
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
 %include "ettus/rfnoc_fosphor_c.h"

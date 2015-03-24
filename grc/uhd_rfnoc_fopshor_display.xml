@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<block>
+ <name>RFNoC QT fosphor display</name>
+ <key>uhd_rfnoc_fosphor_display</key>
+ <import>from PyQt4 import Qt</import>
+ <import>import sip</import>
+ <import>import ettus</import>
+ <make>#set $win = 'self._%s_win'%$id
+ettus.fosphor_display($fft_bins, $pwr_bins)
+self._$(id)_win = sip.wrapinstance(self.$(id).pyqwidget(), Qt.QWidget)
+$(gui_hint()($win))</make>
+ <param>
+  <name>FFT bins</name>
+  <key>fft_bins</key>
+  <value>1024</value>
+  <type>int</type>
+ </param>
+ <param>
+  <name>Power bins</name>
+  <key>pwr_bins</key>
+  <value>64</value>
+  <type>int</type>
+ </param>
+ <param>
+  <name>GUI Hint</name>
+  <key>gui_hint</key>
+  <value></value>
+  <type>gui_hint</type>
+  <hide>part</hide>
+ </param>
+ <sink>
+  <name>in</name>
+  <type>byte</type>
+  <vlen>$fft_bins</vlen>
+ </sink>
+ <doc>
+The GUI hint can be used to position the widget within the application. \
+The hint is of the form [tab_id@tab_index]: [row, col, row_span, col_span]. \
+Both the tab specification and the grid position are optional.
+ </doc>
+</block>
+
