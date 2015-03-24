@@ -17,6 +17,7 @@
 			<block>uhd_rfnoc_streamer_fft</block>
 			<block>uhd_rfnoc_streamer_fir</block>
 			<block>uhd_rfnoc_streamer_keep_one_in_n</block>
+			<block>uhd_rfnoc_streamer_logpwr</block>
 			<block>uhd_rfnoc_streamer_radio</block>
 			<block>uhd_rfnoc_streamer_vector_iir</block>
 			<block>uhd_rfnoc_streamer_window</block>
