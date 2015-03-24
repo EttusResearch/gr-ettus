@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: fosphor</name>
+  <key>uhd_rfnoc_streamer_fosphor</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_fosphor_c(
+    $fft_size,
+    self.device3,
+    #if $block_index()
+    ${block_index},
+    #else
+    -1,
+    #end if
+    #if $device_index()
+    ${device_index},
+    #else
+    -1,
+    #end if
+)
+self.$(id).set_decim($decim)
+self.$(id).set_offset($offset)
+self.$(id).set_scale($scale)
+self.$(id).set_trise($trise)
+self.$(id).set_tdecay($tdecay)
+self.$(id).set_alpha($alpha)
+self.$(id).set_epsilon($epsilon)</make>
+
+  <callback>set_decim($decim)</callback>
+  <callback>set_offset($offset)</callback>
+  <callback>set_scale($scale)</callback>
+  <callback>set_trise($trise)</callback>
+  <callback>set_tdecay($tdecay)</callback>
+  <callback>set_alpha($alpha)</callback>
+  <callback>set_epsilon($epsilon)</callback>
+
+  <param>
+    <name>FFT Size</name>
+    <key>fft_size</key>
+    <value>1024</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Decimation</name>
+    <key>decim</key>
+    <value>min(2, int(samp_rate / (15 * fft_size)))</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Histo Offset</name>
+    <key>offset</key>
+    <value>0</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+  <param>
+    <name>Histo Scale</name>
+    <key>scale</key>
+    <value>256</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+  <param>
+    <name>Histo Rise Time</name>
+    <key>trise</key>
+    <value>4096</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+  <param>
+    <name>Histo Decay Time</name>
+    <key>tdecay</key>
+    <value>16384</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+  <param>
+    <name>Average Alpha</name>
+    <key>alpha</key>
+    <value>65280</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+  <param>
+    <name>MaxHold Decay</name>
+    <key>epsilon</key>
+    <value>1</value>
+    <type>int</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+
+  <param>
+    <name>fopshor Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>fc32</type>
+    <vlen>$fft_size</vlen>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>byte</type>
+    <vlen>$fft_size</vlen>
+    <domain>rfnoc</domain>
+  </source>
+</block>

@@ -28,6 +28,7 @@ list(APPEND ettus_sources
     device3.cc
     rfnoc_block_impl.cc
     rfnoc_fir_cci_impl.cc
+    rfnoc_fosphor_c_impl.cc
     rfnoc_window_cci_impl.cc
     rfnoc_radio_impl.cc
     rfnoc_generic_impl.cc
