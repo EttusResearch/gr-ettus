@@ -489,7 +489,7 @@ rfnoc_block_impl::work_rx_a(
   size_t num_samps = _rx.streamers[0]->recv(
       output_items,
       num_vectors_to_recv * _rx.vlen,
-      _rx.metadata, 0.1
+      _rx.metadata, 0.1, true
   );
 
   switch(_rx.metadata.error_code) {
@@ -515,7 +515,7 @@ rfnoc_block_impl::work_rx_a(
       for (size_t i = 0; i < output_items.size(); i++) {
           add_item_tag(
               i,
-              nitems_written(i) + num_samps - 1,
+              nitems_written(i) + (num_samps / _rx.vlen) - 1,
               EOB_KEY, pmt::PMT_T
             );
       }
@@ -542,7 +542,7 @@ rfnoc_block_impl::work_rx_u(
     size_t num_samps = _rx.streamers[i]->recv(
         buff_ptr,
         num_vectors_to_recv * _rx.vlen,
-        _rx.metadata, 0.1
+        _rx.metadata, 0.1, true
     );
 
     switch(_rx.metadata.error_code) {
@@ -568,7 +568,7 @@ rfnoc_block_impl::work_rx_u(
       for (size_t i = 0; i < output_items.size(); i++) {
         add_item_tag(
             i,
-            nitems_written(i) + num_samps - 1,
+            nitems_written(i) + (num_samps / _rx.vlen) - 1,
             EOB_KEY, pmt::PMT_T
         );
       }
