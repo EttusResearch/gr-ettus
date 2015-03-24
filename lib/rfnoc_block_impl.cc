@@ -151,9 +151,18 @@ rfnoc_block_impl::rfnoc_block_impl(
   const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen")("issue_stream_cmd");
   _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
   GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
+  GR_LOG_INFO(d_debug_logger, str(boost::format("Tx args are: %s ") % _tx.stream_args.args.to_string()));
+  GR_LOG_INFO(d_debug_logger, str(boost::format("Rx args are: %s ") % _rx.stream_args.args.to_string()));
   _blk_ctrl->set_args(_merged_args);
   _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
   _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
+
+  //// Set up message port:
+  message_port_register_in(pmt::mp("command"));
+  set_msg_handler(
+      pmt::mp("command"),
+      boost::bind(&rfnoc_block_impl::msg_handler_command, this, _1)
+  );
 
   //// Final configuration for the GNU Radio block:
   set_tag_propagation_policy(TPP_DONT);
@@ -170,6 +179,7 @@ rfnoc_block_impl::~rfnoc_block_impl()
  * Static members
  ****************************************************************************/
 std::map<std::string, bool> rfnoc_block_impl::_active_streamers;
+std::map<std::string, bool> rfnoc_block_impl::_active_blocks;
 ::uhd::reusable_barrier rfnoc_block_impl::_tx_barrier;
 ::uhd::reusable_barrier rfnoc_block_impl::_rx_barrier;
 boost::recursive_mutex rfnoc_block_impl::s_setup_mutex;
@@ -184,14 +194,17 @@ bool rfnoc_block_impl::check_topology(int ninputs, int noutputs)
   { // scope the mutex:
     boost::recursive_mutex::scoped_lock lock(s_setup_mutex);
     std::string blk_id = get_block_id();
+    // TODO: Check if this is safe: Can blocks somehow be disabled and still show up in here?
+    _active_blocks[blk_id] = true;
     if (ninputs || noutputs) {
       _active_streamers[blk_id] = true;
     } else if (_active_streamers.count(blk_id)) {
       _active_streamers.erase(blk_id);
     }
     GR_LOG_DEBUG(d_debug_logger, str(boost::format("RFNoC blocks with streaming ports: %d") % _active_streamers.size()));
-    _tx_barrier.resize(_active_streamers.size());
-    _rx_barrier.resize(_active_streamers.size());
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("RFNoC blocks total:                %d") % _active_blocks.size()));
+    _tx_barrier.resize(_active_blocks.size());
+    _rx_barrier.resize(_active_blocks.size());
   }
 
   // TODO: Check if ninputs and noutputs match the blocks io signatures.
@@ -256,7 +269,9 @@ bool rfnoc_block_impl::start()
   _tx.metadata.has_time_spec = false;
 
   // Wait for all RFNoC streamers to have set up their tx streamers
+      GR_LOG_DEBUG(d_debug_logger, str(boost::format("waiting for tx barrier....")));
   _tx_barrier.wait();
+      GR_LOG_DEBUG(d_debug_logger, str(boost::format("OK.")));
 
   //////////////////// RX ///////////////////////////////////////////////////////////////
   // Setup RX streamer
@@ -318,9 +333,17 @@ bool rfnoc_block_impl::start()
   ) {
     ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
     stream_cmd.stream_now = true;
-    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Starting streaming on block: ") % get_block_id()));
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Starting streaming on block: %s") % get_block_id()));
     get_block_ctrl_throw< ::uhd::rfnoc::source_block_ctrl_base >()->issue_stream_cmd(stream_cmd);
   }
+
+  //GR_LOG_INFO(d_debug_logger, str(boost::format("Tx args are: %s ") % _tx.stream_args.args.to_string()));
+  //GR_LOG_INFO(d_debug_logger, str(boost::format("Rx args are: %s ") % _rx.stream_args.args.to_string()));
+  //GR_LOG_DEBUG(d_debug_logger, str(boost::format("_rx.streamers.empty(): %d") % _rx.streamers.empty()));
+  //GR_LOG_DEBUG(d_debug_logger, str(boost::format("_active_streamers.empty(): %d") % _active_streamers.empty()));
+  //GR_LOG_DEBUG(d_debug_logger, str(boost::format("get_block_ctrl< ::uhd::rfnoc::terminator_node_ctrl >(): %d") % bool(get_block_ctrl< ::uhd::rfnoc::terminator_node_ctrl >())));
+  //GR_LOG_DEBUG(d_debug_logger, str(boost::format("get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(): %d") % bool(get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >())));
+  //GR_LOG_DEBUG(d_debug_logger, str(boost::format("has_key: %d") % ((_tx.stream_args.args.has_key("issue_stream_cmd") || _rx.stream_args.args.has_key("issue_stream_cmd")))));
 
   return true;
 }
@@ -360,9 +383,11 @@ bool rfnoc_block_impl::stop()
   ) {
     ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
     stream_cmd.stream_now = true;
-    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Stopping streaming on block: ") % get_block_id()));
+    GR_LOG_DEBUG(d_debug_logger, str(boost::format("Stopping streaming on block: %s") % get_block_id()));
     get_block_ctrl_throw< ::uhd::rfnoc::source_block_ctrl_base >()->issue_stream_cmd(stream_cmd);
   }
+
+  _active_blocks.clear();
 
   return true;
 }

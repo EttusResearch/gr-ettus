@@ -134,6 +134,8 @@ namespace gr {
 
       void flush(size_t streamer_index);
 
+      virtual void msg_handler_command(pmt::pmt_t msg) {};
+
       /*********************************************************************
        * I/O Signatures
        ********************************************************************/
@@ -195,6 +197,7 @@ namespace gr {
       //! Counts the number of instantiations of this block
       // that actually have their own streamers
       static std::map<std::string, bool> _active_streamers;
+      static std::map<std::string, bool> _active_blocks;
       static ::uhd::reusable_barrier _tx_barrier;
       static ::uhd::reusable_barrier _rx_barrier;
       static boost::recursive_mutex s_setup_mutex;

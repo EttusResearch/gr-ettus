@@ -77,7 +77,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>32000</value>
+      <value>1e6</value>
     </param>
     <param>
       <key>alias</key>
@@ -85,7 +85,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(10, 170)</value>
+      <value>(8, 155)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -159,7 +159,7 @@
     </param>
     <param>
       <key>rate</key>
-      <value>1e6</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>gain</key>
@@ -172,6 +172,10 @@
     <param>
       <key>device_index</key>
       <value>-1</value>
+    </param>
+    <param>
+      <key>hide_cmd_port</key>
+      <value>False</value>
     </param>
     <param>
       <key>alias</key>
@@ -191,7 +195,93 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(368, 99)</value>
+      <value>(488, 131)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_message_strobe</key>
+    <param>
+      <key>id</key>
+      <value>blocks_message_strobe_0</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>msg</key>
+      <value>pmt.intern("TEST")</value>
+    </param>
+    <param>
+      <key>period</key>
+      <value>1000</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(192, 179)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_message_strobe</key>
+    <param>
+      <key>id</key>
+      <value>blocks_message_strobe_0_0</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>msg</key>
+      <value>pmt.intern("TEST")</value>
+    </param>
+    <param>
+      <key>period</key>
+      <value>1000</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(528, 35)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -234,7 +324,7 @@
     </param>
     <param>
       <key>rate</key>
-      <value>1e6</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>gain</key>
@@ -247,6 +337,10 @@
     <param>
       <key>device_index</key>
       <value>-1</value>
+    </param>
+    <param>
+      <key>hide_cmd_port</key>
+      <value>False</value>
     </param>
     <param>
       <key>alias</key>
@@ -266,7 +360,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(720, 99)</value>
+      <value>(832, 131)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -278,5 +372,17 @@
     <sink_block_id>uhd_rfnoc_streamer_radio_1</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_message_strobe_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_radio_0</sink_block_id>
+    <source_key>strobe</source_key>
+    <sink_key>command</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_message_strobe_0_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_radio_1</sink_block_id>
+    <source_key>strobe</source_key>
+    <sink_key>command</sink_key>
   </connection>
 </flow_graph>
