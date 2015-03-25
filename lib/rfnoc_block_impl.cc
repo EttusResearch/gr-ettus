@@ -544,7 +544,6 @@ rfnoc_block_impl::work_rx_u(
         num_vectors_to_recv * _rx.vlen,
         _rx.metadata, 0.1
     );
-    produce(i, num_samps / _rx.vlen);
 
     switch(_rx.metadata.error_code) {
       case ::uhd::rx_metadata_t::ERROR_CODE_NONE:
@@ -574,6 +573,8 @@ rfnoc_block_impl::work_rx_u(
         );
       }
     }
+
+    produce(i, num_samps / _rx.vlen);
   } /* end for (chans) */
 }
 
