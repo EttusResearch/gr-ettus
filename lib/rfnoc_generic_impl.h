@@ -21,7 +21,6 @@
 #define INCLUDED_ETTUS_RFNOC_GENERIC_IMPL_H
 
 #include <ettus/rfnoc_generic.h>
-#include <ettus/rfnoc_common.h>
 #include "rfnoc_block_impl.h"
 
 namespace gr {

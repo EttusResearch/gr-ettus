@@ -20,7 +20,6 @@
 #ifndef INCLUDED_ETTUS_RFNOC_BLOCK_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_BLOCK_IMPL_H
 
-#include <ettus/rfnoc_common.h>
 #include <ettus/rfnoc_block.h>
 #include <uhd/device3.hpp>
 #include <uhd/usrp/multi_usrp.hpp>

@@ -21,7 +21,6 @@
 #define INCLUDED_ETTUS_RFNOC_VECTOR_IIR_CC_IMPL_H
 
 #include <ettus/rfnoc_vector_iir_cc.h>
-#include <ettus/rfnoc_common.h>
 #include "rfnoc_block_impl.h"
 
 namespace gr {
