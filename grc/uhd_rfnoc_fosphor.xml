@@ -36,13 +36,13 @@ self.$(id).set_epsilon($epsilon)</make>
   <param>
     <name>FFT Size</name>
     <key>fft_size</key>
-    <value>1024</value>
+    <value>fft_size</value>
     <type>int</type>
   </param>
   <param>
     <name>Decimation</name>
     <key>decim</key>
-    <value>min(2, int(samp_rate / (15 * fft_size)))</value>
+    <value>max(2, int(samp_rate / (15 * 64 * fft_size)))</value>
     <type>int</type>
   </param>
 
