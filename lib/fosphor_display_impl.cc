@@ -51,7 +51,7 @@ namespace gr {
                        gr::io_signature::make(1, 1, fft_bins),
                        gr::io_signature::make(0, 0, 0)),
         d_fft_bins(fft_bins), d_pwr_bins(pwr_bins),
-        d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 3) /* FIXME SYNC */
+        d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 2)
     {
       /* Frame buffer */
       this->d_frame = new uint8_t[fft_bins * this->d_subframe_num];
@@ -81,24 +81,48 @@ namespace gr {
                                 gr_vector_const_void_star &input_items,
                                 gr_vector_void_star &output_items)
     {
+      static const pmt::pmt_t EOB_KEY = pmt::string_to_symbol("rx_eob");
       const uint8_t *input = (const uint8_t *) input_items[0];
-      int i;
-
-      // printf("%2d %d\n", noutput_items, this->d_aligned);
+      std::vector<tag_t> v;
+      uint64_t nR = nitems_read(0);
+      int pEOF;
 
       if (noutput_items < 1)
         return 0;
 
+      /* Grab all tags available, we'll need them either way */
+      get_tags_in_range(v, 0, nR, nR + noutput_items);
+
       /* If not aligned we just search for EOF */
       if (!this->d_aligned) {
-        for (i=0; i<this->d_fft_bins; i++)
-         if (input[i] != 0xa5)
-          break;
+        /* No tags ?  Drop all useless data while we wait for one */
+        if (v.empty())
+          return noutput_items;
 
-        if (i == this->d_fft_bins)
-          this->d_aligned = true;
+        /* Start at zero right after the tag */
+        this->d_subframe = 0;
+        this->d_aligned = true;
 
-        return 1;
+        return v[0].offset - nR + 1;
+      }
+
+      /* Check alignement */
+      pEOF = v.empty() ? -1 : (v[0].offset - nR);
+
+      if (noutput_items >= (this->d_subframe_num - this->d_subframe))
+      {
+        /* We have the end of the frame, must be an EOF on that */
+        if (pEOF != (this->d_subframe_num - this->d_subframe - 1))
+        {
+          this->d_aligned = false;
+          return 0;
+        }
+      } else {
+        /* We don't have the end of the frame yet, there can't be any EOF */
+        if (pEOF >= 0) {
+          this->d_aligned = false;
+          return 0;
+        }
       }
 
       /* Limit to expected frame boundary */
@@ -117,14 +141,6 @@ namespace gr {
       /* Are we done ? */
       if (this->d_subframe == this->d_subframe_num)
       {
-        /* Check if the last subframe is EOF */
-        for (i=0; i<this->d_fft_bins; i++)
-         if (this->d_frame[(this->d_subframe - 1) * this->d_fft_bins + i] != 0xa5)
-          break;
-
-        if (i != this->d_fft_bins)
-          this->d_aligned = false;
-
         /* Send the frame to the display surface */
         this->d_gui->sendFrame(this->d_frame, this->d_subframe_num * this->d_fft_bins);
 
