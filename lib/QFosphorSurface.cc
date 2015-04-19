@@ -143,8 +143,8 @@ namespace gr {
       /* Draw grid */
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
       glBegin(GL_LINES);
+      glColor4f(0.02f, 0.02f, 0.02f, 0.5f);
 
         /* Vertical div */
       x[0] = this->layout.x[0] + 0.5f;
@@ -170,8 +170,8 @@ namespace gr {
         glVertex2f(x[0], y[1]);
       }
 
-      glDisable(GL_BLEND);
       glEnd();
+      glDisable(GL_BLEND);
 
       /* Draw intensity scale */
       this->cmap->drawScale(this->palette,
@@ -181,10 +181,12 @@ namespace gr {
         this->layout.y[1]
       );
 
+      /* Draw margins */
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-      /* Draw margins */
       x[0] = 0;
       y[0] = 0;
 
@@ -211,6 +213,9 @@ namespace gr {
       glTexCoord2d(1.0f, 1.0f); glVertex2d(x[1], y[1]);
       glTexCoord2d(0.0f, 1.0f); glVertex2d(x[0], y[1]);
       glEnd();
+
+      glDisable(GL_BLEND);
+      glDisable(GL_TEXTURE_2D);
     }
 
 
@@ -261,7 +266,7 @@ namespace gr {
       /* Paint labels */
       for (i=0; i<11; i++)
       {
-        float yv = this->layout.height - this->layout.y[0] - i * this->layout.y_div;
+        int yv = (int)(this->layout.height - this->layout.y[0] - i * this->layout.y_div);
 
         snprintf(buf, sizeof(buf)-1, "%d", (i - 10) * 10);
         buf[sizeof(buf)-1] = 0;
@@ -302,7 +307,7 @@ namespace gr {
       /* Paint labels */
       for (i=0; i<11; i++)
       {
-        float xv = this->layout.x[0] + i * this->layout.x_div;
+        int xv = (int)(this->layout.x[0] + i * this->layout.x_div);
 
         snprintf(buf, sizeof(buf)-1, "%d", i - 5);
         buf[sizeof(buf)-1] = 0;
