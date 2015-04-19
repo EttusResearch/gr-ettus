@@ -231,6 +231,88 @@ namespace gr {
     /* -------------------------------------------------------------------- */
 
     void
+    QFosphorSurface::refreshPowerAxis()
+    {
+      char buf[32];
+      int i;
+
+      /* Release previous texture */
+      if (this->layout.left_tex)
+        this->deleteTexture(this->layout.left_tex);
+
+      /* Create a pixmap of right size */
+      QPixmap pixmap(this->layout.x[0], this->layout.height);
+      pixmap.fill(Qt::transparent);
+
+      QPainter painter(&pixmap);
+      painter.setPen(QColor(255, 255, 255, 255));
+
+      QFont font("Monospace");
+      font.setPixelSize(10);
+      painter.setFont(font);
+
+      /* Paint labels */
+      for (i=0; i<11; i++)
+      {
+        float yv = this->layout.height - this->layout.y[0] - i * this->layout.y_div;
+
+        snprintf(buf, sizeof(buf)-1, "%d", (i - 10) * 10);
+        buf[sizeof(buf)-1] = 0;
+
+        painter.drawText(
+          0, yv - 10,
+          this->layout.x[0] - 5, 20,
+          Qt::AlignRight | Qt::AlignVCenter,
+          buf
+        );
+      }
+
+      /* Create texture */
+      this->layout.left_tex = this->bindTexture(pixmap);
+    }
+
+    void
+    QFosphorSurface::refreshFrequencyAxis()
+    {
+      char buf[32];
+      int i;
+
+      /* Release previous texture */
+      if (this->layout.bot_tex)
+        this->deleteTexture(this->layout.bot_tex);
+
+      /* Create a pixmap of right size */
+      QPixmap pixmap(this->layout.width, this->layout.y[0]);
+      pixmap.fill(Qt::transparent);
+
+      QPainter painter(&pixmap);
+      painter.setPen(QColor(255, 255, 255, 255));
+
+      QFont font("Monospace");
+      font.setPixelSize(10);
+      painter.setFont(font);
+
+      /* Paint labels */
+      for (i=0; i<11; i++)
+      {
+        float xv = this->layout.x[0] + i * this->layout.x_div;
+
+        snprintf(buf, sizeof(buf)-1, "%d", i - 5);
+        buf[sizeof(buf)-1] = 0;
+
+        painter.drawText(
+          xv - 20, 0,
+          40, this->layout.y[0],
+          Qt::AlignHCenter | Qt::AlignVCenter,
+          buf
+        );
+      }
+
+      /* Create texture */
+      this->layout.bot_tex = this->bindTexture(pixmap);
+    }
+
+    void
     QFosphorSurface::refreshLayout()
     {
       int rsvd_tlbr[2], rsvd, avail, div, over;
@@ -261,85 +343,9 @@ namespace gr {
       this->layout.y[0]  = (float)(rsvd_tlbr[1] + over / 2);
       this->layout.y[1]  = this->layout.y[0] + 10.0f * div + 1.0f;
 
-      /* Draw the dB axis */
-      {
-        char buf[32];
-        int i;
-
-        /* Release previous texture */
-        if (this->layout.left_tex)
-          this->deleteTexture(this->layout.left_tex);
-
-        /* Create a pixmap of right size */
-        QPixmap pixmap(this->layout.x[0], this->layout.height);
-        pixmap.fill(Qt::transparent);
-
-        QPainter painter(&pixmap);
-        painter.setPen(QColor(255, 255, 255, 255));
-
-        QFont font("Monospace");
-        font.setPixelSize(10);
-        painter.setFont(font);
-
-        /* Paint labels */
-        for (i=0; i<11; i++)
-        {
-          float yv = this->layout.height - this->layout.y[0] - i * this->layout.y_div;
-
-          snprintf(buf, sizeof(buf)-1, "%d", (i - 10) * 10);
-          buf[sizeof(buf)-1] = 0;
-
-          painter.drawText(
-            0, yv - 10,
-            this->layout.x[0] - 5, 20,
-            Qt::AlignRight | Qt::AlignVCenter,
-            buf
-          );
-        }
-
-        /* Create texture */
-        this->layout.left_tex = this->bindTexture(pixmap);
-      }
-
-      /* Draw the Frequency axis */
-      {
-        char buf[32];
-        int i;
-
-        /* Release previous texture */
-        if (this->layout.bot_tex)
-          this->deleteTexture(this->layout.bot_tex);
-
-        /* Create a pixmap of right size */
-        QPixmap pixmap(this->layout.width, this->layout.y[0]);
-        pixmap.fill(Qt::transparent);
-
-        QPainter painter(&pixmap);
-        painter.setPen(QColor(255, 255, 255, 255));
-
-        QFont font("Monospace");
-        font.setPixelSize(10);
-        painter.setFont(font);
-
-        /* Paint labels */
-        for (i=0; i<11; i++)
-        {
-          float xv = this->layout.x[0] + i * this->layout.x_div;
-
-          snprintf(buf, sizeof(buf)-1, "%d", i - 5);
-          buf[sizeof(buf)-1] = 0;
-
-          painter.drawText(
-            xv - 20, 0,
-            40, this->layout.y[0],
-            Qt::AlignHCenter | Qt::AlignVCenter,
-            buf
-          );
-        }
-
-        /* Create texture */
-        this->layout.bot_tex = this->bindTexture(pixmap);
-      }
+      /* Refresh axis */
+      this->refreshPowerAxis();
+      this->refreshFrequencyAxis();
 
       /* All refreshed now */
       this->layout.dirty = false;

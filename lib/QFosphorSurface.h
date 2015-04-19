@@ -43,6 +43,8 @@ namespace gr {
       void sendFrame(void *frame, int frame_len);
 
      private:
+      void refreshPowerAxis();
+      void refreshFrequencyAxis();
       void refreshLayout();
 
       int fft_bins;
