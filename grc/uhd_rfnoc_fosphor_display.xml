@@ -7,6 +7,7 @@
  <import>import ettus</import>
  <make>#set $win = 'self._%s_win'%$id
 ettus.fosphor_display($fft_bins, $pwr_bins)
+self.$(id).set_palette("$palette")
 self._$(id)_win = sip.wrapinstance(self.$(id).pyqwidget(), Qt.QWidget)
 $(gui_hint()($win))</make>
  <param>
@@ -20,6 +21,31 @@ $(gui_hint()($win))</make>
   <key>pwr_bins</key>
   <value>64</value>
   <type>int</type>
+ </param>
+ <param>
+  <name>Color Palette</name>
+  <key>palette</key>
+  <type>enum</type>
+  <option>
+    <name>Iron</name>
+    <key>iron</key>
+  </option>
+  <option>
+    <name>Cube Helix</name>
+    <key>cubehelix</key>
+  </option>
+  <option>
+    <name>SDRangelove</name>
+    <key>sdrangelove_histogram</key>
+  </option>
+  <option>
+    <name>Rainbow</name>
+    <key>rainbow</key>
+  </option>
+  <option>
+    <name>prog's</name>
+    <key>prog</key>
+  </option>
  </param>
  <param>
   <name>GUI Hint</name>

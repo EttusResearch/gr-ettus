@@ -76,6 +76,13 @@ namespace gr {
     }
 
 
+    void
+    fosphor_display_impl::set_palette(std::string name)
+    {
+      this->d_gui->setPalette(name);
+    }
+
+
     int
     fosphor_display_impl::work (int noutput_items,
                                 gr_vector_const_void_star &input_items,

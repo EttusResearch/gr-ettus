@@ -23,6 +23,8 @@
 
 #include <QGLWidget>
 
+#include <string>
+
 namespace gr {
   namespace ettus {
 
@@ -40,6 +42,7 @@ namespace gr {
      public:
       QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent);
 
+      void setPalette(std::string name);
       void sendFrame(void *frame, int frame_len);
 
      private:
@@ -49,6 +52,8 @@ namespace gr {
 
       int fft_bins;
       int pwr_bins;
+
+      std::string palette;
 
       struct {
         bool dirty;

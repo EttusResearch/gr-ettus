@@ -506,6 +506,10 @@
       <value>64</value>
     </param>
     <param>
+      <key>palette</key>
+      <value>iron</value>
+    </param>
+    <param>
       <key>gui_hint</key>
       <value></value>
     </param>

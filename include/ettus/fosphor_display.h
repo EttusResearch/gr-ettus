@@ -25,6 +25,8 @@
 #include <ettus/api.h>
 #include <gnuradio/sync_block.h>
 
+#include <string>
+
 class QApplication;
 class QWidget;
 
@@ -48,6 +50,9 @@ namespace gr {
           const int pwr_bins = 64,
           QWidget *parent = NULL
       );
+
+      /* Block API */
+      virtual void set_palette(std::string name) = 0;
 
       /* QT GUI Widget stuff */
       virtual void exec_() = 0;

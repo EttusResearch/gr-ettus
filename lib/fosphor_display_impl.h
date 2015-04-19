@@ -43,6 +43,9 @@ namespace gr {
                            QWidget *parent=NULL);
       ~fosphor_display_impl();
 
+      /* Block API */
+      void set_palette(std::string name);
+
       /* gr::sync_block implementation */
       int work (int noutput_items,
                 gr_vector_const_void_star &input_items,

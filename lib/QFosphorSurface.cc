@@ -35,7 +35,8 @@ namespace gr {
 
     QFosphorSurface::QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent)
       : QGLWidget(parent),
-        fft_bins(fft_bins), pwr_bins(pwr_bins)
+        fft_bins(fft_bins), pwr_bins(pwr_bins),
+        palette("iron")
     {
       this->setFocusPolicy(Qt::StrongFocus);
       this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -123,7 +124,7 @@ namespace gr {
       glClear(GL_COLOR_BUFFER_BIT);
 
       /* Draw Histogram texture */
-      this->cmap->enable("iron", this->frame.tex);
+      this->cmap->enable(this->palette, this->frame.tex);
 
       x[0] = this->layout.x[0];
       x[1] = this->layout.x[1];
@@ -173,7 +174,7 @@ namespace gr {
       glEnd();
 
       /* Draw intensity scale */
-      this->cmap->drawScale("iron", 
+      this->cmap->drawScale(this->palette,
         this->layout.x[1] +  2.0f,
         this->layout.y[0],
         this->layout.x[1] + 10.0f,
@@ -216,6 +217,12 @@ namespace gr {
     /* -------------------------------------------------------------------- */
     /* Public API                                                           */
     /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::setPalette(std::string name)
+    {
+      this->palette = name;
+    }
 
     void
     QFosphorSurface::sendFrame(void *frame, int frame_len)
