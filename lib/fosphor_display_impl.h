@@ -44,6 +44,8 @@ namespace gr {
       ~fosphor_display_impl();
 
       /* Block API */
+      void set_frequency_range(const double center_freq,
+                               const double samp_rate);
       void set_palette(std::string name);
 
       /* gr::sync_block implementation */
@@ -66,6 +68,9 @@ namespace gr {
 
       int d_fft_bins;
       int d_pwr_bins;
+
+      double d_center_freq;
+      double d_samp_rate;
 
       bool d_aligned;
       int d_subframe;

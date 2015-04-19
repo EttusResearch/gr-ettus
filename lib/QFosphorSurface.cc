@@ -43,6 +43,8 @@ namespace gr {
 
       memset(&this->frame, 0, sizeof(this->frame));
       memset(&this->layout, 0, sizeof(this->layout));
+
+      this->setFrequencyRange(0.0, 0.0);
     }
 
 
@@ -224,6 +226,14 @@ namespace gr {
     /* -------------------------------------------------------------------- */
 
     void
+    QFosphorSurface::setFrequencyRange(const double center_freq,
+                                       const double span)
+    {
+      freq_axis_build(&this->freq_axis, center_freq, span, 10);
+      this->layout.dirty = true; // FIXME more fine grain refresh
+    }
+
+    void
     QFosphorSurface::setPalette(std::string name)
     {
       this->palette = name;
@@ -287,7 +297,7 @@ namespace gr {
     QFosphorSurface::refreshFrequencyAxis()
     {
       char buf[32];
-      int i;
+      int n_div, i;
 
       /* Release previous texture */
       if (this->layout.bot_tex)
@@ -305,17 +315,35 @@ namespace gr {
       painter.setFont(font);
 
       /* Paint labels */
-      for (i=0; i<11; i++)
+      n_div = 10;
+
+      for (i=0; i<=n_div; i++)
       {
         int xv = (int)(this->layout.x[0] + i * this->layout.x_div);
+        int xl, xw;
+        int flags;
 
-        snprintf(buf, sizeof(buf)-1, "%d", i - 5);
+        freq_axis_render(&this->freq_axis, buf, i-(n_div>>1));
         buf[sizeof(buf)-1] = 0;
 
+        if (i == 0) {
+          xl = xv - 10;
+          xw = 60;
+          flags = Qt::AlignLeft | Qt::AlignVCenter;
+        } else if (i == n_div) {
+          xl = xv - 50;
+          xw = 60;
+          flags = Qt::AlignRight | Qt::AlignVCenter;
+        } else {
+          xl = xv - 30;
+          xw = 60;
+          flags = Qt::AlignHCenter | Qt::AlignVCenter;
+        }
+
         painter.drawText(
-          xv - 20, 0,
-          40, this->layout.y[0],
-          Qt::AlignHCenter | Qt::AlignVCenter,
+          xl, 0,
+          xw, (int)this->layout.y[0],
+          flags,
           buf
         );
       }

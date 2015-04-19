@@ -51,6 +51,7 @@ namespace gr {
                        gr::io_signature::make(1, 1, fft_bins),
                        gr::io_signature::make(0, 0, 0)),
         d_fft_bins(fft_bins), d_pwr_bins(pwr_bins),
+        d_center_freq(0.0), d_samp_rate(0.0),
         d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 2)
     {
       /* Frame buffer */
@@ -75,6 +76,21 @@ namespace gr {
       delete this->d_frame;
     }
 
+
+    void
+    fosphor_display_impl::set_frequency_range(const double center_freq,
+                                              const double samp_rate)
+    {
+      if ((this->d_samp_rate != samp_rate) && (samp_rate > 0.0))
+      {
+        // FIXME: Send reconfig message to adapt the frame rate
+      }
+
+      this->d_gui->setFrequencyRange(center_freq, samp_rate);
+
+      this->d_center_freq = center_freq;
+      this->d_samp_rate = samp_rate;
+    }
 
     void
     fosphor_display_impl::set_palette(std::string name)

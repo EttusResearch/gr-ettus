@@ -33,6 +33,7 @@ include_directories(${QT_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND ettus_sources
+    axis.c
     device3.cc
     fosphor_display_impl.cc
     rfnoc_block_impl.cc

@@ -52,6 +52,8 @@ namespace gr {
       );
 
       /* Block API */
+      virtual void set_frequency_range(const double center_freq,
+                                       const double samp_rate) = 0;
       virtual void set_palette(std::string name) = 0;
 
       /* QT GUI Widget stuff */

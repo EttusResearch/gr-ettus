@@ -7,9 +7,23 @@
  <import>import ettus</import>
  <make>#set $win = 'self._%s_win'%$id
 ettus.fosphor_display($fft_bins, $pwr_bins)
+self.$(id).set_frequency_range($center_freq, $samp_rate)
 self.$(id).set_palette("$palette")
 self._$(id)_win = sip.wrapinstance(self.$(id).pyqwidget(), Qt.QWidget)
 $(gui_hint()($win))</make>
+ <callback>set_frequency_range($center_freq, $samp_rate)</callback>
+ <param>
+  <name>Center Frequency</name>
+  <key>center_freq</key>
+  <value>0</value>
+  <type>real</type>
+ </param>
+ <param>
+  <name>Sample Rate</name>
+  <key>samp_rate</key>
+  <value>samp_rate</value>
+  <type>real</type>
+ </param>
  <param>
   <name>FFT bins</name>
   <key>fft_bins</key>

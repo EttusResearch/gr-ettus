@@ -25,6 +25,10 @@
 
 #include <string>
 
+extern "C" {
+#include "axis.h"
+}
+
 namespace gr {
   namespace ettus {
 
@@ -42,6 +46,7 @@ namespace gr {
      public:
       QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent);
 
+      void setFrequencyRange(const double center_freq, const double span);
       void setPalette(std::string name);
       void sendFrame(void *frame, int frame_len);
 
@@ -76,6 +81,8 @@ namespace gr {
       } layout;
 
       QFosphorColorMapper *cmap;
+
+      struct freq_axis freq_axis;
     };
 
   } // namespace fosphor
