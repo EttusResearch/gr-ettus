@@ -21,7 +21,7 @@
   <param>
     <name>FFT Size</name>
     <key>fft_size</key>
-    <type>enum</type>
+    <type>int</type>
     <option>
       <name>8</name>
       <key>8</key>
@@ -98,6 +98,8 @@
     <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
+
+  <check>$fft_size in [2**n for n in xrange(3, 9)]</check>
 
   <sink>
     <name>in</name>
