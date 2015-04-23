@@ -3,58 +3,18 @@
 <flow_graph>
   <timestamp>Fri Nov  7 10:40:33 2014</timestamp>
   <block>
-    <key>options</key>
+    <key>variable</key>
     <param>
       <key>id</key>
-      <value>top_block</value>
+      <value>num_points</value>
     </param>
     <param>
       <key>_enabled</key>
       <value>True</value>
     </param>
     <param>
-      <key>title</key>
-      <value></value>
-    </param>
-    <param>
-      <key>author</key>
-      <value></value>
-    </param>
-    <param>
-      <key>description</key>
-      <value></value>
-    </param>
-    <param>
-      <key>window_size</key>
-      <value>1280, 1024</value>
-    </param>
-    <param>
-      <key>generate_options</key>
-      <value>qt_gui</value>
-    </param>
-    <param>
-      <key>category</key>
-      <value>Custom</value>
-    </param>
-    <param>
-      <key>run_options</key>
-      <value>prompt</value>
-    </param>
-    <param>
-      <key>run</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>max_nouts</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>realtime_scheduling</key>
-      <value></value>
-    </param>
-    <param>
-      <key>thread_safe_setters</key>
-      <value></value>
+      <key>value</key>
+      <value>256</value>
     </param>
     <param>
       <key>alias</key>
@@ -66,7 +26,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(10, 10)</value>
+      <value>(104, 75)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -98,37 +58,6 @@
     <param>
       <key>_coordinate</key>
       <value>(8, 75)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>id</key>
-      <value>num_points</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>256</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(104, 75)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1412,6 +1341,77 @@
       <value>0</value>
     </param>
   </block>
+  <block>
+    <key>options</key>
+    <param>
+      <key>id</key>
+      <value>rfnoc_fir_fft</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>title</key>
+      <value></value>
+    </param>
+    <param>
+      <key>author</key>
+      <value></value>
+    </param>
+    <param>
+      <key>description</key>
+      <value></value>
+    </param>
+    <param>
+      <key>window_size</key>
+      <value>1280, 1024</value>
+    </param>
+    <param>
+      <key>generate_options</key>
+      <value>qt_gui</value>
+    </param>
+    <param>
+      <key>category</key>
+      <value>Custom</value>
+    </param>
+    <param>
+      <key>run_options</key>
+      <value>prompt</value>
+    </param>
+    <param>
+      <key>run</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>max_nouts</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>realtime_scheduling</key>
+      <value></value>
+    </param>
+    <param>
+      <key>thread_safe_setters</key>
+      <value></value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(10, 10)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
   <connection>
     <source_block_id>uhd_rfnoc_streamer_fft_0</source_block_id>
     <sink_block_id>blocks_complex_to_mag_squared_0</sink_block_id>
@@ -1461,12 +1461,6 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>uhd_rfnoc_streamer_fir_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_streamer_fft_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
     <source_block_id>uhd_rfnoc_streamer_radio_0</source_block_id>
     <sink_block_id>blocks_stream_to_vector_0</sink_block_id>
     <source_key>0</source_key>
@@ -1475,6 +1469,12 @@
   <connection>
     <source_block_id>blocks_nlog10_ff_0</source_block_id>
     <sink_block_id>qtgui_vector_sink_f_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_streamer_fir_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_fft_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

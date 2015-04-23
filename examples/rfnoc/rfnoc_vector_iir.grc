@@ -77,37 +77,6 @@
     <key>variable</key>
     <param>
       <key>id</key>
-      <value>num_points</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>256</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(104, 75)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>id</key>
       <value>samp_rate</value>
     </param>
     <param>
@@ -129,6 +98,37 @@
     <param>
       <key>_coordinate</key>
       <value>(8, 75)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>id</key>
+      <value>num_points</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>256</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(104, 75)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1236,50 +1236,22 @@
     </param>
   </block>
   <block>
-    <key>uhd_rfnoc_streamer_radio</key>
+    <key>uhd_rfnoc_streamer_keep_one_in_n</key>
     <param>
       <key>id</key>
-      <value>uhd_rfnoc_streamer_radio_0</value>
+      <value>uhd_rfnoc_streamer_keep_one_in_n_0</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
-      <key>radio_index</key>
+      <key>n</key>
+      <value>100</value>
+    </param>
+    <param>
+      <key>block_index</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>direction</key>
-      <value>tx</value>
-    </param>
-    <param>
-      <key>cpu_format</key>
-      <value>fc32</value>
-    </param>
-    <param>
-      <key>otw_format</key>
-      <value>sc16</value>
-    </param>
-    <param>
-      <key>stream_args</key>
-      <value></value>
-    </param>
-    <param>
-      <key>freq</key>
-      <value>1.982e9</value>
-    </param>
-    <param>
-      <key>rate</key>
-      <value>1e6</value>
-    </param>
-    <param>
-      <key>gain</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>ant</key>
-      <value>"TX/RX"</value>
     </param>
     <param>
       <key>device_index</key>
@@ -1307,7 +1279,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(24, 451)</value>
+      <value>(952, 508)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1366,7 +1338,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(232, 500)</value>
+      <value>(208, 451)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1374,22 +1346,50 @@
     </param>
   </block>
   <block>
-    <key>uhd_rfnoc_streamer_keep_one_in_n</key>
+    <key>uhd_rfnoc_streamer_radio</key>
     <param>
       <key>id</key>
-      <value>uhd_rfnoc_streamer_keep_one_in_n_0</value>
+      <value>uhd_rfnoc_streamer_radio_0</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
-      <key>n</key>
-      <value>100</value>
-    </param>
-    <param>
-      <key>block_index</key>
+      <key>radio_index</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>direction</key>
+      <value>rx</value>
+    </param>
+    <param>
+      <key>cpu_format</key>
+      <value>fc32</value>
+    </param>
+    <param>
+      <key>otw_format</key>
+      <value>sc16</value>
+    </param>
+    <param>
+      <key>stream_args</key>
+      <value>spp=256</value>
+    </param>
+    <param>
+      <key>freq</key>
+      <value>1.982e9</value>
+    </param>
+    <param>
+      <key>rate</key>
+      <value>1e6</value>
+    </param>
+    <param>
+      <key>gain</key>
+      <value>20</value>
+    </param>
+    <param>
+      <key>ant</key>
+      <value>"TX/RX"</value>
     </param>
     <param>
       <key>device_index</key>
@@ -1417,7 +1417,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(952, 508)</value>
+      <value>(232, 555)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1440,7 +1440,7 @@
     </param>
     <param>
       <key>magnitude_out</key>
-      <value>1</value>
+      <value>"MAGNITUDE_SQUARED"</value>
     </param>
     <param>
       <key>block_index</key>
@@ -1528,12 +1528,6 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>uhd_rfnoc_streamer_fifo_0_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_streamer_fft_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
     <source_block_id>uhd_rfnoc_streamer_fft_0</source_block_id>
     <sink_block_id>uhd_rfnoc_streamer_vector_iir_0</sink_block_id>
     <source_key>0</source_key>
@@ -1548,6 +1542,18 @@
   <connection>
     <source_block_id>uhd_rfnoc_streamer_keep_one_in_n_0</source_block_id>
     <sink_block_id>blocks_stream_to_vector_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_streamer_fifo_0_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_fft_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_streamer_radio_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_fft_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

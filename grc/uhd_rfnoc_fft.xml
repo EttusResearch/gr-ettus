@@ -8,7 +8,7 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="spp=$fft_size,magnitude_out=$magnitude_out",
+        args="spp={},magnitude_out={}".format($fft_size, $magnitude_out),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
@@ -70,15 +70,15 @@
     <type>enum</type>
     <option>
       <name>Complex</name>
-      <key>0</key>
+      <key>"COMPLEX"</key>
     </option>
     <option>
       <name>Magnitude</name>
-      <key>1</key>
+      <key>"MAGNITUDE"</key>
     </option>
     <option>
       <name>Magnitude^2</name>
-      <key>2</key>
+      <key>"MAGNITUDE_SQUARED"</key>
     </option>
   </param>
 
