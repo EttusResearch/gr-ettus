@@ -21,7 +21,6 @@
 #define INCLUDED_ETTUS_RFNOC_FOSPHOR_C_IMPL_H
 
 #include <ettus/rfnoc_fosphor_c.h>
-#include <ettus/rfnoc_common.h>
 #include "rfnoc_block_impl.h"
 
 namespace gr {
@@ -37,6 +36,8 @@ namespace gr {
           const int device_select
       );
       ~rfnoc_fosphor_c_impl();
+
+      void clear();
 
       void set_decim(const int decim);
       void set_offset(const int offset);

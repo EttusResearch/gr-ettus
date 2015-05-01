@@ -72,6 +72,11 @@ namespace gr {
     }
 
 
+    void rfnoc_fosphor_c_impl::clear()
+    {
+      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->clear();
+    }
+
     void rfnoc_fosphor_c_impl::set_decim(const int decim)
     {
       get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_decim(decim);
