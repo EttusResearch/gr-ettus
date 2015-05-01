@@ -99,7 +99,7 @@
     <tab>RFNoC Config</tab>
   </param>
 
-  <check>$fft_size in [2**n for n in xrange(3, 9)]</check>
+  <check>$fft_size in [2**n for n in xrange(3, 11)]</check>
 
   <sink>
     <name>in</name>
