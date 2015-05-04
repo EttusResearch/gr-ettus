@@ -54,6 +54,9 @@ namespace gr {
         d_center_freq(0.0), d_samp_rate(0.0),
         d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 2)
     {
+      /* Message Port output */
+      message_port_register_out(pmt::mp("cfg"));
+
       /* Frame buffer */
       this->d_frame = new uint8_t[fft_bins * this->d_subframe_num];
 
