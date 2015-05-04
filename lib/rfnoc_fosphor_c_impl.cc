@@ -63,7 +63,11 @@ namespace gr {
             _make_stream_args("u8",   "u8",   fft_size)
         )
     {
-      /* nop */
+      message_port_register_in(pmt::mp("cfg"));
+      set_msg_handler(
+        pmt::mp("cfg"),
+        boost::bind(&rfnoc_fosphor_c_impl::handle_cfg_message, this, _1)
+      );
     }
 
     rfnoc_fosphor_c_impl::~rfnoc_fosphor_c_impl()
@@ -110,6 +114,54 @@ namespace gr {
     void rfnoc_fosphor_c_impl::set_epsilon(const int epsilon)
     {
       get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_epsilon(epsilon);
+    }
+
+
+    void rfnoc_fosphor_c_impl::handle_cfg_message(pmt::pmt_t msg)
+    {
+      /* If the PMT is a list, assume it's a list of pairs and recurse for each */
+      /* Works for dict too */
+      try {
+        /* Because of PMT is just broken you and can't distinguish between
+         * pair and dict, we have to call length() and see if it will throw
+         * or not ... */
+        if (pmt::length(msg) > 0)
+        {
+          for (int i=0; i<pmt::length(msg); i++)
+            this->handle_cfg_message(pmt::nth(i, msg));
+          return;
+        }
+      } catch(...) { }
+
+      /* Handle the pairs */
+      if (pmt::is_pair(msg))
+      {
+        pmt::pmt_t key(pmt::car(msg));
+        pmt::pmt_t val(pmt::cdr(msg));
+        int val_i;
+
+        if (!pmt::is_symbol(key) || !pmt::is_integer(val))
+          return;
+
+        val_i = pmt::to_long(val);
+
+        if (pmt::eqv(key, pmt::string_to_symbol("clear")))
+          this->clear();
+        else if (pmt::eqv(key, pmt::string_to_symbol("decim")))
+          this->set_decim(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("offset")))
+          this->set_offset(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("scale")))
+          this->set_scale(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("trise")))
+          this->set_trise(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("tdecay")))
+          this->set_tdecay(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("alpha")))
+          this->set_alpha(val_i);
+        else if (pmt::eqv(key, pmt::string_to_symbol("epsilon")))
+          this->set_epsilon(val_i);
+      }
     }
 
   } /* namespace ettus */

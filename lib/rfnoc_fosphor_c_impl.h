@@ -46,6 +46,9 @@ namespace gr {
       void set_tdecay(const int tdecay);
       void set_alpha(const int alpha);
       void set_epsilon(const int epsilon);
+
+     private:
+      void handle_cfg_message(pmt::pmt_t msg);
     };
 
   } // namespace ettus

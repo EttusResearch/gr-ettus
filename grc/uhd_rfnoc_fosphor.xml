@@ -119,6 +119,12 @@ self.$(id).set_epsilon($epsilon)</make>
     <domain>rfnoc</domain>
   </sink>
 
+  <sink>
+    <name>cfg</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
   <source>
     <name>out</name>
     <type>byte</type>
