@@ -84,6 +84,12 @@ namespace gr {
     fosphor_display_impl::set_frequency_range(const double center_freq,
                                               const double samp_rate)
     {
+      pmt::pmt_t msg = pmt::make_dict();
+
+      if ((this->d_center_freq == center_freq) &&
+          (this->d_samp_rate == samp_rate))
+        return;
+
       if ((this->d_samp_rate != samp_rate) && (samp_rate > 0.0))
       {
         // FIXME: Send reconfig message to adapt the frame rate
@@ -93,6 +99,12 @@ namespace gr {
 
       this->d_center_freq = center_freq;
       this->d_samp_rate = samp_rate;
+
+      msg = pmt::dict_add(msg,
+        pmt::string_to_symbol("clear"), pmt::from_long(1)
+      );
+
+      message_port_pub(pmt::mp("cfg"), msg);
     }
 
     void
