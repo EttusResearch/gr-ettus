@@ -134,10 +134,10 @@ namespace gr {
       y[1] = this->layout.y[1];
 
       glBegin( GL_QUADS );
-      glTexCoord2d(0.0f, 0.0f); glVertex2d(x[0], y[0]);
-      glTexCoord2d(1.0f, 0.0f); glVertex2d(x[1], y[0]);
-      glTexCoord2d(1.0f, 1.0f); glVertex2d(x[1], y[1]);
-      glTexCoord2d(0.0f, 1.0f); glVertex2d(x[0], y[1]);
+      glTexCoord2d(0.0f, -0.038f); glVertex2d(x[0], y[0]);
+      glTexCoord2d(1.0f, -0.038f); glVertex2d(x[1], y[0]);
+      glTexCoord2d(1.0f,  1.000f); glVertex2d(x[1], y[1]);
+      glTexCoord2d(0.0f,  1.000f); glVertex2d(x[0], y[1]);
       glEnd();
 
       this->cmap->disable();
