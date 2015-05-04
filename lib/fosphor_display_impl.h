@@ -47,6 +47,7 @@ namespace gr {
       void set_frequency_range(const double center_freq,
                                const double samp_rate);
       void set_palette(std::string name);
+      void set_frame_rate(int fps);
 
       /* gr::sync_block implementation */
       int work (int noutput_items,
@@ -71,6 +72,7 @@ namespace gr {
 
       double d_center_freq;
       double d_samp_rate;
+      int d_frame_rate;
 
       bool d_aligned;
       int d_subframe;

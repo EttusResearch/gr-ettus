@@ -7,6 +7,7 @@
  <import>import ettus</import>
  <make>#set $win = 'self._%s_win'%$id
 ettus.fosphor_display($fft_bins, $pwr_bins)
+self.$(id).set_frame_rate($frame_rate)
 self.$(id).set_frequency_range($center_freq, $samp_rate)
 self.$(id).set_palette("$palette")
 self._$(id)_win = sip.wrapinstance(self.$(id).pyqwidget(), Qt.QWidget)
@@ -60,6 +61,12 @@ $(gui_hint()($win))</make>
     <name>prog's</name>
     <key>prog</key>
   </option>
+ </param>
+ <param>
+  <name>Target Frame Rate</name>
+  <key>frame_rate</key>
+  <value>30</value>
+  <type>int</type>
  </param>
  <param>
   <name>GUI Hint</name>

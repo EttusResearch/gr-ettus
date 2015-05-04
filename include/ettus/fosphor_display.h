@@ -55,6 +55,7 @@ namespace gr {
       virtual void set_frequency_range(const double center_freq,
                                        const double samp_rate) = 0;
       virtual void set_palette(std::string name) = 0;
+      virtual void set_frame_rate(int fps) = 0;
 
       /* QT GUI Widget stuff */
       virtual void exec_() = 0;
