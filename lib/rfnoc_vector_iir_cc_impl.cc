@@ -38,9 +38,9 @@ namespace gr {
     static ::uhd::stream_args_t _make_vectoriir_stream_args(size_t vlen, double alpha, double beta)
     {
       ::uhd::stream_args_t stream_args("fc32", "sc16");
-      stream_args.args["vector_len"] = str(boost::format("%s") % vlen);
-      stream_args.args["alpha"]      = str(boost::format("%s") % alpha);
-      stream_args.args["beta"]       = str(boost::format("%s") % beta);
+      stream_args.args["spp"]   = str(boost::format("%s") % vlen);
+      stream_args.args["alpha"] = str(boost::format("%s") % alpha);
+      stream_args.args["beta"]  = str(boost::format("%s") % beta);
       return stream_args;
     }
 
