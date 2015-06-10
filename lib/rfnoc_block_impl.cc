@@ -76,20 +76,26 @@ static void set_signature_from_block(
   if (stream_args.cpu_format.empty()) {
     throw std::runtime_error(str(
         boost::format("%s: No cpu_format specified on %s.")
-        % blk_ctrl->unique_id() % (tx ? "TX" : "RX")
+        % blk_ctrl->unique_id() % dir
     ));
   }
   itemsize = ::uhd::convert::get_bytes_per_item(stream_args.cpu_format);
   // ...and vector length:
-  int gr_vlen = stream_args.args.cast<int>("gr_vlen", 1);
+  int gr_vlen = stream_args.args.cast<int>("gr_vlen", -1);
   size_t block_port = 0; // TODO moar options
   ::uhd::rfnoc::stream_sig_t sig = tx
         ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_signature(block_port)
         : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_signature(block_port);
   vlen = (sig.vlen == 0) ? 1 : sig.vlen;
-  if (gr_vlen != 1) {
-    if (vlen != 1) {
-      throw std::runtime_error("Can't set gr_vlen if underlying RFNoC block already has a vector length.\n");
+  if (gr_vlen != -1) {
+    if (gr_vlen == 1) {
+      // This is a way to force scalar streams even if the upstream
+      // block is setting vlens
+      vlen = 1;
+    } else if (vlen != 1 && vlen != gr_vlen) {
+      // In all other cases, if there's a mismatch, we throw rather
+      // than trying to match vector lengths.
+      throw std::runtime_error(str(boost::format("Can't set gr_vlen to %d if underlying RFNoC block already has a vector length of %d.\n") % gr_vlen % vlen));
     }
     vlen = gr_vlen;
   }
@@ -399,6 +405,7 @@ gr::io_signature::sptr rfnoc_block_impl::get_rfnoc_output_signature()
 {
   const int min_streams = 0;
   const int max_streams = gr::io_signature::IO_INFINITE; // TODO
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("output item size: %d") % (_rx.itemsize * _rx.vlen)));
   return gr::io_signature::make(min_streams, max_streams, _rx.itemsize * _rx.vlen);
 }
 
