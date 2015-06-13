@@ -110,16 +110,7 @@ namespace gr {
       /* Upload texture if needed */
       if (this->frame.dirty)
       {
-        this->frame.dirty = false;
-
-        glBindTexture(GL_TEXTURE_2D, this->frame.tex);
-
-        glTexSubImage2D(
-            GL_TEXTURE_2D, 0,
-            0, 0, this->fft_bins, this->pwr_bins,
-            GL_RED, GL_UNSIGNED_BYTE,
-            this->frame.data
-        );
+        this->uploadData();
       }
 
       /* Refresh layout if needed */
@@ -258,6 +249,23 @@ namespace gr {
     /* -------------------------------------------------------------------- */
     /* Private helpers                                                      */
     /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::uploadData()
+    {
+      /* Upload new texture */
+      glBindTexture(GL_TEXTURE_2D, this->frame.tex);
+
+      glTexSubImage2D(
+          GL_TEXTURE_2D, 0,
+          0, 0, this->fft_bins, this->pwr_bins,
+          GL_RED, GL_UNSIGNED_BYTE,
+          this->frame.data
+      );
+
+      /* Data is fresh */
+      this->frame.dirty = false;
+    }
 
     void
     QFosphorSurface::refreshPowerAxis()

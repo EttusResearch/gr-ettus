@@ -51,6 +51,7 @@ namespace gr {
       void sendFrame(void *frame, int frame_len);
 
      private:
+      void uploadData();
       void refreshPowerAxis();
       void refreshFrequencyAxis();
       void refreshLayout();
