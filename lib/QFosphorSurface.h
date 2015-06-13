@@ -51,6 +51,10 @@ namespace gr {
       void sendFrame(void *frame, int frame_len);
 
      private:
+      void drawHistogram();
+      void drawGrid();
+      void drawIntensityScale();
+      void drawMargins();
       void uploadData();
       void refreshPowerAxis();
       void refreshFrequencyAxis();

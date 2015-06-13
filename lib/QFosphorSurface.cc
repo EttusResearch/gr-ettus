@@ -100,9 +100,6 @@ namespace gr {
     void
     QFosphorSurface::paintGL()
     {
-      float x[2], y[2];
-      int i;
-
       /* If no data, abort early */
       if (!this->frame.data)
         return;
@@ -123,6 +120,50 @@ namespace gr {
       glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
       glClear(GL_COLOR_BUFFER_BIT);
 
+      /* Draw the various UI element */
+      this->drawHistogram();
+      this->drawGrid();
+      this->drawIntensityScale();
+      this->drawMargins();
+    }
+
+
+    /* -------------------------------------------------------------------- */
+    /* Public API                                                           */
+    /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::setFrequencyRange(const double center_freq,
+                                       const double span)
+    {
+      freq_axis_build(&this->freq_axis, center_freq, span, 10);
+      this->layout.dirty = true; // FIXME more fine grain refresh
+    }
+
+    void
+    QFosphorSurface::setPalette(std::string name)
+    {
+      this->palette = name;
+    }
+
+    void
+    QFosphorSurface::sendFrame(void *frame, int frame_len)
+    {
+      this->frame.data  = frame;
+      this->frame.dirty = true;
+      QMetaObject::invokeMethod(this, "updateGL");
+    }
+
+
+    /* -------------------------------------------------------------------- */
+    /* Private helpers                                                      */
+    /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::drawHistogram()
+    {
+      float x[2], y[2];
+
       /* Draw Histogram texture */
       this->cmap->enable(this->palette, this->frame.tex);
 
@@ -139,8 +180,14 @@ namespace gr {
       glEnd();
 
       this->cmap->disable();
+    }
 
-      /* Draw grid */
+    void
+    QFosphorSurface::drawGrid()
+    {
+      float x[2], y[2];
+      int i;
+
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBegin(GL_LINES);
@@ -172,16 +219,24 @@ namespace gr {
 
       glEnd();
       glDisable(GL_BLEND);
+    }
 
-      /* Draw intensity scale */
+    void
+    QFosphorSurface::drawIntensityScale()
+    {
       this->cmap->drawScale(this->palette,
         this->layout.x[1] +  2.0f,
         this->layout.y[0],
         this->layout.x[1] + 10.0f,
         this->layout.y[1]
       );
+    }
 
-      /* Draw margins */
+    void
+    QFosphorSurface::drawMargins()
+    {
+      float x[2], y[2];
+
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
@@ -217,38 +272,6 @@ namespace gr {
       glDisable(GL_BLEND);
       glDisable(GL_TEXTURE_2D);
     }
-
-
-    /* -------------------------------------------------------------------- */
-    /* Public API                                                           */
-    /* -------------------------------------------------------------------- */
-
-    void
-    QFosphorSurface::setFrequencyRange(const double center_freq,
-                                       const double span)
-    {
-      freq_axis_build(&this->freq_axis, center_freq, span, 10);
-      this->layout.dirty = true; // FIXME more fine grain refresh
-    }
-
-    void
-    QFosphorSurface::setPalette(std::string name)
-    {
-      this->palette = name;
-    }
-
-    void
-    QFosphorSurface::sendFrame(void *frame, int frame_len)
-    {
-      this->frame.data  = frame;
-      this->frame.dirty = true;
-      QMetaObject::invokeMethod(this, "updateGL");
-    }
-
-
-    /* -------------------------------------------------------------------- */
-    /* Private helpers                                                      */
-    /* -------------------------------------------------------------------- */
 
     void
     QFosphorSurface::uploadData()
