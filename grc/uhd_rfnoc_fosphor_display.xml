@@ -9,6 +9,7 @@
 ettus.fosphor_display($fft_bins, $pwr_bins)
 self.$(id).set_frame_rate($frame_rate)
 self.$(id).set_frequency_range($center_freq, $samp_rate)
+self.$(id).set_grid($grid_enabled)
 self.$(id).set_palette("$palette")
 self._$(id)_win = sip.wrapinstance(self.$(id).pyqwidget(), Qt.QWidget)
 $(gui_hint()($win))</make>
@@ -36,6 +37,19 @@ $(gui_hint()($win))</make>
   <key>pwr_bins</key>
   <value>64</value>
   <type>int</type>
+ </param>
+ <param>
+  <name>Grid</name>
+  <key>grid_enabled</key>
+  <type>enum</type>
+  <option>
+    <name>Enabled</name>
+    <key>True</key>
+  </option>
+  <option>
+    <name>Disabled</name>
+    <key>False</key>
+  </option>
  </param>
  <param>
   <name>Color Palette</name>

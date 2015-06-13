@@ -47,6 +47,7 @@ namespace gr {
       QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent);
 
       void setFrequencyRange(const double center_freq, const double span);
+      void setGrid(bool enabled);
       void setPalette(std::string name);
       void sendFrame(void *frame, int frame_len);
 
@@ -63,6 +64,7 @@ namespace gr {
       int fft_bins;
       int pwr_bins;
 
+      bool grid_enabled;
       std::string palette;
 
       struct {

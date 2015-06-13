@@ -36,7 +36,7 @@ namespace gr {
     QFosphorSurface::QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent)
       : QGLWidget(parent),
         fft_bins(fft_bins), pwr_bins(pwr_bins),
-        palette("iron")
+        grid_enabled(true), palette("iron")
     {
       this->setFocusPolicy(Qt::StrongFocus);
       this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -141,6 +141,12 @@ namespace gr {
     }
 
     void
+    QFosphorSurface::setGrid(bool enabled)
+    {
+      this->grid_enabled = enabled;
+    }
+
+    void
     QFosphorSurface::setPalette(std::string name)
     {
       this->palette = name;
@@ -187,6 +193,9 @@ namespace gr {
     {
       float x[2], y[2];
       int i;
+
+      if (!this->grid_enabled)
+        return;
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
