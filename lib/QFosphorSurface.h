@@ -22,6 +22,7 @@
 #define INCLUDED_ETTUS_QFOSPHORSURFACE_H
 
 #include <QGLWidget>
+#include <QGLFunctions>
 
 #include <string>
 
@@ -34,7 +35,7 @@ namespace gr {
 
     class QFosphorColorMapper;
 
-    class QFosphorSurface : public ::QGLWidget
+    class QFosphorSurface : public ::QGLWidget, protected ::QGLFunctions
     {
       Q_OBJECT
 
@@ -45,6 +46,7 @@ namespace gr {
 
      public:
       QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent);
+      virtual ~QFosphorSurface();
 
       void setFrequencyRange(const double center_freq, const double span);
       void setGrid(bool enabled);
@@ -53,6 +55,7 @@ namespace gr {
 
      private:
       void drawHistogram();
+      void drawSpectrum();
       void drawGrid();
       void drawIntensityScale();
       void drawMargins();
@@ -71,6 +74,8 @@ namespace gr {
         bool dirty;
         void *data;
         GLuint tex;
+        GLuint vbo;
+        float *vbo_buf;
       } frame;
 
       struct {

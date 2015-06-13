@@ -44,7 +44,14 @@ namespace gr {
       memset(&this->frame, 0, sizeof(this->frame));
       memset(&this->layout, 0, sizeof(this->layout));
 
+      this->frame.vbo_buf = new float[4*fft_bins]();
+
       this->setFrequencyRange(0.0, 0.0);
+    }
+
+    QFosphorSurface::~QFosphorSurface()
+    {
+      delete [] this->frame.vbo_buf;
     }
 
 
@@ -55,6 +62,8 @@ namespace gr {
     void
     QFosphorSurface::initializeGL()
     {
+      initializeGLFunctions();
+
       /* Init frame texture */
       glGenTextures(1, &this->frame.tex);
 
@@ -71,6 +80,18 @@ namespace gr {
           this->fft_bins, this->pwr_bins, 0,
           GL_RED, GL_UNSIGNED_BYTE,
           NULL
+      );
+
+      /* Init frame VBO */
+      glGenBuffers(1, &this->frame.vbo);
+
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+
+      glBufferData(
+        GL_ARRAY_BUFFER,
+        2 * sizeof(float) * 2 * this->fft_bins,
+        NULL,
+        GL_DYNAMIC_DRAW
       );
 
       /* Color map */
@@ -122,6 +143,7 @@ namespace gr {
 
       /* Draw the various UI element */
       this->drawHistogram();
+      this->drawSpectrum();
       this->drawGrid();
       this->drawIntensityScale();
       this->drawMargins();
@@ -186,6 +208,66 @@ namespace gr {
       glEnd();
 
       this->cmap->disable();
+    }
+
+    void
+    QFosphorSurface::drawSpectrum()
+    {
+      /* Setup the 2D transform */
+      glPushMatrix();
+
+      glTranslatef(
+       this->layout.x[0],
+       this->layout.y[0],
+       0.0f
+      );
+
+      glScalef(
+        this->layout.x[1] - this->layout.x[0],
+        this->layout.y[1] - this->layout.y[0],
+        1.0f
+      );
+
+      glScalef(
+        1.0f / this->fft_bins,
+        0.9632f / 256.0f,
+        1.0f
+      );
+
+      glTranslatef(
+        0.0f,
+        9.4208f,  /* (100 - 96.32) / 100 * 256 */
+        0.0f
+      );
+
+      /* Setup GL state */
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+      glVertexPointer(2, GL_FLOAT, 0, 0);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_LINE_SMOOTH);
+      glLineWidth(1.0f);
+
+      /* Draw Max-Hold */
+      glColor4f(1.0f, 0.0f, 0.0f, 0.75f);
+
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glDrawArrays(GL_LINE_STRIP, 0, this->fft_bins);
+      glDisableClientState(GL_VERTEX_ARRAY);
+
+      /* Draw Live */
+      glColor4f(1.0f, 1.0f, 1.0f, 0.75f);
+
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glDrawArrays(GL_LINE_STRIP, this->fft_bins, this->fft_bins);
+      glDisableClientState(GL_VERTEX_ARRAY);
+
+      /* Cleanup GL state */
+      glDisable(GL_BLEND);
+
+      /* Restore */
+      glPopMatrix();
     }
 
     void
@@ -285,6 +367,8 @@ namespace gr {
     void
     QFosphorSurface::uploadData()
     {
+      int i;
+
       /* Upload new texture */
       glBindTexture(GL_TEXTURE_2D, this->frame.tex);
 
@@ -293,6 +377,30 @@ namespace gr {
           0, 0, this->fft_bins, this->pwr_bins,
           GL_RED, GL_UNSIGNED_BYTE,
           this->frame.data
+      );
+
+      /* Compute the new VBO data */
+      for (i=0; i<this->fft_bins; i++)
+      {
+        uint8_t *data = (uint8_t*)this->frame.data + (this->fft_bins * this->pwr_bins);
+        int maxh_idx = 2 *  i;
+        int live_idx = 2 * (i + this->fft_bins);
+
+        this->frame.vbo_buf[maxh_idx  ] = i;
+        this->frame.vbo_buf[maxh_idx+1] = data[i];
+
+        this->frame.vbo_buf[live_idx  ] = i;
+        this->frame.vbo_buf[live_idx+1] = data[i+this->fft_bins];
+      }
+
+      /* Upload new VBO data */
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+
+      glBufferData(
+        GL_ARRAY_BUFFER,
+        2 * sizeof(float) * 2 * this->fft_bins,
+        this->frame.vbo_buf,
+        GL_DYNAMIC_DRAW
       );
 
       /* Data is fresh */
