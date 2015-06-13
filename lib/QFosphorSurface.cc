@@ -65,6 +65,14 @@ namespace gr {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+      glTexImage2D(
+          GL_TEXTURE_2D,
+          0, GL_R8,
+          this->fft_bins, this->pwr_bins, 0,
+          GL_RED, GL_UNSIGNED_BYTE,
+          NULL
+      );
+
       /* Color map */
       this->cmap = new QFosphorColorMapper(this);
     }
@@ -100,16 +108,15 @@ namespace gr {
         return;
 
       /* Upload texture if needed */
-//      if (this->frame.dirty)
+      if (this->frame.dirty)
       {
         this->frame.dirty = false;
 
         glBindTexture(GL_TEXTURE_2D, this->frame.tex);
 
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0, GL_R8,
-            this->fft_bins, this->pwr_bins, 0,
+        glTexSubImage2D(
+            GL_TEXTURE_2D, 0,
+            0, 0, this->fft_bins, this->pwr_bins,
             GL_RED, GL_UNSIGNED_BYTE,
             this->frame.data
         );
