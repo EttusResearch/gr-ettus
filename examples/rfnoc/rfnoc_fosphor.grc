@@ -147,7 +147,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>184.32e6 / 2</value>
+      <value>100e6</value>
     </param>
     <param>
       <key>alias</key>
@@ -178,7 +178,7 @@
     </param>
     <param>
       <key>dev_addr</key>
-      <value>type=x300,master_clock_rate=184.32e6</value>
+      <value>type=x300,master_clock_rate=200e6</value>
     </param>
     <param>
       <key>dev_args</key>
@@ -512,7 +512,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>1024</value>
+      <value>256</value>
     </param>
     <param>
       <key>start</key>
@@ -575,7 +575,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>512</value>
+      <value>64</value>
     </param>
     <param>
       <key>start</key>
@@ -823,11 +823,11 @@
     </param>
     <param>
       <key>alpha</key>
-      <value>65280</value>
+      <value>63000</value>
     </param>
     <param>
       <key>epsilon</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>block_index</key>
