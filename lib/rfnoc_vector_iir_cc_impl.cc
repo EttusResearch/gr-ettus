@@ -23,7 +23,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "rfnoc_vector_iir_cc_impl.h"
-#include <uhd/usrp/rfnoc/vector_iir_block_ctrl.hpp>
 
 namespace gr {
   namespace ettus {
@@ -61,12 +60,12 @@ namespace gr {
 
     void rfnoc_vector_iir_cc_impl::set_vector_iir_alpha(const double alpha)
     {
-      get_block_ctrl_throw< ::uhd::rfnoc::vector_iir_block_ctrl >()->set_alpha(alpha);
+      get_block_ctrl()->set_arg("alpha", alpha);
     }
 
     void rfnoc_vector_iir_cc_impl::set_vector_iir_beta(const double beta)
     {
-      get_block_ctrl_throw< ::uhd::rfnoc::vector_iir_block_ctrl >()->set_beta(beta);
+      get_block_ctrl()->set_arg("beta", beta);
     }
 
 
