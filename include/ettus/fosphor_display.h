@@ -54,6 +54,7 @@ namespace gr {
       /* Block API */
       virtual void set_frequency_range(const double center_freq,
                                        const double samp_rate) = 0;
+      virtual void set_grid(bool enabled) = 0;
       virtual void set_palette(std::string name) = 0;
       virtual void set_frame_rate(int fps) = 0;
 

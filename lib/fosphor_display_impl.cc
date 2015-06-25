@@ -116,6 +116,12 @@ namespace gr {
     }
 
     void
+    fosphor_display_impl::set_grid(bool enabled)
+    {
+      this->d_gui->setGrid(enabled);
+    }
+
+    void
     fosphor_display_impl::set_palette(std::string name)
     {
       this->d_gui->setPalette(name);

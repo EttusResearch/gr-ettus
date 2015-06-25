@@ -36,7 +36,7 @@ namespace gr {
     QFosphorSurface::QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent)
       : QGLWidget(parent),
         fft_bins(fft_bins), pwr_bins(pwr_bins),
-        palette("iron")
+        grid_enabled(true), palette("iron")
     {
       this->setFocusPolicy(Qt::StrongFocus);
       this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -44,7 +44,14 @@ namespace gr {
       memset(&this->frame, 0, sizeof(this->frame));
       memset(&this->layout, 0, sizeof(this->layout));
 
+      this->frame.vbo_buf = new float[4*fft_bins]();
+
       this->setFrequencyRange(0.0, 0.0);
+    }
+
+    QFosphorSurface::~QFosphorSurface()
+    {
+      delete [] this->frame.vbo_buf;
     }
 
 
@@ -55,6 +62,8 @@ namespace gr {
     void
     QFosphorSurface::initializeGL()
     {
+      initializeGLFunctions();
+
       /* Init frame texture */
       glGenTextures(1, &this->frame.tex);
 
@@ -64,6 +73,26 @@ namespace gr {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+      glTexImage2D(
+          GL_TEXTURE_2D,
+          0, GL_R8,
+          this->fft_bins, this->pwr_bins, 0,
+          GL_RED, GL_UNSIGNED_BYTE,
+          NULL
+      );
+
+      /* Init frame VBO */
+      glGenBuffers(1, &this->frame.vbo);
+
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+
+      glBufferData(
+        GL_ARRAY_BUFFER,
+        2 * sizeof(float) * 2 * this->fft_bins,
+        NULL,
+        GL_DYNAMIC_DRAW
+      );
 
       /* Color map */
       this->cmap = new QFosphorColorMapper(this);
@@ -92,27 +121,14 @@ namespace gr {
     void
     QFosphorSurface::paintGL()
     {
-      float x[2], y[2];
-      int i;
-
       /* If no data, abort early */
       if (!this->frame.data)
         return;
 
       /* Upload texture if needed */
-//      if (this->frame.dirty)
+      if (this->frame.dirty)
       {
-        this->frame.dirty = false;
-
-        glBindTexture(GL_TEXTURE_2D, this->frame.tex);
-
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0, GL_R8,
-            this->fft_bins, this->pwr_bins, 0,
-            GL_RED, GL_UNSIGNED_BYTE,
-            this->frame.data
-        );
+        this->uploadData();
       }
 
       /* Refresh layout if needed */
@@ -124,6 +140,57 @@ namespace gr {
       /* Clear everything */
       glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
       glClear(GL_COLOR_BUFFER_BIT);
+
+      /* Draw the various UI element */
+      this->drawHistogram();
+      this->drawSpectrum();
+      this->drawGrid();
+      this->drawIntensityScale();
+      this->drawMargins();
+    }
+
+
+    /* -------------------------------------------------------------------- */
+    /* Public API                                                           */
+    /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::setFrequencyRange(const double center_freq,
+                                       const double span)
+    {
+      freq_axis_build(&this->freq_axis, center_freq, span, 10);
+      this->layout.dirty = true; // FIXME more fine grain refresh
+    }
+
+    void
+    QFosphorSurface::setGrid(bool enabled)
+    {
+      this->grid_enabled = enabled;
+    }
+
+    void
+    QFosphorSurface::setPalette(std::string name)
+    {
+      this->palette = name;
+    }
+
+    void
+    QFosphorSurface::sendFrame(void *frame, int frame_len)
+    {
+      this->frame.data  = frame;
+      this->frame.dirty = true;
+      QMetaObject::invokeMethod(this, "updateGL");
+    }
+
+
+    /* -------------------------------------------------------------------- */
+    /* Private helpers                                                      */
+    /* -------------------------------------------------------------------- */
+
+    void
+    QFosphorSurface::drawHistogram()
+    {
+      float x[2], y[2];
 
       /* Draw Histogram texture */
       this->cmap->enable(this->palette, this->frame.tex);
@@ -141,8 +208,77 @@ namespace gr {
       glEnd();
 
       this->cmap->disable();
+    }
 
-      /* Draw grid */
+    void
+    QFosphorSurface::drawSpectrum()
+    {
+      /* Setup the 2D transform */
+      glPushMatrix();
+
+      glTranslatef(
+       this->layout.x[0],
+       this->layout.y[0],
+       0.0f
+      );
+
+      glScalef(
+        this->layout.x[1] - this->layout.x[0],
+        this->layout.y[1] - this->layout.y[0],
+        1.0f
+      );
+
+      glScalef(
+        1.0f / this->fft_bins,
+        0.9632f / 256.0f,
+        1.0f
+      );
+
+      glTranslatef(
+        0.0f,
+        9.4208f,  /* (100 - 96.32) / 100 * 256 */
+        0.0f
+      );
+
+      /* Setup GL state */
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+      glVertexPointer(2, GL_FLOAT, 0, 0);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_LINE_SMOOTH);
+      glLineWidth(1.0f);
+
+      /* Draw Max-Hold */
+      glColor4f(1.0f, 0.0f, 0.0f, 0.75f);
+
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glDrawArrays(GL_LINE_STRIP, 0, this->fft_bins);
+      glDisableClientState(GL_VERTEX_ARRAY);
+
+      /* Draw Live */
+      glColor4f(1.0f, 1.0f, 1.0f, 0.75f);
+
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glDrawArrays(GL_LINE_STRIP, this->fft_bins, this->fft_bins);
+      glDisableClientState(GL_VERTEX_ARRAY);
+
+      /* Cleanup GL state */
+      glDisable(GL_BLEND);
+
+      /* Restore */
+      glPopMatrix();
+    }
+
+    void
+    QFosphorSurface::drawGrid()
+    {
+      float x[2], y[2];
+      int i;
+
+      if (!this->grid_enabled)
+        return;
+
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBegin(GL_LINES);
@@ -174,16 +310,24 @@ namespace gr {
 
       glEnd();
       glDisable(GL_BLEND);
+    }
 
-      /* Draw intensity scale */
+    void
+    QFosphorSurface::drawIntensityScale()
+    {
       this->cmap->drawScale(this->palette,
         this->layout.x[1] +  2.0f,
         this->layout.y[0],
         this->layout.x[1] + 10.0f,
         this->layout.y[1]
       );
+    }
 
-      /* Draw margins */
+    void
+    QFosphorSurface::drawMargins()
+    {
+      float x[2], y[2];
+
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
@@ -220,37 +364,48 @@ namespace gr {
       glDisable(GL_TEXTURE_2D);
     }
 
-
-    /* -------------------------------------------------------------------- */
-    /* Public API                                                           */
-    /* -------------------------------------------------------------------- */
-
     void
-    QFosphorSurface::setFrequencyRange(const double center_freq,
-                                       const double span)
+    QFosphorSurface::uploadData()
     {
-      freq_axis_build(&this->freq_axis, center_freq, span, 10);
-      this->layout.dirty = true; // FIXME more fine grain refresh
+      int i;
+
+      /* Upload new texture */
+      glBindTexture(GL_TEXTURE_2D, this->frame.tex);
+
+      glTexSubImage2D(
+          GL_TEXTURE_2D, 0,
+          0, 0, this->fft_bins, this->pwr_bins,
+          GL_RED, GL_UNSIGNED_BYTE,
+          this->frame.data
+      );
+
+      /* Compute the new VBO data */
+      for (i=0; i<this->fft_bins; i++)
+      {
+        uint8_t *data = (uint8_t*)this->frame.data + (this->fft_bins * this->pwr_bins);
+        int maxh_idx = 2 *  i;
+        int live_idx = 2 * (i + this->fft_bins);
+
+        this->frame.vbo_buf[maxh_idx  ] = i;
+        this->frame.vbo_buf[maxh_idx+1] = data[i];
+
+        this->frame.vbo_buf[live_idx  ] = i;
+        this->frame.vbo_buf[live_idx+1] = data[i+this->fft_bins];
+      }
+
+      /* Upload new VBO data */
+      glBindBuffer(GL_ARRAY_BUFFER, this->frame.vbo);
+
+      glBufferData(
+        GL_ARRAY_BUFFER,
+        2 * sizeof(float) * 2 * this->fft_bins,
+        this->frame.vbo_buf,
+        GL_DYNAMIC_DRAW
+      );
+
+      /* Data is fresh */
+      this->frame.dirty = false;
     }
-
-    void
-    QFosphorSurface::setPalette(std::string name)
-    {
-      this->palette = name;
-    }
-
-    void
-    QFosphorSurface::sendFrame(void *frame, int frame_len)
-    {
-      this->frame.data  = frame;
-      this->frame.dirty = true;
-      QMetaObject::invokeMethod(this, "updateGL");
-    }
-
-
-    /* -------------------------------------------------------------------- */
-    /* Private helpers                                                      */
-    /* -------------------------------------------------------------------- */
 
     void
     QFosphorSurface::refreshPowerAxis()
