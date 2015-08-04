@@ -59,6 +59,7 @@ class ETTUS_API device3
   virtual boost::shared_ptr< ::uhd::usrp::multi_usrp > get_device(void) = 0;
 
   virtual void connect(const std::string &block1, size_t src_block_port, const std::string block2, size_t dst_block_port) = 0;
+  virtual void connect(const std::string &block1, const std::string block2) = 0;
 
   static sptr make(
       const ::uhd::device_addr_t &device_addr

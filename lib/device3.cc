@@ -66,6 +66,16 @@ class device3_impl : public device3
     );
   }
 
+  void connect(
+      const std::string &block1,
+      const std::string block2
+  ) {
+    _dev->connect(
+        ::uhd::rfnoc::block_id_t(block1),
+        ::uhd::rfnoc::block_id_t(block2)
+    );
+  }
+
  private:
   ::uhd::usrp::multi_usrp::sptr _dev;
 
