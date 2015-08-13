@@ -3,14 +3,25 @@
   <name>RFNoC: Vector IIR</name>
   <key>uhd_rfnoc_streamer_vector_iir</key>
   <import>import ettus</import>
-  <make>ettus.rfnoc_vector_iir_cc(
-      $vlen,
-      $alpha, $beta,
+  <make>ettus.rfnoc_generic(
       self.device3,
-      $block_index, $device_index,
-)</make>
-  <callback>set_vector_iir_alpha($alpha)</callback>
-  <callback>set_vector_iir_beta($beta)</callback>
+      uhd.stream_args( \# TX Stream Args
+          cpu_format="fc32",
+          otw_format="sc16",
+          args="spp={},alpha={},beta={}".format($vlen, $alpha, $beta),
+      ),
+      uhd.stream_args( \# TX Stream Args
+          cpu_format="fc32",
+          otw_format="sc16",
+          args="spp={},alpha={},beta={}".format($vlen, $alpha, $beta),
+      ),
+      "VectorIIR", $block_index, $device_index,
+)
+self.$(id).set_arg("alpha", $alpha)
+self.$(id).set_arg("beta",  $beta)
+  </make>
+  <callback>set_arg("alpha", $alpha)</callback>
+  <callback>set_arg("beta", $beta)</callback>
 
   <param>
     <name>Vector Length</name>
@@ -50,9 +61,9 @@
     <tab>RFNoC Config</tab>
   </param>
 
-  <!--<check>($vector_len > 0 and $vector_len <= 4096)</check>-->
-  <!--<check>($alpha >= 0.0 and $alpha <= 1.0)</check>-->
-  <!--<check>($beta >= 0.0 and $beta <= 1.0)</check>-->
+  <check>($vector_len &gt; 0 and $vector_len &lt;= 4096)</check>
+  <check>($alpha &gt;= 0.0 and $alpha &lt;= 1.0)</check>
+  <check>($beta &gt;= 0.0 and $beta &lt;= 1.0)</check>
 
   <sink>
     <name>in</name>
