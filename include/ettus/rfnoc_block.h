@@ -58,6 +58,10 @@ namespace gr {
       //! Return the full actual block ID of this block (e.g. 0/FFT_0)
       virtual std::string get_block_id() const = 0;
 
+      virtual void set_arg(const std::string &key, const int val,          const size_t port = 0) = 0;
+      virtual void set_arg(const std::string &key, const double val,       const size_t port = 0) = 0;
+      virtual void set_arg(const std::string &key, const std::string &val, const size_t port = 0) = 0;
+
       // GNU Radio-specific overrides (defined in rfnoc_block_impl.cc)
       virtual int general_work(
           int noutput_items,

@@ -112,6 +112,21 @@ namespace gr {
 
       void set_register(size_t reg, boost::uint32_t value) { _blk_ctrl->sr_write(reg, value); }
 
+      void set_arg(const std::string &key, const int val, const size_t port = 0)
+      {
+          _blk_ctrl->set_arg<int>(key, val, port);
+      }
+
+      void set_arg(const std::string &key, const double val, const size_t port = 0)
+      {
+          _blk_ctrl->set_arg<double>(key, val, port);
+      }
+
+      void set_arg(const std::string &key, const std::string &val, const size_t port = 0)
+      {
+          _blk_ctrl->set_arg<std::string>(key, val, port);
+      }
+
       /*********************************************************************
        * Workers and Helpers
        *********************************************************************/

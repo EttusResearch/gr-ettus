@@ -180,7 +180,6 @@ std::map<std::string, bool> rfnoc_block_impl::_active_streamers;
 ::uhd::reusable_barrier rfnoc_block_impl::_rx_barrier;
 boost::recursive_mutex rfnoc_block_impl::s_setup_mutex;
 
-
 /*********************************************************************
  * GR Block functions
  *********************************************************************/
