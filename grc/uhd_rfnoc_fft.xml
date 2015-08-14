@@ -30,6 +30,7 @@ self.$(id).set_arg("magnitude_out", $magnitude_out)
   <param>
     <name>FFT Size</name>
     <key>fft_size</key>
+    <value>64</value>
     <type>int</type>
     <option>
       <name>8</name>
