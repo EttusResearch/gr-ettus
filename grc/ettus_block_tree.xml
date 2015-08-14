@@ -23,6 +23,9 @@
 			<block>uhd_rfnoc_streamer_vector_iir</block>
 			<block>uhd_rfnoc_streamer_window</block>
 			<block>uhd_rfnoc_fosphor_display</block>
+			<block>uhd_rfnoc_ofdm_schmidlcox</block>
+			<block>uhd_rfnoc_ofdm_eq</block>
+			<block>uhd_rfnoc_ofdm_demap</block>
 		</cat>
 	</cat>
 </cat>
