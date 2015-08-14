@@ -8,7 +8,7 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="spp={},magnitude_out={}".format($fft_size, $magnitude_out),
+        args="",
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
@@ -16,7 +16,16 @@
         args="",
     ),
     "FFT", $block_index, $device_index,
-)</make>
+)
+self.$(id).set_arg("spp", $fft_size)
+self.$(id).set_arg("direction", $direction)
+self.$(id).set_arg("scaling", $scaling)
+self.$(id).set_arg("magnitude_out", $magnitude_out)
+  </make>
+  <callback>set_arg("spp", $fft_size)</callback>
+  <callback>set_arg("direction", $direction)</callback>
+  <callback>set_arg("scaling", $scaling)</callback>
+  <callback>set_arg("magnitude_out", $magnitude_out)</callback>
 
   <param>
     <name>FFT Size</name>
@@ -57,6 +66,24 @@
   </param>
 
   <param>
+    <name>FFT Output Order</name>
+    <key>direction</key>
+    <type>enum</type>
+    <option>
+      <name>Normal</name>
+      <key>"normal"</key>
+    </option>
+    <option>
+      <name>Reversed</name>
+      <key>"reverse"</key>
+    </option>
+    <option>
+      <name>Natural</name>
+      <key>"natural"</key>
+    </option>
+  </param>
+
+  <param>
     <name>FFT Output</name>
     <key>magnitude_out</key>
     <type>enum</type>
@@ -75,7 +102,14 @@
   </param>
 
   <param>
-    <name>FFT Select</name>
+    <name>FFT Scaling Word</name>
+    <key>scaling</key>
+    <value>1706</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Block Select</name>
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
