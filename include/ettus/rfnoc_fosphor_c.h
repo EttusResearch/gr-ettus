@@ -46,18 +46,6 @@ namespace gr {
           const int fft_size,
           const device3::sptr &dev, const int block_select=-1, const int device_select=-1
       );
-
-      // Actions on the block
-      virtual void clear() = 0;
-
-      // Update the various configs
-      virtual void set_decim(const int decim) = 0;
-      virtual void set_offset(const int offset) = 0;
-      virtual void set_scale(const int scale) = 0;
-      virtual void set_trise(const int trise) = 0;
-      virtual void set_tdecay(const int tdecay) = 0;
-      virtual void set_alpha(const int alpha) = 0;
-      virtual void set_epsilon(const int epsilon) = 0;
     };
 
   } // namespace ettus
