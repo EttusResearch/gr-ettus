@@ -18,15 +18,17 @@
     "SchmidlCox", $block_index, $device_index,
 )
 self.$(id).set_arg("fftsize", $fft_size)
-self.$(id).set_arg("cp_len", $fft_size)
+self.$(id).set_arg("frame_len", $fft_size)
+self.$(id).set_arg("cp_len", $cp_len)
 self.$(id).set_arg("threshold", $threshold)
-self.$(id).set_arg("offset", $offset)
+self.$(id).set_arg("delay", $delay)
 self.$(id).set_arg("max_num_symbols", $max_num_symbols)
 </make>
   <callback>set_arg("fftsize", $fft_size)</callback>
-  <callback>set_arg("cp_len", $fft_size)</callback>
+  <callback>set_arg("frame_len", $fft_size)</callback>
+  <callback>set_arg("cp_len", $cp_len)</callback>
   <callback>set_arg("threshold", $threshold)</callback>
-  <callback>set_arg("offset", $offset)</callback>
+  <callback>set_arg("delay", $delay)</callback>
   <callback>set_arg("max_num_symbols", $max_num_symbols)</callback>
 
   <param>
@@ -89,9 +91,9 @@ self.$(id).set_arg("max_num_symbols", $max_num_symbols)
     <type>real</type>
   </param>
   <param>
-    <name>Offset</name>
-    <key>offset</key>
-    <value>77</value>
+    <name>delay</name>
+    <key>delay</key>
+    <value>146</value>
     <type>int</type>
   </param>
   <param>
