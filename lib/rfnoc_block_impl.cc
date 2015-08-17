@@ -156,8 +156,10 @@ rfnoc_block_impl::rfnoc_block_impl(
   // Configure the block
   const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
   _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
-  GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
-  _blk_ctrl->set_args(_merged_args);
+  if (_merged_args.size()) {
+      GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
+      _blk_ctrl->set_args(_merged_args);
+  }
   _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
   _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
 
