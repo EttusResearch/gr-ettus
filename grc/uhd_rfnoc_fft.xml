@@ -20,11 +20,13 @@
 self.$(id).set_arg("spp", $fft_size)
 self.$(id).set_arg("direction", $direction)
 self.$(id).set_arg("scaling", $scaling)
+self.$(id).set_arg("shift", $shift)
 self.$(id).set_arg("magnitude_out", $magnitude_out)
   </make>
   <callback>set_arg("spp", $fft_size)</callback>
   <callback>set_arg("direction", $direction)</callback>
   <callback>set_arg("scaling", $scaling)</callback>
+  <callback>set_arg("shift", $shift)</callback>
   <callback>set_arg("magnitude_out", $magnitude_out)</callback>
 
   <param>
@@ -67,20 +69,34 @@ self.$(id).set_arg("magnitude_out", $magnitude_out)
   </param>
 
   <param>
-    <name>FFT Output Order</name>
+    <name>Forward/Reverse</name>
     <key>direction</key>
     <type>enum</type>
     <option>
-      <name>Normal</name>
+      <name>Forward</name>
+      <key>"forward"</key>
+    </option>
+    <option>
+      <name>Reverse</name>
+      <key>"reverse"</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Shift</name>
+    <key>shift</key>
+    <type>enum</type>
+    <option>
+      <name>Yes</name>
       <key>"normal"</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>"natural"</key>
     </option>
     <option>
       <name>Reversed</name>
       <key>"reverse"</key>
-    </option>
-    <option>
-      <name>Natural</name>
-      <key>"natural"</key>
     </option>
   </param>
 
