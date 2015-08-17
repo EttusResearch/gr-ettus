@@ -155,6 +155,7 @@ self.$(id).set_arg("scaling", $scaling)
   <source>
     <name>out</name>
     <type>byte</type>
+    <vlen>$fft_size</vlen>
     <domain>rfnoc</domain>
   </source>
 </block>
