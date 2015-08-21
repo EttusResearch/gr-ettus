@@ -22,6 +22,7 @@
 			<block>uhd_rfnoc_streamer_radio</block>
 			<block>uhd_rfnoc_streamer_vector_iir</block>
 			<block>uhd_rfnoc_streamer_window</block>
+			<block>uhd_rfnoc_streamer_moving_avg</block>
 			<block>uhd_rfnoc_fosphor_display</block>
 			<block>uhd_rfnoc_ofdm_schmidlcox</block>
 			<block>uhd_rfnoc_ofdm_eq</block>

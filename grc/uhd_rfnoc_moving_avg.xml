@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Moving Average</name>
+  <key>uhd_rfnoc_streamer_moving_avg</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_generic(
+    self.device3,
+    uhd.stream_args( \# TX Stream Args
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="",
+    ),
+    uhd.stream_args( \# RX Stream Args
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="",
+    ),
+    "FFT", $block_index, $device_index,
+)</make>
+
+  <param>
+    <name>Average length</name>
+    <key>length</key>
+    <value>10</value>
+    <type>int</type>
+  </param>
+
+  <check>$length in range(1, 256)</check>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <domain>rfnoc</domain>
+  </source>
+</block>
