@@ -17,21 +17,21 @@
     -1,
     #end if
 )
-self.$(id).set_decim($decim)
-self.$(id).set_offset($offset)
-self.$(id).set_scale($scale)
-self.$(id).set_trise($trise)
-self.$(id).set_tdecay($tdecay)
-self.$(id).set_alpha($alpha)
-self.$(id).set_epsilon($epsilon)</make>
+self.$(id).set_arg("decim", $decim)
+self.$(id).set_arg("offset", $offset)
+self.$(id).set_arg("scale", $scale)
+self.$(id).set_arg("trise", $trise)
+self.$(id).set_arg("tdecay", $tdecay)
+self.$(id).set_arg("alpha", $alpha)
+self.$(id).set_arg("epsilon", $epsilon)</make>
 
-  <callback>set_decim($decim)</callback>
-  <callback>set_offset($offset)</callback>
-  <callback>set_scale($scale)</callback>
-  <callback>set_trise($trise)</callback>
-  <callback>set_tdecay($tdecay)</callback>
-  <callback>set_alpha($alpha)</callback>
-  <callback>set_epsilon($epsilon)</callback>
+  <callback>set_arg("decim", $decim)</callback>
+  <callback>set_arg("offset", $offset)</callback>
+  <callback>set_arg("scale", $scale)</callback>
+  <callback>set_arg("trise", $trise)</callback>
+  <callback>set_arg("tdecay", $tdecay)</callback>
+  <callback>set_arg("alpha", $alpha)</callback>
+  <callback>set_arg("epsilon", $epsilon)</callback>
 
   <param>
     <name>FFT Size</name>

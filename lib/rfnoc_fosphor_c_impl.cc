@@ -75,48 +75,6 @@ namespace gr {
       /* nop */
     }
 
-
-    void rfnoc_fosphor_c_impl::clear()
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->clear();
-    }
-
-    void rfnoc_fosphor_c_impl::set_decim(const int decim)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_decim(decim);
-    }
-
-    void rfnoc_fosphor_c_impl::set_offset(const int offset)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_offset(offset);
-    }
-
-    void rfnoc_fosphor_c_impl::set_scale(const int scale)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_scale(scale);
-    }
-
-    void rfnoc_fosphor_c_impl::set_trise(const int trise)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_trise(trise);
-    }
-
-    void rfnoc_fosphor_c_impl::set_tdecay(const int tdecay)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_tdecay(tdecay);
-    }
-
-    void rfnoc_fosphor_c_impl::set_alpha(const int alpha)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_alpha(alpha);
-    }
-
-    void rfnoc_fosphor_c_impl::set_epsilon(const int epsilon)
-    {
-      get_block_ctrl_throw< ::uhd::rfnoc::fosphor_block_ctrl >()->set_epsilon(epsilon);
-    }
-
-
     void rfnoc_fosphor_c_impl::handle_cfg_message(pmt::pmt_t msg)
     {
       /* If the PMT is a list, assume it's a list of pairs and recurse for each */
@@ -145,22 +103,13 @@ namespace gr {
 
         val_i = pmt::to_long(val);
 
-        if (pmt::eqv(key, pmt::string_to_symbol("clear")))
-          this->clear();
-        else if (pmt::eqv(key, pmt::string_to_symbol("decim")))
-          this->set_decim(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("offset")))
-          this->set_offset(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("scale")))
-          this->set_scale(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("trise")))
-          this->set_trise(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("tdecay")))
-          this->set_tdecay(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("alpha")))
-          this->set_alpha(val_i);
-        else if (pmt::eqv(key, pmt::string_to_symbol("epsilon")))
-          this->set_epsilon(val_i);
+        try {
+            const std::string key_str = pmt::symbol_to_string(key);
+            this->set_arg(key_str, val_i);
+        }
+        catch (...) {
+            GR_LOG_ERROR(d_logger, boost::format("Cannot set RFNoC block argument '%s'") % key);
+        }
       }
     }
 
