@@ -23,7 +23,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "rfnoc_fosphor_c_impl.h"
-#include <uhd/usrp/rfnoc/fosphor_block_ctrl.hpp>
 
 namespace gr {
   namespace ettus {
