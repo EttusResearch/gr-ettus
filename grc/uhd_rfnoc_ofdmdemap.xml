@@ -20,10 +20,12 @@
 self.$(id).set_arg("fftsize", $fft_size)
 self.$(id).set_arg("mod_order", $mod_order)
 self.$(id).set_arg("scaling", $scaling)
+self.$(id).set_arg("output_symbols", $output_type)
 </make>
   <callback>set_arg("fftsize", $fft_size)</callback>
   <callback>set_arg("mod_order", $mod_order)</callback>
   <callback>set_arg("scaling", $scaling)</callback>
+  <callback>set_arg("output_symbols", $output_type)</callback>
 
   <param>
     <name>FFT Size</name>
@@ -118,6 +120,22 @@ self.$(id).set_arg("scaling", $scaling)
   </param>
 
   <param>
+    <name>Output</name>
+    <key>output_type</key>
+    <type>enum</type>
+    <option>
+      <name>Bits</name>
+      <key>0</key>
+      <opt>type:byte</opt>
+    </option>
+    <option>
+      <name>Symbols</name>
+      <key>1</key>
+      <opt>type:complex</opt>
+    </option>
+  </param>
+
+  <param>
     <name>Block Select</name>
     <key>block_index</key>
     <value>-1</value>
@@ -125,6 +143,7 @@ self.$(id).set_arg("scaling", $scaling)
     <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
+
   <param>
     <name>Device Select</name>
     <key>device_index</key>
@@ -154,7 +173,7 @@ self.$(id).set_arg("scaling", $scaling)
 
   <source>
     <name>out</name>
-    <type>byte</type>
+    <type>$output_type.type</type>
     <vlen>$fft_size</vlen>
     <domain>rfnoc</domain>
   </source>
