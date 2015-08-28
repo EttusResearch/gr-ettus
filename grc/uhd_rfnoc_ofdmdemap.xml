@@ -18,11 +18,13 @@
     "OFDMDemap", $block_index, $device_index,
 )
 self.$(id).set_arg("fftsize", $fft_size)
+self.$(id).set_arg("pkt_len", $fft_size*4)
 self.$(id).set_arg("mod_order", $mod_order)
 self.$(id).set_arg("scaling", $scaling)
 self.$(id).set_arg("output_symbols", $output_type)
 </make>
   <callback>set_arg("fftsize", $fft_size)</callback>
+  <callback>set_arg("pkt_len", $fft_size*4)</callback>
   <callback>set_arg("mod_order", $mod_order)</callback>
   <callback>set_arg("scaling", $scaling)</callback>
   <callback>set_arg("output_symbols", $output_type)</callback>
@@ -103,19 +105,19 @@ self.$(id).set_arg("output_symbols", $output_type)
     <type>real</type>
     <option>
       <name>BPSK</name>
-      <key>1.0</key>
+      <key>1.0/2.0</key>
     </option>
     <option>
       <name>QPSK</name>
-      <key>1.4142135623730951</key>
+      <key>1.4142135623730951/2.0</key>
     </option>
     <option>
       <name>16-QAM</name>
-      <key>3.1622776601683795</key>
+      <key>3.1622776601683795/6.0</key>
     </option>
     <option>
       <name>64-QAM</name>
-      <key>6.48074069840786</key>
+      <key>6.48074069840786/14.0</key>
     </option>
   </param>
 
