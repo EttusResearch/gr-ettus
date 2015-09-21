@@ -23,7 +23,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "rfnoc_fir_cci_impl.h"
-#include <uhd/usrp/rfnoc/fir_block_ctrl.hpp>
+#include <uhd/rfnoc/fir_block_ctrl.hpp>
 
 namespace gr {
   namespace ettus {

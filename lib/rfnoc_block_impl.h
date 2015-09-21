@@ -24,9 +24,9 @@
 #include <uhd/device3.hpp>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/utils/atomic.hpp>
-#include <uhd/usrp/rfnoc/block_ctrl_base.hpp>
-#include <uhd/usrp/rfnoc/sink_block_ctrl_base.hpp>
-#include <uhd/usrp/rfnoc/source_block_ctrl_base.hpp>
+#include <uhd/rfnoc/block_ctrl_base.hpp>
+#include <uhd/rfnoc/sink_block_ctrl_base.hpp>
+#include <uhd/rfnoc/source_block_ctrl_base.hpp>
 #include <uhd/convert.hpp>
 #include <boost/assign.hpp>
 #include <boost/format.hpp>

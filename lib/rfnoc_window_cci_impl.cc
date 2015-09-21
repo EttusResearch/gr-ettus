@@ -23,7 +23,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "rfnoc_window_cci_impl.h"
-#include <uhd/usrp/rfnoc/window_block_ctrl.hpp>
+#include <uhd/rfnoc/window_block_ctrl.hpp>
 #include <boost/format.hpp>
 
 namespace gr {
