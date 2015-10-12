@@ -697,7 +697,7 @@
     </param>
     <param>
       <key>freq</key>
-      <value>1.982e9</value>
+      <value>tx_freq</value>
     </param>
     <param>
       <key>rate</key>
