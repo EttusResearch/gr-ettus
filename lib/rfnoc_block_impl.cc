@@ -497,7 +497,8 @@ rfnoc_block_impl::work_rx_a(
   size_t num_samps = _rx.streamers[0]->recv(
       output_items,
       num_vectors_to_recv * _rx.vlen,
-      _rx.metadata, 0.1, true
+      //_rx.metadata, 0.1, true
+      _rx.metadata, 0.1
   );
 
   switch(_rx.metadata.error_code) {
