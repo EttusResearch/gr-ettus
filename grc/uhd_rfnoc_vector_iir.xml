@@ -61,7 +61,7 @@ self.$(id).set_arg("beta",  $beta)
     <tab>RFNoC Config</tab>
   </param>
 
-  <check>($vector_len &gt; 0 and $vector_len &lt;= 4096)</check>
+  <check>($vlen &gt; 0 and $vlen &lt;= 4096)</check>
   <check>($alpha &gt;= 0.0 and $alpha &lt;= 1.0)</check>
   <check>($beta &gt;= 0.0 and $beta &lt;= 1.0)</check>
 
