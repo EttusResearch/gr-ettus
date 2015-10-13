@@ -101,6 +101,26 @@ namespace gr {
       get_device()->set_rx_antenna(ant, d_chan);
     }
 
+    void rfnoc_radio_impl::set_tx_dc_offset(bool enable)
+    {
+      get_device()->set_tx_dc_offset(enable, d_chan);
+    }
+
+    void rfnoc_radio_impl::set_tx_dc_offset(const std::complex< double > &offset)
+    {
+      get_device()->set_tx_dc_offset(offset, d_chan);
+    }
+
+    void rfnoc_radio_impl::set_rx_dc_offset(bool enable)
+    {
+      get_device()->set_rx_dc_offset(enable, d_chan);
+      std::cout << "enabling rx dc offset removal: " << enable << std::endl;
+    }
+
+    void rfnoc_radio_impl::set_rx_dc_offset(const std::complex< double > &offset)
+    {
+      get_device()->set_rx_dc_offset(offset, d_chan);
+    }
 
   } /* namespace ettus */
 } /* namespace gr */

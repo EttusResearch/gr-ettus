@@ -69,5 +69,6 @@
     <name>diff</name>
     <type>$type.type</type>
     <domain>rfnoc</domain>
+    <optional>1</optional>
   </source>
 </block>
