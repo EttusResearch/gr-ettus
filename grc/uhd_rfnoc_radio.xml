@@ -30,6 +30,7 @@ self.$(id).set_${direction}_freq($freq)
 self.$(id).set_${direction}_rate($rate)
 self.$(id).set_${direction}_gain($gain)
 self.$(id).set_${direction}_antenna($ant)
+self.$(id).set_${direction}_dc_offset($dcenable)
 </make>
 <callback>self.$(id).set_${direction}_freq($freq)</callback>
 <callback>self.$(id).set_${direction}_rate($rate)</callback>
@@ -137,6 +138,20 @@ self.$(id).set_${direction}_antenna($ant)
     <option>
       <name>RX2</name>
       <key>"RX2"</key>
+    </option>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>DC Offset Cancellation</name>
+    <key>dcenable</key>
+    <type>enum</type>
+    <option>
+      <name>enabled</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>disabled</name>
+      <key>False</key>
     </option>
     <tab>RF Options</tab>
   </param>

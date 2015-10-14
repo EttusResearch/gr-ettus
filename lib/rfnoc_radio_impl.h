@@ -50,6 +50,10 @@ namespace gr {
       void set_rx_gain(double gain);
       void set_tx_antenna(const std::string &ant);
       void set_rx_antenna(const std::string &ant);
+      void set_tx_dc_offset(bool enable);
+      void set_tx_dc_offset(const std::complex< double > &offset);
+      void set_rx_dc_offset(bool enable);
+      void set_rx_dc_offset(const std::complex< double > &offset);
     };
 
   } // namespace ettus
