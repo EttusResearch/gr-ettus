@@ -23,12 +23,18 @@
 install(FILES
     api.h
     device3.h
-    fosphor_display.h
     rfnoc_block.h
     rfnoc_fir_cci.h
-    rfnoc_fosphor_c.h
     rfnoc_window_cci.h
     rfnoc_radio.h
     rfnoc_generic.h
     DESTINATION include/ettus
 )
+
+if(ENABLE_FOSPHOR)
+    install(FILES
+        fosphor_display.h
+        rfnoc_fosphor_c.h
+        DESTINATION include/ettus
+    )
+endif(ENABLE_FOSPHOR)

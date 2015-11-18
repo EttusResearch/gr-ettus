@@ -47,6 +47,10 @@ set(GR_SWIG_LIBRARIES gnuradio-ettus)
 set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/ettus_swig_doc.i)
 set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
+if(ENABLE_FOSPHOR)
+    set(GR_SWIG_FLAGS "-DENABLE_FOSPHOR")
+endif(ENABLE_FOSPHOR)
+
 GR_SWIG_MAKE(ettus_swig ettus_swig.i)
 
 ########################################################################

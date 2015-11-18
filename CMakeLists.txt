@@ -148,6 +148,7 @@ else(DOXYGEN_FOUND)
 	option(ENABLE_DOXYGEN "Build docs using Doxygen" OFF)
 endif(DOXYGEN_FOUND)
 
+option(ENABLE_FOSPHOR "Build rfnoc-fosphor" ON)
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
