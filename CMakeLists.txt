@@ -81,6 +81,11 @@ set(GR_PKG_LIBEXEC_DIR  ${GR_LIBEXEC_DIR}/${CMAKE_PROJECT_NAME})
 set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 
 ########################################################################
+# fosphor
+########################################################################
+option(ENABLE_FOSPHOR "Build rfnoc-fosphor" ON)
+
+########################################################################
 # On Apple only, set install name and use rpath correctly, if not already set
 ########################################################################
 if(APPLE)
@@ -113,14 +118,15 @@ if(NOT PYTHONLIBS_FOUND)
     message(FATAL_ERROR "Python Libs not found.")
 endif(NOT PYTHONLIBS_FOUND)
 
-find_package(Qt4 4.2.0 COMPONENTS QtCore QtGui QtOpenGL)
-if(NOT QT_FOUND)
-    message(FATAL_ERROR "Qt not found.")
-endif(NOT QT_FOUND)
-if (QT_FOUND)
-    include(GrSetupQt4)
-endif (QT_FOUND)
-
+if(ENABLE_FOSPHOR)
+    find_package(Qt4 4.2.0 COMPONENTS QtCore QtGui QtOpenGL)
+    if(NOT QT_FOUND)
+	message(FATAL_ERROR "Qt not found.")
+    endif(NOT QT_FOUND)
+    if (QT_FOUND)
+	include(GrSetupQt4)
+    endif (QT_FOUND)
+endif(ENABLE_FOSPHOR)
 
 ########################################################################
 # Find gnuradio build dependencies
@@ -148,7 +154,6 @@ else(DOXYGEN_FOUND)
 	option(ENABLE_DOXYGEN "Build docs using Doxygen" OFF)
 endif(DOXYGEN_FOUND)
 
-option(ENABLE_FOSPHOR "Build rfnoc-fosphor" ON)
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
