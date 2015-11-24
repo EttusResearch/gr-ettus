@@ -52,11 +52,14 @@
 #include "ettus/rfnoc_window_cci.h"
 #include "ettus/rfnoc_radio.h"
 #include "ettus/rfnoc_generic.h"
-#ifdef ENABLE_FOSPHOR
-#  include "ettus/fosphor_display.h"
-#  include "ettus/rfnoc_fosphor_c.h"
-#endif
 %}
+
+#ifdef ENABLE_FOSPHOR
+%{
+#include "ettus/fosphor_display.h"
+#include "ettus/rfnoc_fosphor_c.h"
+%}
+#endif
 
 %include "ettus/rfnoc_block.h"
 
