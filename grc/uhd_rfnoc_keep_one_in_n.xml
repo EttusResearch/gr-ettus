@@ -8,7 +8,7 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="n=$n",
+        args="n="+str($n),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
@@ -24,6 +24,13 @@
     <key>n</key>
     <value>100</value>
     <type>int</type>
+  </param>
+  
+  <param>
+	  <name>Vector Length</name>
+	  <key>vlen</key>
+	  <value>256</value>
+	  <type>int</type>
   </param>
 
   <param>
@@ -42,10 +49,13 @@
     <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
+  
+  <check>($vlen &gt; 0 and $vlen &lt;= 4096)</check>
 
   <sink>
     <name>in</name>
     <type>complex</type>
+    <vlen>$vlen</vlen>
     <domain>rfnoc</domain>
   </sink>
 
