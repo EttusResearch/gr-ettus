@@ -122,6 +122,22 @@ namespace gr {
       get_device()->set_rx_dc_offset(offset, d_chan);
     }
 
+
+    uhd::time_spec_t rfnoc_radio_impl::get_time_now(void)
+    {
+        return get_device()->get_time_now();
+    }
+
+    void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time)
+    {
+        get_device()->set_command_time(time);
+    }
+
+    void rfnoc_radio_impl::clear_command_time(void)
+    {
+        get_device()->clear_command_time();
+    }
+
   } /* namespace ettus */
 } /* namespace gr */
 

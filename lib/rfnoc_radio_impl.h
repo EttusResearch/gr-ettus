@@ -54,6 +54,10 @@ namespace gr {
       void set_tx_dc_offset(const std::complex< double > &offset);
       void set_rx_dc_offset(bool enable);
       void set_rx_dc_offset(const std::complex< double > &offset);
+
+      uhd::time_spec_t get_time_now(void);
+      void set_command_time(const uhd::time_spec_t &time);
+      void clear_command_time(void);
     };
 
   } // namespace ettus
