@@ -26,16 +26,20 @@
     ),
     $radio_index, $device_index
 )
-self.$(id).set_${direction}_freq($freq)
-self.$(id).set_${direction}_rate($rate)
-self.$(id).set_${direction}_gain($gain)
-self.$(id).set_${direction}_antenna($ant)
-self.$(id).set_${direction}_dc_offset($dcenable)
+self.$(id).set_rate($rate)
+for i in xrange($num_channels):
+    self.$(id).set_${direction}_freq($freq, i)
+    self.$(id).set_${direction}_gain($gain, i)
+    self.$(id).set_${direction}_antenna($ant, i)
+    self.$(id).set_${direction}_dc_offset($dcenable, i)
 </make>
-<callback>self.$(id).set_${direction}_freq($freq)</callback>
-<callback>self.$(id).set_${direction}_rate($rate)</callback>
-<callback>self.$(id).set_${direction}_gain($gain)</callback>
-<callback>self.$(id).set_${direction}_antenna($ant)</callback>
+<callback>self.$(id).set_rate($rate)</callback>
+<callback>for i in xrange($num_channels):
+    self.$(id).set_${direction}_freq($freq, i)</callback>
+<callback>for i in xrange($num_channels):
+    self.$(id).set_${direction}_gain($gain)</callback>
+<callback>for i in xrange($num_channels):
+    self.$(id).set_${direction}_antenna($ant)</callback>
 
   <param>
     <name>Radio Select</name>
@@ -47,6 +51,21 @@ self.$(id).set_${direction}_dc_offset($dcenable)
     </option>
     <option>
       <name>B</name>
+      <key>1</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Num Channels</name>
+    <key>num_channels</key>
+    <value>1</value>
+    <type>int</type>
+    <option>
+      <name>E310: 2 Channels</name>
+      <key>2</key>
+    </option>
+    <option>
+      <name>X3x0: 1 Channel</name>
       <key>1</key>
     </option>
   </param>
@@ -178,6 +197,7 @@ self.$(id).set_${direction}_dc_offset($dcenable)
     <type>$cpu_format.type</type>
     <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
+    <nports>$num_channels</nports>
     <optional>1</optional>
     <hide>$direction.hide_sink</hide>
   </sink>
@@ -187,6 +207,7 @@ self.$(id).set_${direction}_dc_offset($dcenable)
     <type>$cpu_format.type</type>
     <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
+    <nports>$num_channels</nports>
     <optional>1</optional>
     <hide>$direction.hide_source</hide>
   </source>

@@ -53,7 +53,7 @@ namespace gr {
             tx_stream_args, rx_stream_args
         )
     {
-      d_chan = get_block_ctrl()->get_block_id().get_block_count();
+      _radio_ctrl = get_block_ctrl_throw< ::uhd::rfnoc::radio_ctrl >();
     }
 
     rfnoc_radio_impl::~rfnoc_radio_impl()
@@ -61,81 +61,75 @@ namespace gr {
       /* nop */
     }
 
-    void rfnoc_radio_impl::set_tx_freq(double freq)
+    void rfnoc_radio_impl::set_rate(const double rate)
     {
-      get_device()->set_tx_freq(freq, d_chan);
+      _radio_ctrl->set_rate(rate);
     }
 
-    void rfnoc_radio_impl::set_rx_freq(double freq)
+    void rfnoc_radio_impl::set_tx_freq(const double freq, const size_t chan)
     {
-      get_device()->set_rx_freq(freq, d_chan);
+      _radio_ctrl->set_tx_frequency(freq, chan);
     }
 
-    void rfnoc_radio_impl::set_tx_rate(double rate)
+    void rfnoc_radio_impl::set_rx_freq(const double freq, const size_t chan)
     {
-      get_device()->set_tx_rate(rate, d_chan);
+      _radio_ctrl->set_rx_frequency(freq, chan);
     }
 
-    void rfnoc_radio_impl::set_rx_rate(double rate)
+    void rfnoc_radio_impl::set_tx_gain(const double gain, const size_t chan)
     {
-      get_device()->set_rx_rate(rate, d_chan);
+      _radio_ctrl->set_tx_gain(gain, chan);
     }
 
-    void rfnoc_radio_impl::set_tx_gain(double gain)
+    void rfnoc_radio_impl::set_rx_gain(const double gain, const size_t chan)
     {
-      get_device()->set_tx_gain(gain, d_chan);
+      _radio_ctrl->set_rx_gain(gain, chan);
     }
 
-    void rfnoc_radio_impl::set_rx_gain(double gain)
+    void rfnoc_radio_impl::set_tx_antenna(const std::string &ant, const size_t chan)
     {
-      get_device()->set_rx_gain(gain, d_chan);
+      _radio_ctrl->set_antenna(ant, chan);
     }
 
-    void rfnoc_radio_impl::set_tx_antenna(const std::string &ant)
+    void rfnoc_radio_impl::set_rx_antenna(const std::string &ant, const size_t chan)
     {
-      get_device()->set_tx_antenna(ant, d_chan);
+      _radio_ctrl->set_antenna(ant, chan);
     }
 
-    void rfnoc_radio_impl::set_rx_antenna(const std::string &ant)
+    // FIXME everything down from here needs to be mapped on to the block API
+    void rfnoc_radio_impl::set_tx_dc_offset(bool enable, const size_t chan)
     {
-      get_device()->set_rx_antenna(ant, d_chan);
+      get_device()->set_tx_dc_offset(enable, chan);
     }
 
-    void rfnoc_radio_impl::set_tx_dc_offset(bool enable)
+    void rfnoc_radio_impl::set_tx_dc_offset(const std::complex< double > &offset, const size_t chan)
     {
-      get_device()->set_tx_dc_offset(enable, d_chan);
+      get_device()->set_tx_dc_offset(offset, chan);
     }
 
-    void rfnoc_radio_impl::set_tx_dc_offset(const std::complex< double > &offset)
+    void rfnoc_radio_impl::set_rx_dc_offset(bool enable, const size_t chan)
     {
-      get_device()->set_tx_dc_offset(offset, d_chan);
+      get_device()->set_rx_dc_offset(enable, chan);
     }
 
-    void rfnoc_radio_impl::set_rx_dc_offset(bool enable)
+    void rfnoc_radio_impl::set_rx_dc_offset(const std::complex< double > &offset, const size_t chan)
     {
-      get_device()->set_rx_dc_offset(enable, d_chan);
-      std::cout << "enabling rx dc offset removal: " << enable << std::endl;
+      get_device()->set_rx_dc_offset(offset, chan);
     }
-
-    void rfnoc_radio_impl::set_rx_dc_offset(const std::complex< double > &offset)
-    {
-      get_device()->set_rx_dc_offset(offset, d_chan);
-    }
-
 
     uhd::time_spec_t rfnoc_radio_impl::get_time_now(void)
     {
-        return get_device()->get_time_now();
+      return get_device()->get_time_now();
     }
 
     void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time)
     {
-        get_device()->set_command_time(time);
+      get_device()->set_command_time(time);
     }
 
     void rfnoc_radio_impl::clear_command_time(void)
     {
-        get_device()->clear_command_time();
+      get_device()->clear_command_time();
     }
 
   } /* namespace ettus */

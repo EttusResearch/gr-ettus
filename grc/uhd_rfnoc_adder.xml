@@ -8,13 +8,13 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="$type", \# TODO: This must be made an option
         otw_format="sc16",
-	channels=(0,1),
+        channels=(0,1),
         args="align=1",
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="$type",
         otw_format="sc16",
-	channels=(0,1),
+        channels=(0,1),
         args="align=1",
     ),
     "AddSub", $block_index, $device_index,

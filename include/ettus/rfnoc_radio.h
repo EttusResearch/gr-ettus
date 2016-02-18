@@ -55,18 +55,17 @@ namespace gr {
           const int device_select=-1
       );
 
-      virtual void set_tx_freq(double freq) = 0;
-      virtual void set_rx_freq(double freq) = 0;
-      virtual void set_tx_rate(double rate) = 0;
-      virtual void set_rx_rate(double rate) = 0;
-      virtual void set_tx_gain(double gain) = 0;
-      virtual void set_rx_gain(double gain) = 0;
-      virtual void set_tx_antenna(const std::string &ant) = 0;
-      virtual void set_rx_antenna(const std::string &ant) = 0;
-      virtual void set_tx_dc_offset(bool enable) = 0;
-      virtual void set_tx_dc_offset(const std::complex< double > &offset) = 0;
-      virtual void set_rx_dc_offset(bool enable) = 0;
-      virtual void set_rx_dc_offset(const std::complex< double > &offset) = 0;
+      virtual void set_rate(const double rate) = 0;
+      virtual void set_tx_freq(const double freq, const size_t chan=0) = 0;
+      virtual void set_rx_freq(const double freq, const size_t chan=0) = 0;
+      virtual void set_tx_gain(const double gain, const size_t chan=0) = 0;
+      virtual void set_rx_gain(const double gain, const size_t chan=0) = 0;
+      virtual void set_tx_antenna(const std::string &ant, const size_t chan=0) = 0;
+      virtual void set_rx_antenna(const std::string &ant, const size_t chan=0) = 0;
+      virtual void set_tx_dc_offset(bool enable, const size_t chan=0) = 0;
+      virtual void set_tx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
+      virtual void set_rx_dc_offset(bool enable, const size_t chan=0) = 0;
+      virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
 
       virtual uhd::time_spec_t get_time_now(void) = 0;
       virtual void set_command_time(const uhd::time_spec_t &time) = 0;

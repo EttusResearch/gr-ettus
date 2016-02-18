@@ -22,16 +22,13 @@
 
 #include <ettus/rfnoc_radio.h>
 #include "rfnoc_block_impl.h"
+#include <uhd/rfnoc/radio_ctrl.hpp>
 
 namespace gr {
   namespace ettus {
 
     class rfnoc_radio_impl : public rfnoc_radio, public rfnoc_block_impl
-
     {
-     private:
-       size_t d_chan;
-
      public:
       rfnoc_radio_impl(
             const device3::sptr &dev,
@@ -42,22 +39,23 @@ namespace gr {
       );
       ~rfnoc_radio_impl();
 
-      void set_tx_freq(double freq);
-      void set_rx_freq(double freq);
-      void set_tx_rate(double rate);
-      void set_rx_rate(double rate);
-      void set_tx_gain(double gain);
-      void set_rx_gain(double gain);
-      void set_tx_antenna(const std::string &ant);
-      void set_rx_antenna(const std::string &ant);
-      void set_tx_dc_offset(bool enable);
-      void set_tx_dc_offset(const std::complex< double > &offset);
-      void set_rx_dc_offset(bool enable);
-      void set_rx_dc_offset(const std::complex< double > &offset);
+      void set_rate(const double rate);
+      void set_tx_freq(const double freq, const size_t chan);
+      void set_rx_freq(const double freq, const size_t chan);
+      void set_tx_gain(const double gain, const size_t chan);
+      void set_rx_gain(const double gain, const size_t chan);
+      void set_tx_antenna(const std::string &ant, const size_t chan);
+      void set_rx_antenna(const std::string &ant, const size_t chan);
+      void set_tx_dc_offset(bool enable, const size_t chan);
+      void set_tx_dc_offset(const std::complex< double > &offset, const size_t chan);
+      void set_rx_dc_offset(bool enable, const size_t chan);
+      void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan);
 
       uhd::time_spec_t get_time_now(void);
       void set_command_time(const uhd::time_spec_t &time);
       void clear_command_time(void);
+     private:
+      ::uhd::rfnoc::radio_ctrl::sptr _radio_ctrl;
     };
 
   } // namespace ettus
