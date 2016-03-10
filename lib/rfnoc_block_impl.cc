@@ -143,15 +143,16 @@ rfnoc_block_impl::rfnoc_block_impl(
     const ::uhd::stream_args_t &tx_stream_args,
     const ::uhd::stream_args_t &rx_stream_args
 ) : _dev(dev->get_device()),
-    _blk_ctrl(dev->get_device()->get_device3()->find_block_ctrl(block_id)),
     _tx(tx_stream_args),
     _rx(rx_stream_args)
 {
-  //// Set up the RFNoC block:
-  // Make sure the current device actually has the requested block:
-  if (not _blk_ctrl) {
-    throw std::runtime_error(str(boost::format("Cannot find a block for ID: %s") % block_id));
+  std::vector< ::uhd::rfnoc::block_id_t > blocks =
+          dev->get_device()->get_device3()->find_blocks(block_id);
+  if (blocks.empty()) {
+      throw std::runtime_error(str(boost::format("Cannot find a block for ID: %s") % block_id));
   }
+  _blk_ctrl = dev->get_device()->get_device3()->get_block_ctrl(blocks.front());
+  UHD_ASSERT_THROW(_blk_ctrl);
 
   // Configure the block
   const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
