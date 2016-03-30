@@ -88,12 +88,12 @@ namespace gr {
 
     void rfnoc_radio_impl::set_tx_antenna(const std::string &ant, const size_t chan)
     {
-      _radio_ctrl->set_antenna(ant, chan);
+      _radio_ctrl->set_tx_antenna(ant, chan);
     }
 
     void rfnoc_radio_impl::set_rx_antenna(const std::string &ant, const size_t chan)
     {
-      _radio_ctrl->set_antenna(ant, chan);
+      _radio_ctrl->set_rx_antenna(ant, chan);
     }
 
     // FIXME everything down from here needs to be mapped on to the block API
