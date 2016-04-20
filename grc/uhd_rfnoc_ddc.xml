@@ -53,7 +53,6 @@
     <value>0.0</value>
     <type>real</type>
   </param>
-
   <param>
     <name>Full scale</name>
     <key>fullscale</key>
