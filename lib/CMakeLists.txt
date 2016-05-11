@@ -25,11 +25,11 @@ include(GrPlatform) #define LIB_SUFFIX
 add_definitions(-DENABLE_PYTHON)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-if(ENABLE_FOSPHOR)
+if(ENABLE_QT)
     QT4_ADD_RESOURCES(FOSPHOR_RC_SRCS fosphor.qrc )
     set(CMAKE_AUTOMOC ON)
     include_directories(${QT_INCLUDE_DIRS})
-endif(ENABLE_FOSPHOR)
+endif(ENABLE_QT)
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -40,18 +40,18 @@ list(APPEND ettus_sources
     rfnoc_window_cci_impl.cc
     rfnoc_radio_impl.cc
     rfnoc_generic_impl.cc
+    rfnoc_fosphor_c_impl.cc
 )
 
-if(ENABLE_FOSPHOR)
+if(ENABLE_QT)
     list(APPEND ettus_sources
         axis.c
         fosphor_display_impl.cc
-        rfnoc_fosphor_c_impl.cc
         QFosphorColorMapper.cc
         QFosphorSurface.cc
         ${FOSPHOR_RC_SRCS}
     )
-endif(ENABLE_FOSPHOR)
+endif(ENABLE_QT)
 
 set(ettus_sources "${ettus_sources}" PARENT_SCOPE)
 if(NOT ettus_sources)
@@ -60,7 +60,7 @@ if(NOT ettus_sources)
 endif(NOT ettus_sources)
 
 add_library(gnuradio-ettus SHARED ${ettus_sources})
-if(ENABLE_FOSPHOR)
+if(ENABLE_QT)
     target_link_libraries(gnuradio-ettus
         ${QT_LIBRARIES}
         ${PYTHON_LIBRARY}
@@ -68,14 +68,14 @@ if(ENABLE_FOSPHOR)
         ${GNURADIO_ALL_LIBRARIES}
         ${UHD_LIBRARIES}
     )
-else(ENABLE_FOSPHOR)
+else(ENABLE_QT)
     target_link_libraries(gnuradio-ettus
         ${PYTHON_LIBRARY}
         ${Boost_LIBRARIES}
         ${GNURADIO_ALL_LIBRARIES}
         ${UHD_LIBRARIES}
     )
-endif(ENABLE_FOSPHOR)
+endif(ENABLE_QT)
 
 set_target_properties(gnuradio-ettus PROPERTIES DEFINE_SYMBOL "gnuradio_ettus_EXPORTS")
 

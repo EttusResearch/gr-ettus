@@ -83,7 +83,7 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 # fosphor
 ########################################################################
-option(ENABLE_FOSPHOR "Build rfnoc-fosphor" ON)
+option(ENABLE_QT "Build Qt based blocks" ON)
 
 ########################################################################
 # On Apple only, set install name and use rpath correctly, if not already set
@@ -118,7 +118,7 @@ if(NOT PYTHONLIBS_FOUND)
     message(FATAL_ERROR "Python Libs not found.")
 endif(NOT PYTHONLIBS_FOUND)
 
-if(ENABLE_FOSPHOR)
+if(ENABLE_QT)
     find_package(Qt4 4.2.0 COMPONENTS QtCore QtGui QtOpenGL)
     if(NOT QT_FOUND)
 	message(FATAL_ERROR "Qt not found.")
@@ -126,7 +126,7 @@ if(ENABLE_FOSPHOR)
     if (QT_FOUND)
 	include(GrSetupQt4)
     endif (QT_FOUND)
-endif(ENABLE_FOSPHOR)
+endif(ENABLE_QT)
 
 ########################################################################
 # Find gnuradio build dependencies

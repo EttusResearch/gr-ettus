@@ -28,13 +28,13 @@ install(FILES
     rfnoc_window_cci.h
     rfnoc_radio.h
     rfnoc_generic.h
+    rfnoc_fosphor_c.h
     DESTINATION include/ettus
 )
 
-if(ENABLE_FOSPHOR)
+if(ENABLE_QT)
     install(FILES
         fosphor_display.h
-        rfnoc_fosphor_c.h
         DESTINATION include/ettus
     )
-endif(ENABLE_FOSPHOR)
+endif(ENABLE_QT)
