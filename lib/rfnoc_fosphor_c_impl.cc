@@ -42,10 +42,15 @@ namespace gr {
     }
 
     static ::uhd::stream_args_t
-    _make_stream_args(const char *host_type, const char *otw_type, size_t spp)
+    _make_stream_args(const char *host_type, const char *otw_type, size_t spp, size_t len)
     {
       ::uhd::stream_args_t stream_args(host_type, otw_type);
       stream_args.args["spp"] = str(boost::format("%s") % spp);
+      if (len > 1) {
+        stream_args.channels.clear();
+        for (size_t i=0; i<len; i++)
+          stream_args.channels.push_back(i);
+      }
       return stream_args;
     }
 
@@ -58,8 +63,8 @@ namespace gr {
         rfnoc_block_impl(
             dev,
             rfnoc_block_impl::make_block_id("fosphor", block_select, device_select),
-            _make_stream_args("fc32", "sc16", fft_size),
-            _make_stream_args("u8",   "u8",   fft_size)
+            _make_stream_args("fc32", "sc16", fft_size, 1),
+            _make_stream_args("u8",   "u8",   fft_size, 2)
         )
     {
       message_port_register_in(pmt::mp("cfg"));

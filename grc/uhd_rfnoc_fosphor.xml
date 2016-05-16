@@ -17,21 +17,27 @@
     -1,
     #end if
 )
-self.$(id).set_arg("decim", $decim)
+self.$(id).set_arg("enable", 3 if ($wf_mode >= 0) else 1)
+self.$(id).set_arg("decim", $hist_decim)
 self.$(id).set_arg("offset", $offset)
 self.$(id).set_arg("scale", $scale)
 self.$(id).set_arg("trise", $trise)
 self.$(id).set_arg("tdecay", $tdecay)
 self.$(id).set_arg("alpha", $alpha)
-self.$(id).set_arg("epsilon", $epsilon)</make>
+self.$(id).set_arg("epsilon", $epsilon)
+self.$(id).set_arg("wf_ctrl", {0:0x00, 1:0x81, 2:0x82, 3:0x83}.get($wf_mode, 0))
+self.$(id).set_arg("wf_decim", {0:$wf_decim, 1:8, 2:64, 3:256}.get($wf_mode, 16))
+</make>
 
-  <callback>set_arg("decim", $decim)</callback>
+  <callback>set_arg("decim", $hist_decim)</callback>
   <callback>set_arg("offset", $offset)</callback>
   <callback>set_arg("scale", $scale)</callback>
   <callback>set_arg("trise", $trise)</callback>
   <callback>set_arg("tdecay", $tdecay)</callback>
   <callback>set_arg("alpha", $alpha)</callback>
   <callback>set_arg("epsilon", $epsilon)</callback>
+  <callback>set_arg("wf_ctrl", {0:0x00, 1:0x81, 2:0x82, 3:0x83}.get($wf_mode, 0))</callback>
+  <callback>set_arg("wf_decim", {0:$wf_decim, 1:8, 2:64, 3:256}.get($wf_mode, 16))</callback>
 
   <param>
     <name>FFT Size</name>
@@ -40,10 +46,42 @@ self.$(id).set_arg("epsilon", $epsilon)</make>
     <type>int</type>
   </param>
   <param>
-    <name>Decimation</name>
-    <key>decim</key>
+    <name>Histo Decimation</name>
+    <key>hist_decim</key>
     <value>max(2, int(samp_rate / (15 * 64 * fft_size)))</value>
     <type>int</type>
+  </param>
+  <param>
+   <name>Waterfall mode</name>
+   <key>wf_mode</key>
+   <type>enum</type>
+   <option>
+     <name>Disabled</name>
+     <key>-1</key>
+   </option>
+   <option>
+     <name>Max Hold</name>
+     <key>0</key>
+   </option>
+   <option>
+     <name>Average 1:8</name>
+     <key>1</key>
+   </option>
+   <option>
+     <name>Average 1:64</name>
+     <key>2</key>
+   </option>
+   <option>
+     <name>Average 1:256</name>
+     <key>3</key>
+   </option>
+  </param>
+  <param>
+    <name>Waterfall Decimation</name>
+    <key>wf_decim</key>
+    <value>16</value>
+    <type>int</type>
+    <hide>#if str($wf_mode) == '0' then 'none' else 'all'#</hide>
   </param>
 
   <param>
@@ -126,9 +164,18 @@ self.$(id).set_arg("epsilon", $epsilon)</make>
   </sink>
 
   <source>
-    <name>out</name>
+    <name>out_hist</name>
     <type>byte</type>
     <vlen>$fft_size</vlen>
     <domain>rfnoc</domain>
+  </source>
+
+  <source>
+    <name>out_wf</name>
+    <type>byte</type>
+    <vlen>$fft_size</vlen>
+    <domain>rfnoc</domain>
+    <optional>1</optional>
+    <hide>#if str($wf_mode) == '-1' then 'True' else 'False'#</hide>
   </source>
 </block>
