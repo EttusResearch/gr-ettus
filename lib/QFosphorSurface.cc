@@ -336,7 +336,7 @@ namespace gr {
       x[0] = 0;
       y[0] = 0;
 
-      glBindTexture(GL_TEXTURE_2D, this->layout.left_tex);
+      glBindTexture(GL_TEXTURE_2D, this->layout.pwr_tex);
 
       x[1] = this->layout.x[0];
       y[1] = this->layout.height;
@@ -348,7 +348,7 @@ namespace gr {
       glTexCoord2d(0.0f, 1.0f); glVertex2d(x[0], y[1]);
       glEnd();
 
-      glBindTexture(GL_TEXTURE_2D, this->layout.bot_tex);
+      glBindTexture(GL_TEXTURE_2D, this->layout.freq_tex);
 
       x[1] = this->layout.width;
       y[1] = this->layout.y[0];
@@ -414,8 +414,8 @@ namespace gr {
       int i;
 
       /* Release previous texture */
-      if (this->layout.left_tex)
-        this->deleteTexture(this->layout.left_tex);
+      if (this->layout.pwr_tex)
+        this->deleteTexture(this->layout.pwr_tex);
 
       /* Create a pixmap of right size */
       QPixmap pixmap(this->layout.x[0], this->layout.height);
@@ -445,7 +445,7 @@ namespace gr {
       }
 
       /* Create texture */
-      this->layout.left_tex = this->bindTexture(pixmap);
+      this->layout.pwr_tex = this->bindTexture(pixmap);
     }
 
     void
@@ -455,8 +455,8 @@ namespace gr {
       int n_div, i;
 
       /* Release previous texture */
-      if (this->layout.bot_tex)
-        this->deleteTexture(this->layout.bot_tex);
+      if (this->layout.freq_tex)
+        this->deleteTexture(this->layout.freq_tex);
 
       /* Create a pixmap of right size */
       QPixmap pixmap(this->layout.width, this->layout.y[0]);
@@ -504,7 +504,7 @@ namespace gr {
       }
 
       /* Create texture */
-      this->layout.bot_tex = this->bindTexture(pixmap);
+      this->layout.freq_tex = this->bindTexture(pixmap);
     }
 
     void

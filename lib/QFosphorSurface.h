@@ -88,8 +88,8 @@ namespace gr {
         float x_div;
         float y_div;
 
-        GLuint left_tex;
-        GLuint bot_tex;
+        GLuint pwr_tex;
+        GLuint freq_tex;
       } layout;
 
       QFosphorColorMapper *cmap;
