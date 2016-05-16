@@ -50,10 +50,11 @@ namespace gr {
       void set_palette(std::string name);
       void set_frame_rate(int fps);
 
-      /* gr::sync_block implementation */
-      int work (int noutput_items,
-                gr_vector_const_void_star &input_items,
-                gr_vector_void_star &output_items);
+      /* gr::block implementation */
+      int general_work(int noutput_items,
+                       gr_vector_int &ninput_items,
+                       gr_vector_const_void_star &input_items,
+                       gr_vector_void_star &output_items);
 
       /* QT GUI Widget stuff */
       void exec_();
@@ -66,6 +67,8 @@ namespace gr {
 #endif
 
      private:
+      int _work_hist(const uint8_t *input, int n_items, int port);
+
       QFosphorSurface *d_gui;
 
       int d_fft_bins;

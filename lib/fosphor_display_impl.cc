@@ -47,9 +47,9 @@ namespace gr {
     fosphor_display_impl::fosphor_display_impl(const int fft_bins,
                                                const int pwr_bins,
                                                QWidget *parent)
-      : gr::sync_block("fosphor_display",
-                       gr::io_signature::make(1, 1, fft_bins),
-                       gr::io_signature::make(0, 0, 0)),
+      : gr::block("fosphor_display",
+                  gr::io_signature::make(1, 1, fft_bins),
+                  gr::io_signature::make(0, 0, 0)),
         d_fft_bins(fft_bins), d_pwr_bins(pwr_bins),
         d_center_freq(0.0), d_samp_rate(0.0), d_frame_rate(0),
         d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 2)
@@ -135,27 +135,45 @@ namespace gr {
 
 
     int
-    fosphor_display_impl::work (int noutput_items,
-                                gr_vector_const_void_star &input_items,
-                                gr_vector_void_star &output_items)
+    fosphor_display_impl::general_work(int noutput_items,
+                                       gr_vector_int &ninput_items,
+                                       gr_vector_const_void_star &input_items,
+                                       gr_vector_void_star &output_items)
+    {
+      int rv;
+
+      /* Consume histogram */
+      rv = this->_work_hist(
+        (const uint8_t *) input_items[0],
+        ninput_items[0],
+        0
+      );
+
+      if (rv > 0)
+        consume(0, rv);
+
+      return 0;
+    }
+
+    int
+    fosphor_display_impl::_work_hist(const uint8_t *input, int n_items, int port)
     {
       static const pmt::pmt_t EOB_KEY = pmt::string_to_symbol("rx_eob");
-      const uint8_t *input = (const uint8_t *) input_items[0];
       std::vector<tag_t> v;
-      uint64_t nR = nitems_read(0);
+      uint64_t nR = nitems_read(port);
       int pEOF;
 
-      if (noutput_items < 1)
+      if (n_items < 1)
         return 0;
 
       /* Grab all tags available, we'll need them either way */
-      get_tags_in_range(v, 0, nR, nR + noutput_items);
+      get_tags_in_range(v, port, nR, nR + n_items);
 
       /* If not aligned we just search for EOF */
       if (!this->d_aligned) {
         /* No tags ?  Drop all useless data while we wait for one */
         if (v.empty())
-          return noutput_items;
+          return n_items;
 
         /* Start at zero right after the tag */
         this->d_subframe = 0;
@@ -167,7 +185,7 @@ namespace gr {
       /* Check alignement */
       pEOF = v.empty() ? -1 : (v[0].offset - nR);
 
-      if (noutput_items >= (this->d_subframe_num - this->d_subframe))
+      if (n_items >= (this->d_subframe_num - this->d_subframe))
       {
         /* We have the end of the frame, must be an EOF on that */
         if (pEOF != (this->d_subframe_num - this->d_subframe - 1))
@@ -184,17 +202,17 @@ namespace gr {
       }
 
       /* Limit to expected frame boundary */
-      if (noutput_items > (this->d_subframe_num - this->d_subframe))
-        noutput_items = this->d_subframe_num - this->d_subframe;
+      if (n_items > (this->d_subframe_num - this->d_subframe))
+        n_items = this->d_subframe_num - this->d_subframe;
 
       /* Copy the data */
       memcpy(
         &this->d_frame[this->d_fft_bins * this->d_subframe],
         input,
-        noutput_items * this->d_fft_bins
+        n_items * this->d_fft_bins
       );
 
-      this->d_subframe += noutput_items;
+      this->d_subframe += n_items;
 
       /* Are we done ? */
       if (this->d_subframe == this->d_subframe_num)
@@ -206,8 +224,9 @@ namespace gr {
         this->d_subframe = 0;
       }
 
-      return noutput_items;
+      return n_items;
     }
+
 
     void
     fosphor_display_impl::exec_()

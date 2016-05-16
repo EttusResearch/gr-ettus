@@ -37,7 +37,7 @@ namespace gr {
      * \brief QT GUI Display block for RFNoC fosphor
      * \ingroup ettus
      */
-    class ETTUS_API fosphor_display : virtual public gr::sync_block
+    class ETTUS_API fosphor_display : virtual public gr::block
     {
      public:
       typedef boost::shared_ptr<fosphor_display> sptr;
