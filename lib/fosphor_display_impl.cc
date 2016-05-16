@@ -37,13 +37,13 @@
 
 namespace gr {
   namespace ettus {
- 
-	  fosphor_display::sptr
+
+    fosphor_display::sptr
     fosphor_display::make(const int fft_bins, const int pwr_bins, QWidget *parent)
     {
       return gnuradio::get_initial_sptr(new fosphor_display_impl(fft_bins, pwr_bins, parent));
     }
-  
+
     fosphor_display_impl::fosphor_display_impl(const int fft_bins,
                                                const int pwr_bins,
                                                QWidget *parent)
