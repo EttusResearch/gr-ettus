@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: SigGen</name>
+  <key>uhd_rfnoc_streamer_siggen</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_generic(
+    self.device3,
+    uhd.stream_args( \# TX Stream Args
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="",
+    ),
+    uhd.stream_args( \# RX Stream Args
+        cpu_format="fc32", \# TODO: This must be made an option
+        otw_format="sc16",
+        args="",
+    ),
+    "SigGen", $block_index, $device_index,
+)
+self.$(id).set_arg("frequency", ((2*$frequency)/$samp_rate))
+self.$(id).set_arg("waveform", $waveform)
+self.$(id).set_arg("amplitude_i",  $(amplitude).real)
+self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
+self.$(id).set_arg("spp",  $spp)
+  </make>
+  <callback>set_arg("frequency", ((2*$frequency)/$samp_rate))</callback>
+  <callback>set_arg("amplitude_i", $(amplitude).real)</callback>
+  <callback>set_arg("amplitude_q", $(amplitude).imag)</callback>
+  <callback>set_arg("waveform", $waveform)</callback>
+  <callback>set_arg("spp", $spp)</callback>
+
+  <param>
+    <name>Frequency</name>
+    <key>frequency</key>
+    <value>0.1</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Packet Size</name>
+    <key>spp</key>
+    <value>364</value>
+    <type>int</type>
+  </param>
+  
+  <param>
+    <name>Amplitude</name>
+    <key>amplitude</key>
+    <value>0.1</value>
+    <type>complex</type>
+  </param>
+  
+  <param>
+    <name>Sample Rate</name>
+    <key>samp_rate</key>
+    <value>10000000</value>
+    <type>real</type>
+  </param>
+  
+  <param>
+    <name>Waveform</name>
+    <key>waveform</key>
+    <type>string</type>
+    <option>
+      <name>Constant</name>
+      <key>"CONSTANT"</key>
+    </option>
+    <option>
+      <name>Sine</name>
+      <key>"SINE_WAVE"</key>
+    </option>
+  </param>
+
+  <param>
+    <name>FFT Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$siggen_out</vlen>
+    <domain>rfnoc</domain>
+  </source>
+</block>
