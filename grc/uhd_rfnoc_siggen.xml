@@ -22,12 +22,14 @@ self.$(id).set_arg("waveform", $waveform)
 self.$(id).set_arg("amplitude_i",  $(amplitude).real)
 self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
 self.$(id).set_arg("spp",  $spp)
+self.$(id).set_arg("enable",  $enable)
   </make>
   <callback>set_arg("frequency", ((2*$frequency)/$samp_rate))</callback>
   <callback>set_arg("amplitude_i", $(amplitude).real)</callback>
   <callback>set_arg("amplitude_q", $(amplitude).imag)</callback>
   <callback>set_arg("waveform", $waveform)</callback>
   <callback>set_arg("spp", $spp)</callback>
+  <callback>set_arg("enable", $enable)</callback>
 
   <param>
     <name>Frequency</name>
@@ -40,6 +42,13 @@ self.$(id).set_arg("spp",  $spp)
     <name>Packet Size</name>
     <key>spp</key>
     <value>364</value>
+    <type>int</type>
+  </param>
+  
+  <param>
+    <name>Enable</name>
+    <key>enable</key>
+    <value>0</value>
     <type>int</type>
   </param>
   

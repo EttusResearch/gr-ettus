@@ -219,7 +219,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>false</key>
@@ -227,7 +227,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(96, 291)</value>
+      <value>(176, 291)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1612,6 +1612,10 @@
       <value>-1</value>
     </param>
     <param>
+      <key>enable</key>
+      <value>enable</value>
+    </param>
+    <param>
       <key>_enabled</key>
       <value>True</value>
     </param>
@@ -1625,7 +1629,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(440, 275)</value>
+      <value>(328, 283)</value>
     </param>
     <param>
       <key>_rotation</key>
