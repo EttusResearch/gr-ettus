@@ -17,19 +17,21 @@
     ),
     "SigGen", $block_index, $device_index,
 )
+self.$(id).set_arg("spp",  $spp)
 self.$(id).set_arg("frequency", ((2*$frequency)/$samp_rate))
 self.$(id).set_arg("waveform", $waveform)
+self.$(id).set_arg("gain", $gain)
+self.$(id).set_arg("enable", $enable)
 self.$(id).set_arg("amplitude_i",  $(amplitude).real)
 self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
-self.$(id).set_arg("spp",  $spp)
-self.$(id).set_arg("enable",  $enable)
   </make>
   <callback>set_arg("frequency", ((2*$frequency)/$samp_rate))</callback>
+  <callback>set_arg("gain", $gain)</callback>
+  <callback>set_arg("enable", $enable)</callback>
   <callback>set_arg("amplitude_i", $(amplitude).real)</callback>
   <callback>set_arg("amplitude_q", $(amplitude).imag)</callback>
   <callback>set_arg("waveform", $waveform)</callback>
   <callback>set_arg("spp", $spp)</callback>
-  <callback>set_arg("enable", $enable)</callback>
 
   <param>
     <name>Frequency</name>
@@ -48,14 +50,28 @@ self.$(id).set_arg("enable",  $enable)
   <param>
     <name>Enable</name>
     <key>enable</key>
-    <value>0</value>
     <type>int</type>
+    <option>
+      <name>True</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>False</name>
+      <key>0</key>
+    </option>
   </param>
-  
+
+  <param>
+    <name>Gain</name>
+    <key>gain</key>
+    <value>1.0</value>
+    <type>real</type>
+  </param>
+
   <param>
     <name>Amplitude</name>
     <key>amplitude</key>
-    <value>0.1</value>
+    <value>1.0</value>
     <type>complex</type>
   </param>
   
@@ -78,10 +94,14 @@ self.$(id).set_arg("enable",  $enable)
       <name>Sine</name>
       <key>"SINE_WAVE"</key>
     </option>
+    <option>
+      <name>Noise</name>
+      <key>"NOISE"</key>
+    </option>
   </param>
 
   <param>
-    <name>FFT Select</name>
+    <name>SigGen Select</name>
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
