@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='ASCII'?>
-<?grc format='1' created='3.7.8'?>
+<?xml version='1.0' encoding='utf-8'?>
+<?grc format='1' created='3.7.10'?>
 <flow_graph>
   <timestamp>Fri Nov  7 10:40:33 2014</timestamp>
   <block>
@@ -9,8 +9,8 @@
       <value></value>
     </param>
     <param>
-      <key>alias</key>
-      <value></value>
+      <key>window_size</key>
+      <value>1280, 1024</value>
     </param>
     <param>
       <key>category</key>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(-8, -4)</value>
+      <value>(8, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -41,6 +41,10 @@
       <value>qt_gui</value>
     </param>
     <param>
+      <key>hier_block_src_path</key>
+      <value>.:</value>
+    </param>
+    <param>
       <key>id</key>
       <value>rfnoc_fir</value>
     </param>
@@ -49,8 +53,16 @@
       <value>0</value>
     </param>
     <param>
+      <key>qt_qss_theme</key>
+      <value></value>
+    </param>
+    <param>
       <key>realtime_scheduling</key>
       <value></value>
+    </param>
+    <param>
+      <key>run_command</key>
+      <value>{python} -u {filename}</value>
     </param>
     <param>
       <key>run_options</key>
@@ -68,20 +80,12 @@
       <key>title</key>
       <value></value>
     </param>
-    <param>
-      <key>window_size</key>
-      <value>1280, 1024</value>
-    </param>
   </block>
   <block>
-    <key>variable_qtgui_entry</key>
+    <key>variable</key>
     <param>
       <key>comment</key>
       <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>[14614,-69849,-203468,-216117,-7860,194302,81889,-216542,-207219,195672,372287,-93615,-558778,-131378,743447,557343,-899809,-1447471,1004420,5224804,7347329,5224804,1004420,-1447471,-899809,557343,743447,-131378,-558778,-93615,372287,195672,-207219,-216542,81889,194302,-7860,-216117,-203468,-69849,14614]</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -89,7 +93,65 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(984, -4)</value>
+      <value>(1016, 4)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>filter_1</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>[158,526,33,-445,-256,553,573,-542,-1012,349,1536,123,-2097,-1012,2633,2608,-3077,-5946,3370,20513,29295,20513,3370,-5946,-3077,2608,2633,-1012,-2097,123,1536,349,-1012,-542,573,553,-256,-445,33,526,158]</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1016, 68)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>filter_2</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>[23,447,405,279,-94,-548,-792,-572,137,1023,1533,1165,-168,-1941,-3121,-2608,188,4923,10307,14569,16189,14569,10307,4923,188,-2608,-3121,-1941,-168,1165,1533,1023,137,-572,-792,-548,-94,279,405,447,23]</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_chooser</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>filter_1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(880, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -104,12 +166,72 @@
       <value>filter_coeff</value>
     </param>
     <param>
+      <key>label0</key>
+      <value>Filter 1</value>
+    </param>
+    <param>
+      <key>label1</key>
+      <value>Filter 2</value>
+    </param>
+    <param>
+      <key>label2</key>
+      <value></value>
+    </param>
+    <param>
+      <key>label3</key>
+      <value></value>
+    </param>
+    <param>
+      <key>label4</key>
+      <value></value>
+    </param>
+    <param>
       <key>label</key>
-      <value>FIR Filter Coefficients</value>
+      <value></value>
+    </param>
+    <param>
+      <key>labels</key>
+      <value>[]</value>
+    </param>
+    <param>
+      <key>num_opts</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>option0</key>
+      <value>filter_1</value>
+    </param>
+    <param>
+      <key>option1</key>
+      <value>filter_2</value>
+    </param>
+    <param>
+      <key>option2</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>option3</key>
+      <value>3</value>
+    </param>
+    <param>
+      <key>option4</key>
+      <value>4</value>
+    </param>
+    <param>
+      <key>options</key>
+      <value>[0, 1, 2]</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.QVBoxLayout</value>
     </param>
     <param>
       <key>type</key>
       <value>raw</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>combo_box</value>
     </param>
   </block>
   <block>
@@ -128,7 +250,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(848, -10)</value>
+      <value>(736, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -176,33 +298,6 @@
     </param>
   </block>
   <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(104, 75)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>num_points</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>256</value>
-    </param>
-  </block>
-  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -218,7 +313,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(352, -2)</value>
+      <value>(216, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -281,7 +376,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, -10)</value>
+      <value>(344, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -340,7 +435,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 75)</value>
+      <value>(8, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -375,7 +470,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(176, -4)</value>
+      <value>(8, 132)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -402,7 +497,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(712, -2)</value>
+      <value>(592, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -465,7 +560,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(584, -10)</value>
+      <value>(464, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -513,7 +608,7 @@
     </param>
   </block>
   <block>
-    <key>analog_noise_source_x</key>
+    <key>analog_fastnoise_source_x</key>
     <param>
       <key>amp</key>
       <value>noise_amp</value>
@@ -536,7 +631,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(0, 316)</value>
+      <value>(8, 372)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -544,7 +639,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>analog_noise_source_x_0</value>
+      <value>analog_fastnoise_source_x_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -565,6 +660,10 @@
     <param>
       <key>seed</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>samples</key>
+      <value>8192</value>
     </param>
   </block>
   <block>
@@ -595,7 +694,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(-8, 149)</value>
+      <value>(48, 260)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -650,7 +749,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(216, 184)</value>
+      <value>(232, 296)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -701,7 +800,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(336, 195)</value>
+      <value>(336, 308)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -747,6 +846,10 @@
       <value>1.0</value>
     </param>
     <param>
+      <key>axislabels</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>bw</key>
       <value>samp_rate</value>
     </param>
@@ -780,7 +883,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1088, 179)</value>
+      <value>(960, 292)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1015,12 +1118,20 @@
       <value>firdes.WIN_BLACKMAN_hARRIS</value>
     </param>
     <param>
+      <key>label</key>
+      <value>Relative Gain</value>
+    </param>
+    <param>
       <key>ymax</key>
       <value>-10</value>
     </param>
     <param>
       <key>ymin</key>
       <value>-140</value>
+    </param>
+    <param>
+      <key>units</key>
+      <value>dB</value>
     </param>
   </block>
   <block>
@@ -1059,7 +1170,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(544, 187)</value>
+      <value>(512, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1114,7 +1225,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 195)</value>
+      <value>(752, 308)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1156,6 +1267,10 @@
       <value></value>
     </param>
     <param>
+      <key>dcenable</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>otw_format</key>
       <value>sc16</value>
     </param>
@@ -1173,7 +1288,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(344, 331)</value>
+      <value>(248, 436)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1204,6 +1319,10 @@
       <value>rx</value>
     </param>
     <param>
+      <key>num_channels</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>radio_index</key>
       <value>0</value>
     </param>
@@ -1217,7 +1336,7 @@
     </param>
   </block>
   <connection>
-    <source_block_id>analog_noise_source_x_0</source_block_id>
+    <source_block_id>analog_fastnoise_source_x_0</source_block_id>
     <sink_block_id>blocks_add_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>1</sink_key>
