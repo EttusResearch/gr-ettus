@@ -101,7 +101,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>filter_1</value>
+      <value>filter_coeff</value>
     </param>
     <param>
       <key>value</key>
@@ -475,7 +475,7 @@
     </param>
     <param>
       <key>taps</key>
-      <value>filter_1</value>
+      <value>filter_coeff</value>
     </param>
     <param>
       <key>_coordinate</key>
