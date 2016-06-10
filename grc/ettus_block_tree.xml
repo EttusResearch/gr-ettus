@@ -30,6 +30,7 @@
 			<block>uhd_rfnoc_ofdm_eq</block>
 			<block>uhd_rfnoc_ofdm_demap</block>
 			<block>uhd_rfnoc_siggen</block>
+			<block>uhd_rfnoc_dma_fifo</block>
 		</cat>
 	</cat>
 </cat>
