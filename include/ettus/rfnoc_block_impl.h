@@ -39,7 +39,8 @@ static const pmt::pmt_t EOB_KEY = pmt::string_to_symbol("rx_eob");
 namespace gr {
   namespace ettus {
 
-    class rfnoc_block_impl : virtual public rfnoc_block
+    class ETTUS_API rfnoc_block_impl : virtual public rfnoc_block
+    //class rfnoc_block_impl : virtual public rfnoc_block
     {
      public:
       /*********************************************************************

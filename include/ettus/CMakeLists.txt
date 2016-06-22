@@ -26,6 +26,7 @@ install(FILES
     rfnoc_block.h
     rfnoc_fir_cci.h
     rfnoc_window_cci.h
+    rfnoc_block_impl.h
     rfnoc_radio.h
     rfnoc_generic.h
     rfnoc_fosphor_c.h

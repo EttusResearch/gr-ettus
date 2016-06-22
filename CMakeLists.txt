@@ -76,6 +76,7 @@ set(GR_DOC_DIR          ${GR_DATA_DIR}/doc)
 set(GR_PKG_DOC_DIR      ${GR_DOC_DIR}/${CMAKE_PROJECT_NAME})
 set(GR_CONF_DIR         etc)
 set(GR_PKG_CONF_DIR     ${GR_CONF_DIR}/${CMAKE_PROJECT_NAME}/conf.d)
+set(GR_PREFSDIR     	${GR_CONF_DIR}/${CMAKE_PROJECT_NAME}/conf.d)
 set(GR_LIBEXEC_DIR      libexec)
 set(GR_PKG_LIBEXEC_DIR  ${GR_LIBEXEC_DIR}/${CMAKE_PROJECT_NAME})
 set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
@@ -200,6 +201,8 @@ add_subdirectory(python)
 add_subdirectory(grc)
 add_subdirectory(apps)
 add_subdirectory(docs)
+add_subdirectory(python/rfnoc_modtool)
+add_subdirectory(python/utils)
 
 ########################################################################
 # Install cmake search helper for this library

@@ -21,7 +21,7 @@
 #define INCLUDED_ETTUS_RFNOC_RADIO_IMPL_H
 
 #include <ettus/rfnoc_radio.h>
-#include "rfnoc_block_impl.h"
+#include <ettus/rfnoc_block_impl.h>
 #include <uhd/rfnoc/radio_ctrl.hpp>
 
 namespace gr {

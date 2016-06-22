@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "rfnoc_block_impl.h"
+#include <ettus/rfnoc_block_impl.h>
 #include <gnuradio/block_detail.h>
 
 using namespace gr::ettus;

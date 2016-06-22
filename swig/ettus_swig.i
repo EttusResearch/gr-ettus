@@ -52,6 +52,8 @@
 #include "ettus/rfnoc_window_cci.h"
 #include "ettus/rfnoc_radio.h"
 #include "ettus/rfnoc_generic.h"
+#include "ettus/rfnoc_block.h"
+#include "ettus/rfnoc_block_impl.h"
 #include "ettus/rfnoc_fosphor_c.h"
 %}
 
@@ -63,6 +65,7 @@
 
 %include "ettus/rfnoc_block.h"
 
+%include "ettus/rfnoc_block_impl.h"
 ////////////////////////////////////////////////////////////////////////
 // used types
 ////////////////////////////////////////////////////////////////////////
