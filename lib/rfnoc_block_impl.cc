@@ -1,16 +1,16 @@
 /* -*- c++ -*- */
-/* Copyright 2015 Ettus Research
- * 
+/* Copyright 2015-2016 Ettus Research
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * gr-ettus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with gr-ettus; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -21,7 +21,6 @@
 #include <gnuradio/block_detail.h>
 
 using namespace gr::ettus;
-
 
 /****************************************************************************
  * Helper functions
@@ -167,6 +166,13 @@ rfnoc_block_impl::rfnoc_block_impl(
   //// Final configuration for the GNU Radio block:
   set_tag_propagation_policy(TPP_DONT);
   update_gr_io_signature();
+
+  // Add message ports
+  message_port_register_in(pmt::mp("rfnoc"));
+  set_msg_handler(
+    pmt::mp("rfnoc"),
+    boost::bind(&rfnoc_block_impl::handle_rfnoc_msg, this, _1)
+  );
 }
 
 rfnoc_block_impl::~rfnoc_block_impl()
@@ -586,5 +592,54 @@ rfnoc_block_impl::work_rx_u(
 
     produce(i, num_samps / _rx.vlen);
   } /* end for (chans) */
+}
+
+/*********************************************************************
+ * Message handling
+ *********************************************************************/
+void rfnoc_block_impl::handle_rfnoc_msg(pmt::pmt_t msg)
+{
+  /* If the PMT is a list, assume it's a list of pairs and recurse for each */
+  /* Works for dict too */
+  try {
+    /* Because of PMT is just broken you and can't distinguish between
+     * pair and dict, we have to call length() and see if it will throw
+     * or not ... */
+    if (pmt::length(msg) > 0) {
+      for (size_t i = 0; i < pmt::length(msg); i++) {
+        this->handle_rfnoc_msg(pmt::nth(i, msg));
+      }
+      return;
+    }
+  }
+  catch(...) {
+    // nop (means it wasn't a dict)
+  }
+
+  /* Handle the pairs */
+  if (pmt::is_pair(msg)) {
+    pmt::pmt_t key(pmt::car(msg));
+    pmt::pmt_t val(pmt::cdr(msg));
+    if (!pmt::is_symbol(key)) {
+      return;
+    }
+
+    try {
+        const std::string key_str = pmt::symbol_to_string(key);
+        if (pmt::is_bool(val)) {
+          this->set_arg(key_str, pmt::to_bool(val));
+        } else if (pmt::is_integer(val)) {
+          this->set_arg(key_str, int(pmt::to_long(val)));
+        } else if (pmt::is_real(val)) {
+          this->set_arg(key_str, pmt::to_double(val));
+        } else if (pmt::is_symbol(val)) {
+          this->set_arg(key_str, pmt::symbol_to_string(val));
+        }
+        // TODO: Add vectors
+    }
+    catch (...) {
+        GR_LOG_ERROR(d_logger, boost::format("Cannot set RFNoC block argument '%s'") % key);
+    }
+  }
 }
 

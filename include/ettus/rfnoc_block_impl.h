@@ -207,6 +207,9 @@ namespace gr {
       /*** RX **********************************************/
       stream_info< ::uhd::rx_streamer::sptr, ::uhd::rx_metadata_t > _rx;
 
+      /*** Message handling ********************************/
+      void handle_rfnoc_msg(pmt::pmt_t msg);
+
       /*** Multi-Streamer Sync and concurrency stuff ********/
       boost::recursive_mutex d_mutex;
       //! Counts the number of instantiations of this block
