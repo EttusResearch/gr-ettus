@@ -52,6 +52,12 @@ self.$(id).set_arg("length", $length)
     <domain>rfnoc</domain>
   </sink>
 
+  <sink>
+    <name>rfnoc</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
   <source>
     <name>out</name>
     <type>complex</type>

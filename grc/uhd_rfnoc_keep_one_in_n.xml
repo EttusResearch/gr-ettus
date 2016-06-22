@@ -49,7 +49,7 @@
     <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
-  
+
   <check>($vlen &gt; 0 and $vlen &lt;= 4096)</check>
 
   <sink>
@@ -57,6 +57,12 @@
     <type>complex</type>
     <vlen>$vlen</vlen>
     <domain>rfnoc</domain>
+  </sink>
+
+  <sink>
+    <name>rfnoc</name>
+    <type>message</type>
+    <optional>1</optional>
   </sink>
 
   <source>
