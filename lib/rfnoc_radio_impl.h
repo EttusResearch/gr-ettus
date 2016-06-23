@@ -52,8 +52,8 @@ namespace gr {
       void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan);
 
       uhd::time_spec_t get_time_now(void);
-      void set_command_time(const uhd::time_spec_t &time);
-      void clear_command_time(void);
+      void set_command_time(const uhd::time_spec_t &time, const size_t chan);
+      void clear_command_time(const size_t chan);
      private:
       ::uhd::rfnoc::radio_ctrl::sptr _radio_ctrl;
     };

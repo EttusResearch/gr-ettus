@@ -27,7 +27,6 @@
 #include <ettus/device3.h>
 #include <gnuradio/io_signature.h>
 #include "gr_uhd_common.h"
-#include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/rfnoc/graph.hpp>
 
 //using namespace gr::uhd;
@@ -39,12 +38,12 @@ class device3_impl : public device3
 
   device3_impl(const ::uhd::device_addr_t &device_addr)
   {
-    _dev = ::uhd::usrp::multi_usrp::make(device_addr);
-    if (not _dev->is_device3()) {
-      throw std::runtime_error("Device is not a generation-3 device.");
+    _dev = boost::dynamic_pointer_cast< ::uhd::device3 >(::uhd::device::make(device_addr));
+    if (not _dev) {
+      throw std::runtime_error("Could not find a generation-3 device matching device_addr.");
     }
-    _dev->get_device3()->clear();
-    _graph = _dev->get_device3()->create_graph("GNU Radio");
+    _dev->clear();
+    _graph = _dev->create_graph("GNU Radio");
   }
 
   ~device3_impl()
@@ -52,7 +51,7 @@ class device3_impl : public device3
     // nop
   }
 
-  ::uhd::usrp::multi_usrp::sptr get_device(void) { return _dev; };
+  ::uhd::device3::sptr get_device(void) { return _dev; };
 
   void connect(
       const std::string &block1,
@@ -79,7 +78,7 @@ class device3_impl : public device3
   }
 
  private:
-  ::uhd::usrp::multi_usrp::sptr _dev;
+  ::uhd::device3::sptr _dev;
   ::uhd::rfnoc::graph::sptr _graph;
 
 };

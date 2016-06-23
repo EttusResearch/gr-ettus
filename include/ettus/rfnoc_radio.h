@@ -68,8 +68,8 @@ namespace gr {
       virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
 
       virtual uhd::time_spec_t get_time_now(void) = 0;
-      virtual void set_command_time(const uhd::time_spec_t &time) = 0;
-      virtual void clear_command_time(void) = 0;
+      virtual void set_command_time(const uhd::time_spec_t &time, const size_t chan=0) = 0;
+      virtual void clear_command_time(const size_t chan=0) = 0;
     };
 
   } // namespace ettus

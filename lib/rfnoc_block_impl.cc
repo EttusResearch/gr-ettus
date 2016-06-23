@@ -146,11 +146,11 @@ rfnoc_block_impl::rfnoc_block_impl(
     _rx(rx_stream_args)
 {
   std::vector< ::uhd::rfnoc::block_id_t > blocks =
-          dev->get_device()->get_device3()->find_blocks(block_id);
+          dev->get_device()->find_blocks(block_id);
   if (blocks.empty()) {
       throw std::runtime_error(str(boost::format("Cannot find a block for ID: %s") % block_id));
   }
-  _blk_ctrl = dev->get_device()->get_device3()->get_block_ctrl(blocks.front());
+  _blk_ctrl = dev->get_device()->get_block_ctrl(blocks.front());
   UHD_ASSERT_THROW(_blk_ctrl);
 
   // Configure the block

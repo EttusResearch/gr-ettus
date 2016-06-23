@@ -22,7 +22,6 @@
 
 #include <ettus/rfnoc_block.h>
 #include <uhd/device3.hpp>
-#include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/utils/atomic.hpp>
 #include <uhd/rfnoc/block_ctrl_base.hpp>
 #include <uhd/rfnoc/sink_block_ctrl_base.hpp>
@@ -81,7 +80,7 @@ namespace gr {
       /*********************************************************************
        * RFNoC block related functions.
        *********************************************************************/
-      ::uhd::usrp::multi_usrp::sptr get_device() const { return _dev; };
+      ::uhd::device3::sptr get_device() const { return _dev; };
 
       //! \returns Block ID in string format.
       std::string get_block_id() const { return _blk_ctrl->get_block_id(); };
@@ -173,7 +172,7 @@ namespace gr {
        * Private attributes
        ********************************************************************/
       /*** Device and block controls ***********************/
-      ::uhd::usrp::multi_usrp::sptr       _dev;
+      ::uhd::device3::sptr                _dev;
       ::uhd::rfnoc::block_ctrl_base::sptr _blk_ctrl;
       ::uhd::device_addr_t                _merged_args;
 

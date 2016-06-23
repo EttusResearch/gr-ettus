@@ -99,37 +99,37 @@ namespace gr {
     // FIXME everything down from here needs to be mapped on to the block API
     void rfnoc_radio_impl::set_tx_dc_offset(bool enable, const size_t chan)
     {
-      get_device()->set_tx_dc_offset(enable, chan);
+      //get_device()->set_tx_dc_offset(enable, chan);
     }
 
     void rfnoc_radio_impl::set_tx_dc_offset(const std::complex< double > &offset, const size_t chan)
     {
-      get_device()->set_tx_dc_offset(offset, chan);
+      //get_device()->set_tx_dc_offset(offset, chan);
     }
 
     void rfnoc_radio_impl::set_rx_dc_offset(bool enable, const size_t chan)
     {
-      get_device()->set_rx_dc_offset(enable, chan);
+      //get_device()->set_rx_dc_offset(enable, chan);
     }
 
     void rfnoc_radio_impl::set_rx_dc_offset(const std::complex< double > &offset, const size_t chan)
     {
-      get_device()->set_rx_dc_offset(offset, chan);
+      //get_device()->set_rx_dc_offset(offset, chan);
     }
 
     uhd::time_spec_t rfnoc_radio_impl::get_time_now(void)
     {
-      return get_device()->get_time_now();
+      return _radio_ctrl->get_time_now();
     }
 
-    void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time)
+    void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time, const size_t chan)
     {
-      get_device()->set_command_time(time);
+      _radio_ctrl->set_command_time(time, chan);
     }
 
-    void rfnoc_radio_impl::clear_command_time(void)
+    void rfnoc_radio_impl::clear_command_time(const size_t chan)
     {
-      get_device()->clear_command_time();
+      _radio_ctrl->clear_command_time(chan);
     }
 
   } /* namespace ettus */

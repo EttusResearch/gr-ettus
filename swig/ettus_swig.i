@@ -47,6 +47,7 @@
 ////////////////////////////////////////////////////////////////////////
 %ignore gr::uhd::device3::get_device;
 %{
+#include <uhd/usrp/multi_usrp.hpp> // This conveniently includes all the things, we don't actually need multi_usrp
 #include "ettus/device3.h"
 #include "ettus/rfnoc_fir_cci.h"
 #include "ettus/rfnoc_window_cci.h"
@@ -117,26 +118,7 @@
     }
 };
 
-%include <uhd/types/stream_cmd.hpp>
-
-%include <uhd/types/clock_config.hpp>
-
-%include <uhd/types/metadata.hpp>
-
 %template(device_addr_vector_t) std::vector<uhd::device_addr_t>;
-
-%include <uhd/types/sensors.hpp>
-
-%include <uhd/stream.hpp>
-
-////////////////////////////////////////////////////////////////////////
-// swig dboard_iface for python access
-////////////////////////////////////////////////////////////////////////
-%include stdint.i
-%include <uhd/types/serial.hpp>
-%include <uhd/usrp/dboard_iface.hpp>
-
-%template(dboard_iface_sptr) boost::shared_ptr<uhd::usrp::dboard_iface>;
 
 ////////////////////////////////////////////////////////////////////////
 // block magic
