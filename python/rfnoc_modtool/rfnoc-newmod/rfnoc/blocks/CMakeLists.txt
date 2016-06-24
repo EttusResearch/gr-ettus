@@ -20,6 +20,5 @@ FILE(GLOB xml_files "*.xml")
 install(
     FILES ${xml_files}
     DESTINATION share/uhd/rfnoc/blocks
-    DESTINATION share/gnuradio/grc/blocks
     COMPONENT headers # TODO: Different component
 )

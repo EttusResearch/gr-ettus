@@ -567,12 +567,12 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
           uhd.stream_args( \# TX Stream Args
                 cpu_format="\$type",
                 otw_format="\$otw",
-                args=""
+                args="gr_vlen={0},{1}".format(\${grvlen}, "" if \$grvlen == 1 else "spp={0}".format(\$grvlen)),
           ),
           uhd.stream_args( \# RX Stream Args
                 cpu_format="\$type",
                 otw_format="\$otw",
-                args=""
+                args="gr_vlen={0},{1}".format(\${grvlen}, "" if \$grvlen == 1 else "spp={0}".format(\$grvlen)),
           ),
           \$block_index,
           \$device_index
@@ -624,7 +624,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   </param>
 
   <param>
-    <name>COPY Select</name>
+    <name>${blockname.upper()} Select</name>
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
@@ -632,6 +632,30 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>Force Vector Length</name>
+    <key>grvlen</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Device Format</name>
+    <key>otw</key>
+    <type>enum</type>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+    </option>
+    <option>
+      <name>Complex int8</name>
+      <key>sc8</key>
+    </option>
+    <option>
+      <name>Byte</name>
+      <key>u8</key>
+    </option>
+  </param>
 #end if
   <param>
     <name>...</name>
@@ -647,6 +671,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   <sink>
     <name>in</name>
     <type>\$type.type</type>
+    <vlen>\$grvlen</vlen>
     <domain>rfnoc</domain>
   </sink>
 
@@ -658,6 +683,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   <source>
     <name>out</name>
     <type>\$type.type</type>
+    <vlen>\$grvlen</vlen>
     <domain>rfnoc</domain>
   </source>
 </block>

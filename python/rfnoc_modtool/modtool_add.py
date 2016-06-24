@@ -52,7 +52,7 @@ class ModToolAdd(ModTool):
         parser = ModTool.setup_parser(self)
         ogroup = OptionGroup(parser, "Add module options")
         ogroup.add_option("--license-file", type="string", default=None,
-                help="File containing the license header for every source code file.")
+                          help="File containing the license header for every source code file.")
         ogroup.add_option("--noc_id", type="string", default=None,
                 help="The ID number with which the RFNoC block will identify itself at the SW/Hw interface")
         ogroup.add_option("--copyright", type="string", default=None,
@@ -85,14 +85,14 @@ class ModToolAdd(ModTool):
                 self._info['blockname'] = raw_input("Enter name of block/code (without module name prefix): ")
         if not re.match('[a-zA-Z0-9_]+', self._info['blockname']):
             raise ModToolException('Invalid block name.')
-        print "Block/code identifier: " + self._info['blockname']
+        print("Block/code identifier: " + self._info['blockname'])
         self._info['fullblockname'] = self._info['modname'] + '_' + self._info['blockname']
         if not options.license_file:
             self._info['copyrightholder'] = options.copyright
             if self._info['copyrightholder'] is None:
                 self._info['copyrightholder'] = '<+YOU OR YOUR COMPANY+>'
             elif self._info['is_component']:
-                print "For GNU Radio components the FSF is added as copyright holder"
+                print("For GNU Radio components the FSF is added as copyright holder")
         self._license_file = options.license_file
         self._info['license'] = self.setup_choose_license()
         if options.argument_list is not None:
@@ -109,8 +109,8 @@ class ModToolAdd(ModTool):
             self._add_cc_qa = ask_yes_no('Add C++ QA code?', not self._add_py_qa)
         self._skip_cmakefiles = options.skip_cmakefiles
         if self._info['version'] == 'autofoo' and not self._skip_cmakefiles:
-            print "Warning: Autotools modules are not supported. ",
-            print "Files will be created, but Makefiles will not be edited."
+            print("Warning: Autotools modules are not supported. ",)
+            print("Files will be created, but Makefiles will not be edited.")
             self._skip_cmakefiles = True
         #NOC ID parse
         self._info['noc_id'] = options.noc_id
@@ -120,10 +120,10 @@ class ModToolAdd(ModTool):
             raise ModToolException('Invalid NoC ID - Only Hexadecimal Values accepted.')
         self._skip_block_ctrl = options.skip_block_ctrl
         if self._skip_block_ctrl is None:
-            self._skip_block_ctrl = ask_yes_no('Skip Block Controllers Generation?', False)
+            self._skip_block_ctrl = ask_yes_no('Skip Block Controllers Generation? [UHD block ctrl files]', False)
         self._skip_block_interface = options.skip_block_interface
         if self._skip_block_interface is None:
-            self._skip_block_interface = ask_yes_no('Skip Block interface Generation?', False)
+            self._skip_block_interface = ask_yes_no('Skip Block interface files Generation? [GRC block ctrl files]', False)
 
     def setup_choose_license(self):
         """ Select a license by the following rules, in this order:
@@ -146,7 +146,7 @@ class ModToolAdd(ModTool):
     def _write_tpl(self, tpl, path, fname):
         """ Shorthand for writing a substituted template to a file"""
         path_to_file = os.path.join(path, fname)
-        print "Adding file '%s'..." % path_to_file
+        print("Adding file '%s'..." % path_to_file)
         open(path_to_file, 'w').write(get_template(tpl, **self._info))
         self.scm.add_files((path_to_file,))
 
@@ -201,7 +201,7 @@ class ModToolAdd(ModTool):
                                             )
                     self.scm.mark_files_updated((self._file['qalib'],))
                 except IOError:
-                    print "Can't add C++ QA files."
+                    print("Can't add C++ QA files.")
         def _add_qa36():
             " Add C++ QA files for pre-3.7 API (not autotools) "
             fname_qa_cc = 'qa_%s.cc' % self._info['fullblockname']
@@ -269,16 +269,16 @@ class ModToolAdd(ModTool):
             elif self._info['version'] == '36':
                 _add_qa36()
             elif self._info['version'] == 'autofoo':
-                print "Warning: C++ QA files not supported for autotools."
+                print("Warning: C++ QA files not supported for autotools.")
 
     def _run_swig(self):
         """ Do everything that needs doing in the subdir 'swig'.
         - Edit main *.i file
         """
         if self._get_mainswigfile() is None:
-            print 'Warning: No main swig file found.'
+            print('Warning: No main swig file found.')
             return
-        print "Editing %s..." % self._file['swig']
+        print("Editing %s..." % self._file['swig'])
         mod_block_sep = '/'
         if self._info['version'] == '36':
             mod_block_sep = '_'
@@ -309,7 +309,7 @@ class ModToolAdd(ModTool):
         self.scm.mark_files_updated((os.path.join(self._info['pydir'], fname_py_qa),))
         if self._skip_cmakefiles or CMakeFileEditor(self._file['cmpython']).check_for_glob('qa_*.py'):
             return
-        print "Editing %s/CMakeLists.txt..." % self._info['pydir']
+        print("Editing %s/CMakeLists.txt..." % self._info['pydir'])
         open(self._file['cmpython'], 'a').write(
                 'GR_ADD_TEST(qa_%s ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % \
                   (self._info['blockname'], fname_py_qa))
@@ -346,7 +346,7 @@ class ModToolAdd(ModTool):
         ed = CMakeFileEditor(self._file['cmgrc'], '\n    ')
         if self._skip_cmakefiles or ed.check_for_glob('*.xml'):
             return
-        print "Editing grc/CMakeLists.txt..."
+        print("Editing grc/CMakeLists.txt...")
         ed.append_value('install', fname_grc, to_ignore_end='DESTINATION[^()]+')
         ed.write()
         self.scm.mark_files_updated((self._file['cmgrc'],))
@@ -363,14 +363,14 @@ class ModToolAdd(ModTool):
         fname_rfnocv = 'noc_block_' +  self._info['blockname'] + '.v'
         self._write_tpl('rfnoc_xml', 'rfnoc/blocks', fname_rfnoc)
         self._write_tpl('rfnoc_v', 'rfnoc/fpga-src', fname_rfnocv)
-        patt_v = re.escape('RFNOC_SRCS = $(abspath $(addprefix $(BASE_DIR)/../lib/rfnoc/, \\\n') #TODO can be replaced with a dummy, as the file is supposed to be empty
+        patt_v = re.escape('$(addprefix '+os.path.join(os.getcwd(),'rfnoc','fpga-src','')+', \\\n') #TODO can be replaced with a dummy, as the file is supposed to be empty
         append_re_line_sequence(self._file['rfnoc_mksrc'],
                                            patt_v,
-                                           'noc_block_' + self._info['blockname'] + '.v \\\n')
+                                           'noc_block_' + self._info['blockname'] + '.v \\')
         ed = CMakeFileEditor(self._file['cmrfnoc'], '\n    ')
         if self._skip_cmakefiles or ed.check_for_glob('*.xml'):
             return
-        print "Editing rfnoc/blocks/CMakeLists.txt..."
+        print("Editing rfnoc/blocks/CMakeLists.txt...")
         ed.append_value('install', fname_rfnoc, to_ignore_end='DESTINATION[^()]+')
         ed.write()
         self.scm.mark_files_updated((self._file['cmrfnoc'],))
