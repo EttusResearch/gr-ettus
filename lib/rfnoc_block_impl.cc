@@ -270,7 +270,8 @@ bool rfnoc_block_impl::start()
   _tx.metadata.has_time_spec = false;
 
   // Wait for all RFNoC streamers to have set up their tx streamers
-  _tx_barrier.wait();
+  if (!_tx.streamers.empty() || !_rx.streamers.empty())
+    _tx_barrier.wait();
 
   //////////////////// RX ///////////////////////////////////////////////////////////////
   // Setup RX streamer
@@ -311,7 +312,8 @@ bool rfnoc_block_impl::start()
   }
 
   // Wait for all RFNoC streamers to have set up their rx streamers
-  _rx_barrier.wait();
+  if (!_tx.streamers.empty() || !_rx.streamers.empty())
+    _rx_barrier.wait();
 
   // Start the streamers
   if (!_rx.streamers.empty()) {
@@ -343,7 +345,8 @@ bool rfnoc_block_impl::stop()
     }
   }
 
-  _tx_barrier.wait();
+  if (!_tx.streamers.empty() || !_rx.streamers.empty())
+    _tx_barrier.wait();
 
   // RX: Stop streaming and empty the buffers
   for (size_t i = 0; i < _rx.streamers.size(); i++) {
