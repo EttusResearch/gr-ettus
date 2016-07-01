@@ -358,6 +358,8 @@ class ModToolAdd(ModTool):
         - include in CMakeLists.txt
         - add verilog file
         - adds verilog name to Makefile.srcs
+        - Calls _run_testbenches()
+        - Runs build (test)
         """
         fname_rfnoc = self._info['blockname'] + '.xml'
         fname_rfnocv = 'noc_block_' +  self._info['blockname'] + '.v'
@@ -368,6 +370,8 @@ class ModToolAdd(ModTool):
                                            patt_v,
                                            'noc_block_' + self._info['blockname'] + '.v \\')
         ed = CMakeFileEditor(self._file['cmrfnoc'], '\n    ')
+        self._run_testbenches()
+        self._build()
         if self._skip_cmakefiles or ed.check_for_glob('*.xml'):
             return
         print("Editing rfnoc/blocks/CMakeLists.txt...")
@@ -375,4 +379,38 @@ class ModToolAdd(ModTool):
         ed.write()
         self.scm.mark_files_updated((self._file['cmrfnoc'],))
 
+    def _run_testbenches(self):
+        """
+        Generates the template for the OOT mod testbench and puts it into
+        a new folder along with an empty CMakelists and a template for
+        the Makefile.
+        """
+        dirname = 'noc_block_' + self._info['blockname'] + '_tb'
+        new_tbdir = 'rfnoc/testbenches/' + dirname
+        if not os.path.isdir(new_tbdir):
+            os.makedirs(new_tbdir)
+            print(new_tbdir + ' folder created')
+        tbname = 'noc_block_' + self._info['blockname'] + '_tb.sv'
+        self._write_tpl('rfnoc_tb', new_tbdir, tbname)
+        self._write_tpl('tb_makefile', new_tbdir, 'Makefile')
+        self._write_tpl('empty', new_tbdir, 'CMakeLists.txt')
+        append_re_line_sequence('rfnoc/testbenches/CMakeLists.txt',
+               "--------------------",
+               'add_subdirectory({})'.format(dirname) + '\n')
 
+    def _build(args):
+        """
+        Run the make command that sets up the fpga repository path. Assumes
+        that the  script is run in the newly created OOT mod, which is the
+        normal operational behavior
+        """
+        cwd = os.getcwd()
+        build_dir = os.path.join(cwd, 'build')
+        if os.path.isdir(build_dir):
+            print("changing temporarily working directory to {0}".\
+                    format(build_dir))
+            os.chdir(build_dir)
+            make_cmd = "make test_tb"
+            ret_val = os.system(make_cmd)
+            os.chdir(cwd)
+            return ret_val

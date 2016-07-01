@@ -166,6 +166,13 @@ IF(ettus_FOUND)
 	link_directories(${ETTUS_LIBRARIES})
 	message(" * LIBS = ${ETTUS_LIBRARIES}")
 ENDIF(ettus_FOUND)
+###########################################################################
+# Linking for fpga
+###########################################################################
+FIND_PACKAGE(fpga)
+IF(FPGA_FOUND)
+    set(FPGA ${UHD_FPGA_DIR}  CACHE STRING "" FORCE)
+ENDIF(FPGA_FOUND)
 
 # Set component parameters
 set(GR_RFNOC_EXAMPLE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "" FORCE)
@@ -194,6 +201,7 @@ add_subdirectory(grc)
 add_subdirectory(apps)
 add_subdirectory(docs)
 add_subdirectory(rfnoc/blocks)
+add_subdirectory(rfnoc/testbenches)
 
 ########################################################################
 # Install cmake search helper for this library
@@ -205,4 +213,42 @@ endif(NOT CMAKE_MODULES_DIR)
 install(FILES cmake/Modules/rfnoc_exampleConfig.cmake
     DESTINATION ${CMAKE_MODULES_DIR}/rfnoc_example
 )
+
+install(FILES cmake/Modules/Findfpga.cmake
+    DESTINATION ${CMAKE_MODULES_DIR}/fpga
+)
+########################################################################
+# Create target for testbenches
+########################################################################
+
+FILE(GLOB_RECURSE Makefiles "${CMAKE_SOURCE_DIR}/rfnoc/testbenches/Makefile")
+FILE(GLOB_RECURSE testbenches "${CMAKE_SOURCE_DIR}/rfnoc/testbenches/*.sv")
+
+########################TEST TO RETRIEVE THE PATHS CONTAINING Makefiles
+SET(dir_list "")
+FOREACH(file_path ${Makefiles})
+	GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+	SET(dir_list ${dir_list} ${dir_path})
+ENDFOREACH()
+
+FOREACH(file_path ${testbenches})
+    GET_FILENAME_COMPONENT(dir_name ${file_path} NAME_WE)
+	SET(name_list ${name_list} ${dir_name})
+ENDFOREACH()
+
+LIST(REMOVE_DUPLICATES dir_list) #Not really needed, no duplicate expected
+
+add_custom_target(test_tb
+	COMMAND sed -i 's~FPGA_TOP_DIR~${FPGA}~' ${Makefiles}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake/
+	COMMAND sed -i 's~FPGA_TOP_DIR~${FPGA}~' setupenv.sh
+)
+
+FOREACH(name ${name_list})
+    add_custom_target(${name}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMAND source cmake/setupenv.sh && make -C rfnoc/testbenches/${name} xsim
+    )
+ENDFOREACH()
+
 
