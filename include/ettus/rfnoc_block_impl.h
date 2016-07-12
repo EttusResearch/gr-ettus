@@ -127,6 +127,21 @@ namespace gr {
           _blk_ctrl->set_arg<std::string>(key, val, port);
       }
 
+      void set_command_time(const uhd::time_spec_t &time_spec, const size_t port = 0)
+      {
+          _blk_ctrl->set_command_time(time_spec, port);
+      }
+
+      uhd::time_spec_t get_command_time(const size_t port = 0)
+      {
+          return _blk_ctrl->get_command_time(port);
+      }
+
+      void clear_command_time(const size_t port)
+      {
+          _blk_ctrl->clear_command_time(port);
+      }
+
       /*********************************************************************
        * Workers and Helpers
        *********************************************************************/

@@ -24,6 +24,7 @@
 #include <ettus/device3.h>
 #include <gnuradio/block.h>
 #include <uhd/stream.hpp>
+#include <uhd/types/time_spec.hpp>
 
 namespace gr {
   namespace ettus {
@@ -61,6 +62,10 @@ namespace gr {
       virtual void set_arg(const std::string &key, const int val,          const size_t port = 0) = 0;
       virtual void set_arg(const std::string &key, const double val,       const size_t port = 0) = 0;
       virtual void set_arg(const std::string &key, const std::string &val, const size_t port = 0) = 0;
+
+      virtual void set_command_time(const uhd::time_spec_t &time_spec, const size_t port = 0) = 0;
+      virtual uhd::time_spec_t get_command_time(const size_t port = 0) = 0;
+      virtual void clear_command_time(const size_t port) = 0;
 
       // GNU Radio-specific overrides (defined in rfnoc_block_impl.cc)
       virtual int general_work(

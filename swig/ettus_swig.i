@@ -47,6 +47,7 @@
 ////////////////////////////////////////////////////////////////////////
 %ignore gr::uhd::device3::get_device;
 %{
+#include <uhd/types/time_spec.hpp>
 #include <uhd/usrp/multi_usrp.hpp> // This conveniently includes all the things, we don't actually need multi_usrp
 #include "ettus/device3.h"
 #include "ettus/rfnoc_fir_cci.h"
