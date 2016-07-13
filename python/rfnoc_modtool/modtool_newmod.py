@@ -69,7 +69,7 @@ class ModToolNewModule(ModTool):
             if os.environ.get('PYBOMBS_PREFIX'):
                 options.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'),post_path)
             else:
-                options.srcdir = os.path.join('usr','local',post_path)
+                options.srcdir = os.path.join('/usr','local',post_path)
         self._srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path', options.srcdir)
         if not os.path.isdir(self._srcdir):
             raise ModToolException('Could not find rfnoc-newmod source dir')
