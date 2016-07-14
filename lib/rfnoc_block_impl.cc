@@ -219,6 +219,10 @@ bool rfnoc_block_impl::start()
   size_t noutputs = detail()->noutputs();
   GR_LOG_DEBUG(d_debug_logger, str(boost::format("start(): ninputs == %d noutputs == %d") % ninputs % noutputs));
 
+  if (ninputs == 0 && noutputs == 0) {
+      return true;
+  }
+
   // If the topology changed, we need to clear the old streamers
   if (_rx.streamers.size() != noutputs) {
     _rx.streamers.clear();
