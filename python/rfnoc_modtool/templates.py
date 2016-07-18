@@ -56,6 +56,7 @@ ${str_to_fancyc_comment($license)}
 
 \#include <${include_dir_prefix}/${blockname}.h>
 #if $blocktype == 'rfnoc'
+\#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
 \#include <ettus/rfnoc_block_impl.h>
 #end if
 
@@ -136,9 +137,6 @@ ${str_to_fancyc_comment($license)}
 \#include <${include_dir_prefix}/${blockname}.h>
 #else
 \#include "${blockname}_impl.h"
-#end if
-#if $blocktype == 'rfnoc'
-\#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
 #end if
 namespace gr {
   namespace ${modname} {
