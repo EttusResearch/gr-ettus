@@ -132,7 +132,7 @@ namespace gr {
           _blk_ctrl->set_arg<std::string>(key, val, port);
       }
 
-      void set_command_time(const uhd::time_spec_t &time_spec, const size_t port = 0)
+      void set_command_time(const uhd::time_spec_t &time_spec, const size_t port = ::uhd::rfnoc::ANY_PORT)
       {
           _blk_ctrl->set_command_time(time_spec, port);
       }
@@ -142,7 +142,7 @@ namespace gr {
           return _blk_ctrl->get_command_time(port);
       }
 
-      void clear_command_time(const size_t port)
+      void clear_command_time(const size_t port = ::uhd::rfnoc::ANY_PORT)
       {
           _blk_ctrl->clear_command_time(port);
       }

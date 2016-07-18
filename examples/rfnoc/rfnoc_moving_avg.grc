@@ -1374,6 +1374,12 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>qtgui_edit_box_msg_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_moving_avg_0</sink_block_id>
+    <source_key>msg</source_key>
+    <sink_key>rfnoc</sink_key>
+  </connection>
+  <connection>
     <source_block_id>uhd_rfnoc_streamer_fifo_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
     <source_key>0</source_key>

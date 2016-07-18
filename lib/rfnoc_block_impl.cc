@@ -22,6 +22,10 @@
 
 using namespace gr::ettus;
 
+const pmt::pmt_t CMD_TIME_KEY = pmt::mp("time");
+const pmt::pmt_t CMD_CHAN_KEY = pmt::mp("chan");
+const pmt::pmt_t MSG_PORT_RFNOC = pmt::mp("rfnoc");
+
 /****************************************************************************
  * Helper functions
  ****************************************************************************/
@@ -199,9 +203,9 @@ rfnoc_block_impl::rfnoc_block_impl(
 
 
   // Add message ports
-  message_port_register_in(pmt::mp("rfnoc"));
+  message_port_register_in(MSG_PORT_RFNOC);
   set_msg_handler(
-    pmt::mp("rfnoc"),
+    MSG_PORT_RFNOC,
     boost::bind(&rfnoc_block_impl::handle_rfnoc_msg, this, _1)
   );
 }
@@ -651,33 +655,55 @@ rfnoc_block_impl::work_rx_u(
  *********************************************************************/
 void rfnoc_block_impl::handle_rfnoc_msg(pmt::pmt_t msg)
 {
-  /* If the PMT is a list, assume it's a list of pairs and recurse for each */
-  /* Works for dict too */
+  // Pairs pass is_dict(), but they're not dicts.
   try {
-    /* Because of PMT is just broken you and can't distinguish between
-     * pair and dict, we have to call length() and see if it will throw
-     * or not ... */
-    if (pmt::length(msg) > 0) {
-      for (size_t i = 0; i < pmt::length(msg); i++) {
-        this->handle_rfnoc_msg(pmt::nth(i, msg));
+    // This will fail if msg is a pair:
+    pmt::pmt_t keys = pmt::dict_keys(msg);
+  } catch (const pmt::wrong_type &e) {
+    // So we fix it:
+    GR_LOG_DEBUG(d_debug_logger, boost::format("Converting pair to dict: %s") % msg);
+    msg = pmt::dict_add(pmt::make_dict(), pmt::car(msg), pmt::cdr(msg));
+  }
+
+  /*** Start the actual message processing *************************/
+  /// 1) Read chan value
+  int chan = int(pmt::to_long(
+      pmt::dict_ref(
+        msg, CMD_CHAN_KEY,
+        pmt::from_long(-1) // Default to all chans
+      )
+  ));
+
+  /// 2) Check if there's a time stamp
+  if (pmt::dict_has_key(msg, CMD_TIME_KEY)) {
+    pmt::pmt_t timespec_p = pmt::dict_ref(msg, CMD_TIME_KEY, pmt::PMT_NIL);
+    if (timespec_p == pmt::PMT_NIL) {
+      if (chan == -1) {
+        clear_command_time();
+      } else {
+        clear_command_time(chan);
       }
-      return;
+    } else {
+      ::uhd::time_spec_t timespec(
+          time_t(pmt::to_uint64(pmt::car(timespec_p))), // Full secs
+          pmt::to_double(pmt::cdr(timespec_p)) // Frac secs
+      );
+      GR_LOG_DEBUG(d_debug_logger, boost::format("Setting command time on chan %d") % chan);
+      if (chan == -1) {
+        set_command_time(timespec);
+      } else {
+        set_command_time(timespec, chan);
+      }
     }
   }
-  catch(...) {
-    // nop (means it wasn't a dict)
-  }
 
-  /* Handle the pairs */
-  if (pmt::is_pair(msg)) {
-    pmt::pmt_t key(pmt::car(msg));
-    pmt::pmt_t val(pmt::cdr(msg));
-    if (!pmt::is_symbol(key)) {
-      return;
-    }
-
+  /// 3) Loop through all the values
+  GR_LOG_DEBUG(d_debug_logger, boost::format("Processing command message %s") % msg);
+  pmt::pmt_t msg_items = pmt::dict_items(msg);
+  for (size_t i = 0; i < pmt::length(msg_items); i++) {
     try {
-        const std::string key_str = pmt::symbol_to_string(key);
+        const std::string key_str = pmt::symbol_to_string(pmt::car(pmt::nth(i, msg_items)));
+        const pmt::pmt_t val(pmt::cdr(pmt::nth(i, msg_items)));
         if (pmt::is_bool(val)) {
           this->set_arg(key_str, pmt::to_bool(val));
         } else if (pmt::is_integer(val)) {
@@ -690,7 +716,7 @@ void rfnoc_block_impl::handle_rfnoc_msg(pmt::pmt_t msg)
         // TODO: Add vectors
     }
     catch (...) {
-        GR_LOG_ERROR(d_logger, boost::format("Cannot set RFNoC block argument '%s'") % key);
+        GR_LOG_ERROR(d_logger, boost::format("Cannot set RFNoC block argument '%d'") % i);
     }
   }
 }
