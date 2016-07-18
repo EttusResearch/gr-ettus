@@ -17,6 +17,7 @@
     ),
     "DUC", $block_index, $device_index,
 )</make>
+  <callback>set_arg("freq", $freq)</callback>
 
   <param>
     <name>Input Rate</name>
