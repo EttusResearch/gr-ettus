@@ -39,18 +39,19 @@ namespace gr {
   namespace ettus {
 
     fosphor_display::sptr
-    fosphor_display::make(const int fft_bins, const int pwr_bins, QWidget *parent)
+    fosphor_display::make(const int fft_bins, const int pwr_bins, const int wf_lines, QWidget *parent)
     {
-      return gnuradio::get_initial_sptr(new fosphor_display_impl(fft_bins, pwr_bins, parent));
+      return gnuradio::get_initial_sptr(new fosphor_display_impl(fft_bins, pwr_bins, wf_lines, parent));
     }
 
     fosphor_display_impl::fosphor_display_impl(const int fft_bins,
                                                const int pwr_bins,
+                                               const int wf_lines,
                                                QWidget *parent)
       : gr::block("fosphor_display",
-                  gr::io_signature::make(1, 1, fft_bins),
+                  gr::io_signature::make(1, 2, fft_bins),
                   gr::io_signature::make(0, 0, 0)),
-        d_fft_bins(fft_bins), d_pwr_bins(pwr_bins),
+        d_fft_bins(fft_bins), d_pwr_bins(pwr_bins), d_wf_lines(wf_lines),
         d_center_freq(0.0), d_samp_rate(0.0), d_frame_rate(0),
         d_aligned(false), d_subframe(0), d_subframe_num(pwr_bins + 2)
     {
@@ -69,7 +70,7 @@ namespace gr {
         this->d_qApplication = new QApplication(argc, argv);
       }
 
-      this->d_gui = new QFosphorSurface(fft_bins, pwr_bins, parent);
+      this->d_gui = new QFosphorSurface(fft_bins, pwr_bins, wf_lines, parent);
       this->d_gui->setFocusPolicy(Qt::StrongFocus);
       this->d_gui->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
@@ -116,6 +117,12 @@ namespace gr {
     }
 
     void
+    fosphor_display_impl::set_waterfall(bool enabled)
+    {
+      this->d_gui->setWaterfall(enabled);
+    }
+
+    void
     fosphor_display_impl::set_grid(bool enabled)
     {
       this->d_gui->setGrid(enabled);
@@ -133,6 +140,41 @@ namespace gr {
       this->d_frame_rate = fps;
     }
 
+
+    bool
+    fosphor_display_impl::start()
+    {
+      pmt::pmt_t msg = pmt::make_dict();
+
+      {
+        int decim;
+
+        decim = (int)(this->d_samp_rate / (this->d_fft_bins * this->d_pwr_bins * this->d_frame_rate));
+        if (decim < 2)
+          decim = 2;
+
+        msg = pmt::dict_add(msg,
+          pmt::string_to_symbol("decim"), pmt::from_long(decim)
+        );
+      }
+
+      msg = pmt::dict_add(msg,
+        pmt::string_to_symbol("clear"), pmt::from_long(1)
+      );
+
+      message_port_pub(pmt::mp("cfg"), msg);
+    }
+
+    void
+    fosphor_display_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+    {
+      /* Need at least one item */
+      ninput_items_required[0] = 1;
+
+      /* Don't wait on WaterFall data */
+      if (ninput_items_required.size() > 1)
+        ninput_items_required[1] = 0;
+    }
 
     int
     fosphor_display_impl::general_work(int noutput_items,
@@ -152,6 +194,19 @@ namespace gr {
       if (rv > 0)
         consume(0, rv);
 
+      /* Consume waterfall, if available */
+      if (ninput_items.size() > 1)
+      {
+        rv = this->_work_wf(
+          (const uint8_t *) input_items[1],
+          ninput_items[1],
+          1
+        );
+
+        if (rv > 0)
+          consume(1, rv);
+      }
+
       return 0;
     }
 
@@ -163,6 +218,7 @@ namespace gr {
       uint64_t nR = nitems_read(port);
       int pEOF;
 
+      /* Anything to do ? */
       if (n_items < 1)
         return 0;
 
@@ -223,6 +279,19 @@ namespace gr {
         /* Start over */
         this->d_subframe = 0;
       }
+
+      return n_items;
+    }
+
+    int
+    fosphor_display_impl::_work_wf(const uint8_t *input, int n_items, int port)
+    {
+      /* Anything to do ? */
+      if (n_items < 1)
+        return 0;
+
+      /* Send them to the display surface */
+      this->d_gui->sendWaterfall(input, n_items);
 
       return n_items;
     }

@@ -33,18 +33,20 @@
 namespace gr {
   namespace ettus {
 
-    QFosphorSurface::QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent)
+    QFosphorSurface::QFosphorSurface(int fft_bins, int pwr_bins, int wf_lines, QWidget *parent)
       : QGLWidget(parent),
-        fft_bins(fft_bins), pwr_bins(pwr_bins),
+        fft_bins(fft_bins), pwr_bins(pwr_bins), wf_lines(wf_lines),
         grid_enabled(true), palette("iron")
     {
       this->setFocusPolicy(Qt::StrongFocus);
       this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
       memset(&this->frame, 0, sizeof(this->frame));
+      memset(&this->wf, 0, sizeof(this->wf));
       memset(&this->layout, 0, sizeof(this->layout));
 
       this->frame.vbo_buf = new float[4*fft_bins]();
+      this->wf.data_buf = new uint8_t[wf_lines*fft_bins]();
 
       this->setFrequencyRange(0.0, 0.0);
     }
@@ -52,6 +54,7 @@ namespace gr {
     QFosphorSurface::~QFosphorSurface()
     {
       delete [] this->frame.vbo_buf;
+      delete [] this->wf.data_buf;
     }
 
 
@@ -94,6 +97,24 @@ namespace gr {
         GL_DYNAMIC_DRAW
       );
 
+      /* Init waterfall texture */
+      glGenTextures(1, &this->wf.tex);
+
+      glBindTexture(GL_TEXTURE_2D, this->wf.tex);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+      glTexImage2D(
+          GL_TEXTURE_2D,
+          0, GL_R8,
+          this->fft_bins, this->wf_lines, 0,
+          GL_RED, GL_UNSIGNED_BYTE,
+          NULL
+      );
+
       /* Color map */
       this->cmap = new QFosphorColorMapper(this);
     }
@@ -128,7 +149,12 @@ namespace gr {
       /* Upload texture if needed */
       if (this->frame.dirty)
       {
-        this->uploadData();
+        this->uploadFrameData();
+      }
+
+      if (this->wf.dirty)
+      {
+        this->uploadWaterfallData();
       }
 
       /* Refresh layout if needed */
@@ -143,9 +169,16 @@ namespace gr {
 
       /* Draw the various UI element */
       this->drawHistogram();
+      this->drawHistogramIntensityScale();
       this->drawSpectrum();
       this->drawGrid();
-      this->drawIntensityScale();
+
+      if (this->layout.wf_enabled)
+      {
+        this->drawWaterfall();
+        this->drawWaterfallIntensityScale();
+      }
+
       this->drawMargins();
     }
 
@@ -160,6 +193,13 @@ namespace gr {
     {
       freq_axis_build(&this->freq_axis, center_freq, span, 10);
       this->layout.dirty = true; // FIXME more fine grain refresh
+    }
+
+    void
+    QFosphorSurface::setWaterfall(bool enabled)
+    {
+      this->layout.wf_enabled = enabled;
+      this->layout.dirty = true;
     }
 
     void
@@ -182,6 +222,31 @@ namespace gr {
       QMetaObject::invokeMethod(this, "updateGL");
     }
 
+    void
+    QFosphorSurface::sendWaterfall(const uint8_t *wf, int n)
+    {
+      int m;
+
+      // Limit to max height
+      if (n > this->wf_lines) {
+        wf += this->fft_bins * (n - this->wf_lines);
+        n = this->wf_lines;
+      }
+
+      // Copy the new data
+      while (n)
+      {
+        m = n > (this->wf_lines - this->wf.pos) ? (this->wf_lines - this->wf.pos) : n;
+        memcpy(&this->wf.data_buf[this->wf.pos * this->fft_bins], wf, m * this->fft_bins);
+        this->wf.pos = (this->wf.pos + m) % this->wf_lines;
+        wf  += m * this->fft_bins;
+        n   -= m;
+      }
+
+      // Force refresh
+      this->wf.dirty = true;
+    }
+
 
     /* -------------------------------------------------------------------- */
     /* Private helpers                                                      */
@@ -191,23 +256,35 @@ namespace gr {
     QFosphorSurface::drawHistogram()
     {
       float x[2], y[2];
+      float e = 0.5f / this->fft_bins;
 
       /* Draw Histogram texture */
       this->cmap->enable(this->palette, this->frame.tex);
 
-      x[0] = this->layout.x[0];
-      x[1] = this->layout.x[1];
-      y[0] = this->layout.y[0];
-      y[1] = this->layout.y[1];
+      x[0] = this->layout.x[1];
+      x[1] = this->layout.x[2];
+      y[0] = this->layout.y[3];
+      y[1] = this->layout.y[4];
 
       glBegin( GL_QUADS );
-      glTexCoord2d(0.0f, -0.038f); glVertex2d(x[0], y[0]);
-      glTexCoord2d(1.0f, -0.038f); glVertex2d(x[1], y[0]);
-      glTexCoord2d(1.0f,  1.000f); glVertex2d(x[1], y[1]);
-      glTexCoord2d(0.0f,  1.000f); glVertex2d(x[0], y[1]);
+      glTexCoord2d(0.0f + e, -0.038f); glVertex2d(x[0], y[0]);
+      glTexCoord2d(1.0f + e, -0.038f); glVertex2d(x[1], y[0]);
+      glTexCoord2d(1.0f + e,  1.000f); glVertex2d(x[1], y[1]);
+      glTexCoord2d(0.0f + e,  1.000f); glVertex2d(x[0], y[1]);
       glEnd();
 
       this->cmap->disable();
+    }
+
+    void
+    QFosphorSurface::drawHistogramIntensityScale()
+    {
+      this->cmap->drawScale(this->palette,
+        this->layout.x[2] +  2.0f,
+        this->layout.y[3],
+        this->layout.x[2] + 10.0f,
+        this->layout.y[4]
+      );
     }
 
     void
@@ -217,14 +294,14 @@ namespace gr {
       glPushMatrix();
 
       glTranslatef(
-       this->layout.x[0],
-       this->layout.y[0],
+       this->layout.x[1],
+       this->layout.y[3],
        0.0f
       );
 
       glScalef(
-        this->layout.x[1] - this->layout.x[0],
-        this->layout.y[1] - this->layout.y[0],
+        this->layout.x[2] - this->layout.x[1],
+        this->layout.y[4] - this->layout.y[3],
         1.0f
       );
 
@@ -285,24 +362,24 @@ namespace gr {
       glColor4f(0.02f, 0.02f, 0.02f, 0.5f);
 
         /* Vertical div */
-      x[0] = this->layout.x[0] + 0.5f;
-      x[1] = this->layout.x[1] - 0.5f;
+      x[0] = this->layout.x[1];
+      x[1] = this->layout.x[2];
 
       for (i=0; i<11; i++)
       {
-        y[0] = this->layout.y[0] + i * this->layout.y_div + 0.5f;
+        y[0] = this->layout.y[3] + i * this->layout.y_div + 0.5f;
 
         glVertex2f(x[0], y[0]);
         glVertex2f(x[1], y[0]);
       }
 
         /* Horizontal div */
-      y[0] = this->layout.y[0] + 0.5f;
-      y[1] = this->layout.y[1] - 0.5f;
+      y[0] = this->layout.y[3];
+      y[1] = this->layout.y[4];
 
       for (i=0; i<11; i++)
       {
-        x[0] = this->layout.x[0] + i * this->layout.x_div + 0.5f;
+        x[0] = this->layout.x[1] + i * this->layout.x_div + 0.5f;
 
         glVertex2f(x[0], y[0]);
         glVertex2f(x[0], y[1]);
@@ -313,13 +390,41 @@ namespace gr {
     }
 
     void
-    QFosphorSurface::drawIntensityScale()
+    QFosphorSurface::drawWaterfall()
+    {
+      float x[2], y[2];
+      float e = 0.5f / this->fft_bins;
+      float v[2];
+
+      /* Draw Waterfall texture */
+      this->cmap->enable(this->palette, this->wf.tex);
+
+      x[0] = this->layout.x[1];
+      x[1] = this->layout.x[2];
+      y[0] = this->layout.y[1];
+      y[1] = this->layout.y[2];
+
+      v[0] = (float)(this->wf.pos) / (float)(this->wf_lines);
+      v[1] = v[0] + 1.0f;
+
+      glBegin( GL_QUADS );
+      glTexCoord2d(0.0f + e, v[0]); glVertex2d(x[0], y[0]);
+      glTexCoord2d(1.0f + e, v[0]); glVertex2d(x[1], y[0]);
+      glTexCoord2d(1.0f + e, v[1]); glVertex2d(x[1], y[1]);
+      glTexCoord2d(0.0f + e, v[1]); glVertex2d(x[0], y[1]);
+      glEnd();
+
+      this->cmap->disable();
+    }
+
+    void
+    QFosphorSurface::drawWaterfallIntensityScale()
     {
       this->cmap->drawScale(this->palette,
-        this->layout.x[1] +  2.0f,
-        this->layout.y[0],
-        this->layout.x[1] + 10.0f,
-        this->layout.y[1]
+        this->layout.x[2] +  2.0f,
+        this->layout.y[1],
+        this->layout.x[2] + 10.0f,
+        this->layout.y[2]
       );
     }
 
@@ -333,13 +438,13 @@ namespace gr {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-      x[0] = 0;
-      y[0] = 0;
+      x[0] = this->layout.x[0];
+      y[0] = this->layout.y[2];
 
       glBindTexture(GL_TEXTURE_2D, this->layout.pwr_tex);
 
-      x[1] = this->layout.x[0];
-      y[1] = this->layout.height;
+      x[1] = this->layout.x[1];
+      y[1] = this->layout.y[5];
 
       glBegin( GL_QUADS );
       glTexCoord2d(0.0f, 0.0f); glVertex2d(x[0], y[0]);
@@ -350,8 +455,8 @@ namespace gr {
 
       glBindTexture(GL_TEXTURE_2D, this->layout.freq_tex);
 
-      x[1] = this->layout.width;
-      y[1] = this->layout.y[0];
+      x[1] = this->layout.x[3];
+      y[1] = this->layout.y[3];
 
       glBegin( GL_QUADS );
       glTexCoord2d(0.0f, 0.0f); glVertex2d(x[0], y[0]);
@@ -365,7 +470,7 @@ namespace gr {
     }
 
     void
-    QFosphorSurface::uploadData()
+    QFosphorSurface::uploadFrameData()
     {
       int i;
 
@@ -408,6 +513,19 @@ namespace gr {
     }
 
     void
+    QFosphorSurface::uploadWaterfallData()
+    {
+      glBindTexture(GL_TEXTURE_2D, this->wf.tex);
+
+      glTexSubImage2D(
+          GL_TEXTURE_2D, 0,
+          0, 0, this->fft_bins, this->wf_lines,
+          GL_RED, GL_UNSIGNED_BYTE,
+          this->wf.data_buf
+      );
+    }
+
+    void
     QFosphorSurface::refreshPowerAxis()
     {
       char buf[32];
@@ -418,7 +536,10 @@ namespace gr {
         this->deleteTexture(this->layout.pwr_tex);
 
       /* Create a pixmap of right size */
-      QPixmap pixmap(this->layout.x[0], this->layout.height);
+      QPixmap pixmap(
+        (int)(this->layout.x[1] - this->layout.x[0]),
+        (int)(this->layout.y[5] - this->layout.y[2])
+      );
       pixmap.fill(Qt::transparent);
 
       QPainter painter(&pixmap);
@@ -431,14 +552,14 @@ namespace gr {
       /* Paint labels */
       for (i=0; i<11; i++)
       {
-        int yv = (int)(this->layout.height - this->layout.y[0] - i * this->layout.y_div);
+        int yv = (int)(this->layout.y[5] - this->layout.y[3] - i * this->layout.y_div);
 
         snprintf(buf, sizeof(buf)-1, "%d", (i - 10) * 10);
         buf[sizeof(buf)-1] = 0;
 
         painter.drawText(
           0, yv - 10,
-          this->layout.x[0] - 5, 20,
+          this->layout.x[1] - this->layout.x[0] - 5, 20,
           Qt::AlignRight | Qt::AlignVCenter,
           buf
         );
@@ -459,7 +580,10 @@ namespace gr {
         this->deleteTexture(this->layout.freq_tex);
 
       /* Create a pixmap of right size */
-      QPixmap pixmap(this->layout.width, this->layout.y[0]);
+      QPixmap pixmap(
+        (int)(this->layout.x[3] - this->layout.x[0]),
+        (int)(this->layout.y[3] - this->layout.y[2])
+      );
       pixmap.fill(Qt::transparent);
 
       QPainter painter(&pixmap);
@@ -474,7 +598,7 @@ namespace gr {
 
       for (i=0; i<=n_div; i++)
       {
-        int xv = (int)(this->layout.x[0] + i * this->layout.x_div);
+        int xv = (int)(this->layout.x[1] - this->layout.x[0] + i * this->layout.x_div);
         int xl, xw;
         int flags;
 
@@ -497,7 +621,7 @@ namespace gr {
 
         painter.drawText(
           xl, 0,
-          xw, (int)this->layout.y[0],
+          xw, (int)(this->layout.y[3] - this->layout.y[2]),
           flags,
           buf
         );
@@ -510,33 +634,63 @@ namespace gr {
     void
     QFosphorSurface::refreshLayout()
     {
-      int rsvd_tlbr[2], rsvd, avail, div, over;
+      int rsvd_pos[3], rsvd, avail, n_div, div, over, over_pos[3];
 
       /* Split the X space */
-      rsvd_tlbr[0] = 40;
-      rsvd_tlbr[1] = 20;
+      rsvd_pos[0] = 40;
+      rsvd_pos[1] = 20;
 
-      rsvd  = rsvd_tlbr[0] + rsvd_tlbr[1];
-      avail = this->layout.width - rsvd;
+      rsvd  = rsvd_pos[0] + rsvd_pos[1];
+      avail = this->layout.width - rsvd - 1;
       div   = avail / 10;
       over  = avail - 10 * div;
+
+      over_pos[0] = over / 2;
+      over_pos[1] = over - over_pos[0];
 
       this->layout.x_div = (float)div;
-      this->layout.x[0]  = (float)(rsvd_tlbr[0] + (over / 2));
-      this->layout.x[1]  = this->layout.x[0] + 10.0f * div + 1.0f;
+      this->layout.x[0]  = 0.0f;
+      this->layout.x[1]  = (float)(rsvd_pos[0] + over_pos[0]);
+      this->layout.x[2]  = this->layout.x[1] + 10.0f * div + 1.0f;
+      this->layout.x[3]  = this->layout.width;
 
       /* Split the Y space */
-      rsvd_tlbr[0] = 10;
-      rsvd_tlbr[1] = 20;
+      rsvd_pos[0] = this->layout.wf_enabled ? 10 : 0;
+      rsvd_pos[1] = 20;
+      rsvd_pos[2] = 10;
 
-      rsvd  = rsvd_tlbr[0] + rsvd_tlbr[1];
-      avail = this->layout.height - rsvd;
-      div   = avail / 10;
-      over  = avail - 10 * div;
+      rsvd  = rsvd_pos[0] + rsvd_pos[1] + rsvd_pos[2];
+      avail = this->layout.height - rsvd - (this->layout.wf_enabled ? 2 : 1);
+      n_div = this->layout.wf_enabled ? 20 : 10;
+      div   = avail / n_div;
+      over  = avail - n_div * div;
+
+      if (this->layout.wf_enabled) {
+        over_pos[0] = over / 3;
+        over_pos[1] = over - (2 * over_pos[0]);
+        over_pos[2] = over_pos[0];
+      } else {
+        over_pos[0] = 0;
+        over_pos[1] = over / 2;
+        over_pos[2] = over - over_pos[1];
+      }
 
       this->layout.y_div = (float)div;
-      this->layout.y[0]  = (float)(rsvd_tlbr[1] + over / 2);
-      this->layout.y[1]  = this->layout.y[0] + 10.0f * div + 1.0f;
+
+      this->layout.y[0] = 0.0f;
+
+      if (this->layout.wf_enabled) {
+        this->layout.y[1] = this->layout.y[0] + (float)(rsvd_pos[0] + over_pos[0]);
+        this->layout.y[2] = this->layout.y[1] + 10.0f * div + 1.0f;
+      } else {
+        this->layout.y[1] = 0.0f;
+        this->layout.y[2] = 0.0f;
+      }
+
+      this->layout.y[3]  = this->layout.y[2] + (float)(rsvd_pos[1] + over_pos[1]);
+      this->layout.y[4]  = this->layout.y[3] + 10.0f * div + 1.0f;
+
+      this->layout.y[5] = this->layout.height;
 
       /* Refresh axis */
       this->refreshPowerAxis();

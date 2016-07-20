@@ -48,12 +48,14 @@ namespace gr {
       static sptr make(
           const int fft_bins = 256,
           const int pwr_bins = 64,
+          const int wf_lines = 512,
           QWidget *parent = NULL
       );
 
       /* Block API */
       virtual void set_frequency_range(const double center_freq,
                                        const double samp_rate) = 0;
+      virtual void set_waterfall(bool enabled) = 0;
       virtual void set_grid(bool enabled) = 0;
       virtual void set_palette(std::string name) = 0;
       virtual void set_frame_rate(int fps) = 0;

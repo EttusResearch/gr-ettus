@@ -45,27 +45,33 @@ namespace gr {
       void paintGL();
 
      public:
-      QFosphorSurface(int fft_bins, int pwr_bins, QWidget *parent);
+      QFosphorSurface(int fft_bins, int pwr_bins, int wf_lines, QWidget *parent);
       virtual ~QFosphorSurface();
 
       void setFrequencyRange(const double center_freq, const double span);
+      void setWaterfall(bool enabled);
       void setGrid(bool enabled);
       void setPalette(std::string name);
       void sendFrame(void *frame, int frame_len);
+      void sendWaterfall(const uint8_t *wf, int n);
 
      private:
       void drawHistogram();
+      void drawHistogramIntensityScale();
       void drawSpectrum();
       void drawGrid();
-      void drawIntensityScale();
+      void drawWaterfall();
+      void drawWaterfallIntensityScale();
       void drawMargins();
-      void uploadData();
+      void uploadFrameData();
+      void uploadWaterfallData();
       void refreshPowerAxis();
       void refreshFrequencyAxis();
       void refreshLayout();
 
       int fft_bins;
       int pwr_bins;
+      int wf_lines;
 
       bool grid_enabled;
       std::string palette;
@@ -79,12 +85,21 @@ namespace gr {
       } frame;
 
       struct {
+        bool dirty;
+        int pos;
+        uint8_t *data_buf;
+        GLuint tex;
+      } wf;
+
+      struct {
         bool  dirty;
         int   width;
         int   height;
 
+        bool  wf_enabled;
+
         float x[4];
-        float y[2];
+        float y[6];
         float x_div;
         float y_div;
 

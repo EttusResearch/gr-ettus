@@ -40,17 +40,23 @@ namespace gr {
      public:
       fosphor_display_impl(const int fft_bins = 256,
                            const int pwr_bins = 64,
+                           const int wf_lines = 512,
                            QWidget *parent=NULL);
       ~fosphor_display_impl();
 
       /* Block API */
       void set_frequency_range(const double center_freq,
                                const double samp_rate);
+      void set_waterfall(bool enabled);
       void set_grid(bool enabled);
       void set_palette(std::string name);
       void set_frame_rate(int fps);
 
       /* gr::block implementation */
+      bool start();
+
+      void forecast(int noutput_items, gr_vector_int &ninput_items_required);
+
       int general_work(int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
@@ -68,11 +74,13 @@ namespace gr {
 
      private:
       int _work_hist(const uint8_t *input, int n_items, int port);
+      int _work_wf(const uint8_t *input, int n_items, int port);
 
       QFosphorSurface *d_gui;
 
       int d_fft_bins;
       int d_pwr_bins;
+      int d_wf_lines;
 
       double d_center_freq;
       double d_samp_rate;
