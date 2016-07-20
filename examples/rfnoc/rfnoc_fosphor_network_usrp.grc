@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Tue Mar 24 08:34:19 2015</timestamp>
   <block>
@@ -368,7 +368,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(504, 260)</value>
+      <value>(456, 260)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -423,7 +423,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 268)</value>
+      <value>(888, 212)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -436,6 +436,65 @@
     <param>
       <key>id</key>
       <value>uhd_rfnoc_streamer_fifo_0_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>uhd_rfnoc_streamer_fifo</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>otw</key>
+      <value>u8</value>
+    </param>
+    <param>
+      <key>device_index</key>
+      <value>-1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>block_index</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>grvlen</key>
+      <value>fft_size</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(888, 324)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>u8</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>uhd_rfnoc_streamer_fifo_0_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -465,10 +524,6 @@
       <value></value>
     </param>
     <param>
-      <key>decim</key>
-      <value>int(samp_rate / (fft_size * 64 * 15))</value>
-    </param>
-    <param>
       <key>device_index</key>
       <value>-1</value>
     </param>
@@ -482,7 +537,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(712, 272)</value>
+      <value>(648, 260)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -491,6 +546,10 @@
     <param>
       <key>tdecay</key>
       <value>int(tdecay)</value>
+    </param>
+    <param>
+      <key>hist_decim</key>
+      <value>max(2, int(samp_rate / (15 * 64 * fft_size)))</value>
     </param>
     <param>
       <key>offset</key>
@@ -518,6 +577,14 @@
     </param>
     <param>
       <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>wf_decim</key>
+      <value>64</value>
+    </param>
+    <param>
+      <key>wf_mode</key>
       <value>0</value>
     </param>
     <param>
@@ -569,7 +636,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 204)</value>
+      <value>(8, 208)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -644,7 +711,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(272, 268)</value>
+      <value>(248, 268)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -726,7 +793,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1104, 380)</value>
+      <value>(1096, 428)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -773,7 +840,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1152, 260)</value>
+      <value>(1144, 204)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -786,6 +853,61 @@
     <param>
       <key>id</key>
       <value>zeromq_push_sink_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>byte</value>
+    </param>
+    <param>
+      <key>pass_tags</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>timeout</key>
+      <value>10000</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fft_size</value>
+    </param>
+  </block>
+  <block>
+    <key>zeromq_push_sink</key>
+    <param>
+      <key>address</key>
+      <value>tcp://*:4001</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1144, 316)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>hwm</key>
+      <value>-1</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>zeromq_push_sink_0_0</value>
     </param>
     <param>
       <key>type</key>
@@ -817,9 +939,21 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>uhd_rfnoc_streamer_fifo_0_0_0</source_block_id>
+    <sink_block_id>zeromq_push_sink_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>uhd_rfnoc_streamer_fosphor_0</source_block_id>
     <sink_block_id>uhd_rfnoc_streamer_fifo_0_0</sink_block_id>
     <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_streamer_fosphor_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_fifo_0_0_0</sink_block_id>
+    <source_key>1</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
