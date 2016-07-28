@@ -335,6 +335,14 @@ bool rfnoc_block_impl::stop()
 {
   boost::recursive_mutex::scoped_lock lock(d_mutex);
 
+  size_t ninputs  = detail()->ninputs();
+  size_t noutputs = detail()->noutputs();
+  GR_LOG_DEBUG(d_debug_logger, str(boost::format("start(): ninputs == %d noutputs == %d") % ninputs % noutputs));
+
+  if (ninputs == 0 && noutputs == 0) {
+      return true;
+  }
+
   // TX: Send EOB
   _tx.metadata.start_of_burst = false;
   _tx.metadata.end_of_burst = true;
