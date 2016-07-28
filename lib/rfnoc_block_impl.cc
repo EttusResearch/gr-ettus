@@ -256,6 +256,7 @@ bool rfnoc_block_impl::start()
     } else { // Unaligned streamers:
       for (size_t i = 0; i < size_t(ninputs); i++) {
         _tx.stream_args.channels = std::vector<size_t>(1, i);
+        _tx.stream_args.args["block_port"] = str(boost::format("%d") % i);
         GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating tx streamer with: %s") % _tx.stream_args.args.to_string()));
         ::uhd::tx_streamer::sptr tx_stream = _dev->get_tx_stream(_tx.stream_args);
         if (tx_stream) {
@@ -301,6 +302,7 @@ bool rfnoc_block_impl::start()
     } else { // Unaligned streamers:
       for (size_t i = 0; i < size_t(noutputs); i++) {
         _rx.stream_args.channels = std::vector<size_t>(1, i);
+        _rx.stream_args.args["block_port"] = str(boost::format("%d") % i);
         GR_LOG_DEBUG(d_debug_logger, str(boost::format("creating rx streamer with: %s") % _rx.stream_args.args.to_string()));
         ::uhd::rx_streamer::sptr rx_stream = _dev->get_rx_stream(_rx.stream_args);
         if (rx_stream) {
