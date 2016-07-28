@@ -18,8 +18,15 @@
         args="",
     ),
     "DDC", $block_index, $device_index,
-)</make>
-  <callback>set_arg("freq", $freq)</callback>
+)
+for chan in xrange($num_chans):
+    self.$(id).set_arg("input_rate", $input_rate, chan)
+    self.$(id).set_arg("output_rate", $output_rate, chan)
+    self.$(id).set_arg("fullscale", $fullscale, chan)
+    self.$(id).set_arg("freq", $freq, chan)
+</make>
+<callback>for i in xrange($num_chans):
+    self.$(id).set_arg("freq", $freq, i)</callback>
 
   <param>
     <name>Num Channels</name>
