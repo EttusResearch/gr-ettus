@@ -32,3 +32,4 @@ except ImportError:
 
 # import any pure python here
 #
+from fosphor_histo_framer import fosphor_histo_framer_bb
