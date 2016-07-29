@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>3D Canvas Test</title>
+
+  <style type="text/css">
+   body { background-color: black; }
+   canvas { border: 1px solid gray; }
+  </style>
+
+  <script src="jquery.js"></script>
+  <script src="fosphor.js"></script>
+
+  <script type="text/javascript">
+	var wsh, wsw;
+	var fosphor;
+
+	function createWebSocket(path)
+	{
+		var protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+		return new WebSocket(protocolPrefix + '//' + location.host + path);
+	}
+
+	function init()
+	{
+		fosphorInit().done(function() {
+			fosphor = new fosphorSurface(
+				document.getElementById('fosphor'),
+				1024, 64, 256
+			);
+			fosphor.setFrequencyRange(1525e6, 20e6);
+		});
+	}
+
+	function start()
+	{
+		/* Pre-flight */
+		if (wsh != null || wsw != null) {
+			alert("Already started !");
+			return;
+		}
+
+		/* Histogram */
+		wsh = createWebSocket("/stream_histogram");
+		wsh.binaryType = 'arraybuffer';
+		wsh.onopen = function() {
+			/* Queue up two requests to fight latency */
+			wsh.send('r')
+			wsh.send('r')
+		};
+		wsh.onmessage = function(e) {
+			fosphor.feedHistoFrame(new Uint8Array(e.data), true);
+			wsh.send('r')
+		};
+
+		/* Waterfall */
+		wsw = createWebSocket("/stream_waterfall");
+		wsw.binaryType = 'arraybuffer';
+		wsw.onopen = function() {
+			/* Queue first request */
+			wsw.send('r')
+		};
+		wsw.onmessage = function(e) {
+			var data = new Uint8Array(e.data);
+			fosphor.feedWaterfallLine(data.slice(2), data[1]);
+			wsw.send(String.fromCharCode(data[0]));
+		};
+	}
+
+	function stop()
+	{
+		/* Close histogram stream */
+		wsh.close();
+		wsh = null;
+
+		/* Close waterfall stream */
+		wsw.close();
+		wsw = null;
+	}
+  </script>
+ </head>
+ <body onload='init()';>
+  <canvas id="fosphor" width="1536" height="768"></canvas>
+  <br/>
+  <button onClick="start();">Start</button>
+  <button onClick="stop();">Stop</button>
+ </body>
+</html>
+
