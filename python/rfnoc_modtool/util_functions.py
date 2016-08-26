@@ -4,6 +4,7 @@
 
 import re
 import sys
+import random
 
 # None of these must depend on other modtool stuff!
 
@@ -127,17 +128,24 @@ def ask_yes_no(question, default):
     else:
         return not default
 
-def zero_padd(noc_id):
-    """ 
-    checks if the number given for NoC ID is 16 digits long. If it is shorter, pads the until 16 with zeros. If it is longer,
-    throws error, as it is not allowed
+def random_id_generator():
+    """ Generates a 16 HeX long string to be used as a NoC ID when the argument
+    is left blank during the generation process"""
+    ID = "{:X}".format(random.randint(0,2**64-1))
+    return ID
+
+def id_process(noc_id):
     """
-    digits = len(noc_id)
-    if (digits > 16):
-        print "Invalid NoC ID - Please provide an ID shorter than 16 Hex Digits"
+    checks if the number given for NoC ID is 16 digits long. If its length is 0,
+    it generates a random ID of length 16. If it is shorter than 16, it pads
+    the until 16 with zeros. If it is longer, throws error, as it is not allowed
+    """
+    if (len(noc_id) > 16):
+        print("Invalid NoC ID - Please provide an ID shorter than 16 Hex Digits")
         sys.exit(0)
+    elif len(noc_id) == 0:
+        noc_id = random_id_generator()
+        print("Random NoC ID generated: {}".format(noc_id))
     else:
-        while digits < 16: 
-            noc_id +='0'
-            digits += 1
+        noc_id + '0' * (16 - len(noc_id))
     return noc_id

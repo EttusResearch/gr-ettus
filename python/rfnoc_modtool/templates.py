@@ -631,6 +631,15 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   </param>
 
   <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_${blockname}</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
     <name>Force Vector Length</name>
     <key>grvlen</key>
     <value>1</value>

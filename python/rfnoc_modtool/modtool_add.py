@@ -24,7 +24,7 @@ import os
 import re
 from optparse import OptionGroup
 
-from util_functions import append_re_line_sequence, ask_yes_no, zero_padd
+from util_functions import append_re_line_sequence, ask_yes_no, id_process
 from cmakefile_editor import CMakeFileEditor
 from modtool_base import ModTool, ModToolException
 from templates import Templates
@@ -83,7 +83,7 @@ class ModToolAdd(ModTool):
                 self._info['blockname'] = args[1]
             else:
                 self._info['blockname'] = raw_input("Enter name of block/code (without module name prefix): ")
-        if not re.match('[a-zA-Z0-9_]+', self._info['blockname']):
+        if not re.match('^([a-zA-Z]+[0-9a-zA-Z]*)$', self._info['blockname']):
             raise ModToolException('Invalid block name.')
         print("Block/code identifier: " + self._info['blockname'])
         self._info['fullblockname'] = self._info['modname'] + '_' + self._info['blockname']
@@ -115,7 +115,7 @@ class ModToolAdd(ModTool):
         #NOC ID parse
         self._info['noc_id'] = options.noc_id
         if self._info['noc_id'] is None:
-            self._info['noc_id'] = zero_padd(raw_input("Block NoC ID (Hexadecimal): "))
+            self._info['noc_id'] = id_process(raw_input("Block NoC ID (Hexadecimal): "))
         if not re.match(r'\A[0-9A-F]+\Z', self._info['noc_id']):
             raise ModToolException('Invalid NoC ID - Only Hexadecimal Values accepted.')
         self._skip_block_ctrl = options.skip_block_ctrl
