@@ -31,6 +31,7 @@
 			<block>uhd_rfnoc_ofdm_demap</block>
 			<block>uhd_rfnoc_siggen</block>
 			<block>uhd_rfnoc_dma_fifo</block>
+			<block>uhd_rfnoc_digital_gain</block>
 		</cat>
 	</cat>
 </cat>

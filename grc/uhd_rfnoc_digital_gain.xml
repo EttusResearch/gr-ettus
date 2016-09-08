@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Digital Gain</name>
+  <key>uhd_rfnoc_digital_gain</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_generic(
+    self.device3,
+    uhd.stream_args( \# TX Stream Args
+        cpu_format="fc32",
+        otw_format="sc16",
+        args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
+    ),
+    uhd.stream_args( \# RX Stream Args
+        cpu_format="fc32",
+        otw_format="sc16",
+        args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
+    ),
+    "DigitalGain", $block_index, $device_index,
+)
+self.$(id).set_arg("gain", $gain)
+  </make>
+  <callback>set_arg("gain", $gain)</callback>
+
+  <param>
+    <name>Gain</name>
+    <key>gain</key>
+    <value>1.0</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Digital Gain Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+    <name>Force Vector Length</name>
+    <key>grvlen</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$grvlen</vlen>
+    <domain>rfnoc</domain>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$grvlen</vlen>
+    <domain>rfnoc</domain>
+  </source>
+
+
+</block>
