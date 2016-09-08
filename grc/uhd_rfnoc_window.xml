@@ -36,7 +36,16 @@
     <tab>RFNoC Config</tab>
   </param>
 
-  <sink>
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_window</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+ <sink>
     <name>in</name>
     <type>complex</type>
     <vlen>len(list($coeffs))</vlen>

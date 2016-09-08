@@ -150,6 +150,15 @@ self.$(id).set_arg("wf_decim", {0:$wf_decim, 1:8, 2:64, 3:256}.get($wf_mode, 16)
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_fosphor</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <sink>
     <name>in</name>
     <type>fc32</type>

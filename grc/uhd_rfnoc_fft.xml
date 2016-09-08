@@ -99,6 +99,15 @@
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_fft</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <check>$fft_size in [2**n for n in xrange(3, 11)]</check>
 
   <sink>

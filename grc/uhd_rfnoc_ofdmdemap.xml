@@ -134,7 +134,16 @@ self.$(id).set_arg("scaling", $scaling)
     <tab>RFNoC Config</tab>
   </param>
 
-  <check>$fft_size in [2**n for n in xrange(3, 11)]</check>
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_ofdmdemap</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+ <check>$fft_size in [2**n for n in xrange(3, 11)]</check>
 
   <sink>
     <name>in</name>

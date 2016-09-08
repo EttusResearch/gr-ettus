@@ -44,6 +44,15 @@ self.$(id).set_arg("length", $length)
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_moving_avg</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <check>$length in range(1, 256)</check>
 
   <sink>

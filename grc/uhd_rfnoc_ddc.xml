@@ -87,6 +87,15 @@ for chan in xrange($num_chans):
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_ddc</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <check>$output_rate &lt;= $input_rate</check>
   <check>$output_rate &gt;= $input_rate/1024</check>
 

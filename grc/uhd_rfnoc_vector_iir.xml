@@ -61,7 +61,16 @@ self.$(id).set_arg("beta",  $beta)
     <tab>RFNoC Config</tab>
   </param>
 
-  <check>($vlen &gt; 0 and $vlen &lt;= 4096)</check>
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_vector_iir</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+ <check>($vlen &gt; 0 and $vlen &lt;= 4096)</check>
   <check>($alpha &gt;= 0.0 and $alpha &lt;= 1.0)</check>
   <check>($beta &gt;= 0.0 and $beta &lt;= 1.0)</check>
 

@@ -46,7 +46,7 @@ self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
     <value>364</value>
     <type>int</type>
   </param>
-  
+
   <param>
     <name>Enable</name>
     <key>enable</key>
@@ -74,14 +74,14 @@ self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
     <value>1.0</value>
     <type>complex</type>
   </param>
-  
+
   <param>
     <name>Sample Rate</name>
     <key>samp_rate</key>
     <value>10000000</value>
     <type>real</type>
   </param>
-  
+
   <param>
     <name>Waveform</name>
     <key>waveform</key>
@@ -117,6 +117,14 @@ self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_siggen</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
 
   <source>
     <name>out</name>

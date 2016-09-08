@@ -64,6 +64,15 @@
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_duc</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <check>$output_rate &gt;= $input_rate</check>
   <check>$output_rate &lt;= $input_rate*512</check>
 

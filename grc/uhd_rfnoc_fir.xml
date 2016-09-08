@@ -46,6 +46,15 @@ self.$(id).set_taps($taps)</make>
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_fir_filter</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
   <sink>
     <name>in</name>
     <type>complex</type>
