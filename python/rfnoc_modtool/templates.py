@@ -153,12 +153,12 @@ namespace gr {
     ${blockname}::sptr
     ${blockname}::make(
 #if $blocktype == 'rfnoc'
-#if $arglist:
-        ${strip_default_values($arglist)},
-#end if
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
+#if $arglist:
+        ${strip_default_values($arglist)},
+#end if
         const int block_select,
         const int device_select
 #else
@@ -384,12 +384,12 @@ namespace gr {
        */
       static sptr make(
 #if $blocktype == 'rfnoc'
-#if $arglist
-        $arglist,
-#end if
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
+#if $arglist
+        $arglist,
+#end if
         const int block_select=-1,
         const int device_select=-1
 #else
