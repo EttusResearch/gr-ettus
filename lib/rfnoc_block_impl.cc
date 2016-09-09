@@ -160,8 +160,17 @@ rfnoc_block_impl::rfnoc_block_impl(
       GR_LOG_INFO(d_debug_logger, str(boost::format("Setting args on %s (%s)") % _blk_ctrl->get_block_id() % _merged_args.to_string()));
       _blk_ctrl->set_args(_merged_args);
   }
+
   _tx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
   _rx.stream_args.args["block_id"] = _blk_ctrl->get_block_id().get();
+
+  //Each block can have multiple tx/rx channels. This works when channels are aligned.
+  BOOST_FOREACH(const size_t chan_idx, _tx.stream_args.channels) {
+    _tx.stream_args.args[str(boost::format("block_port%d") % chan_idx)] = str(boost::format("%d") % chan_idx);
+  }
+  BOOST_FOREACH(const size_t chan_idx, _rx.stream_args.channels) {
+    _rx.stream_args.args[str(boost::format("block_port%d") % chan_idx)] = str(boost::format("%d") % chan_idx);
+  }
 
   //// Final configuration for the GNU Radio block:
   set_tag_propagation_policy(TPP_DONT);
@@ -442,7 +451,6 @@ rfnoc_block_impl::general_work (
     gr_vector_void_star &output_items
 ) {
   boost::recursive_mutex::scoped_lock lock(d_mutex);
-
   // These call consume()
   if (!input_items.empty()) {
     if (_tx.align) {
