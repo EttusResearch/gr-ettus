@@ -18,6 +18,8 @@
     "DUC", $block_index, $device_index,
 )</make>
   <callback>set_arg("freq", $freq)</callback>
+  <callback>set_arg("input_rate", $input_rate)</callback>
+  <callback>set_arg("output_rate", $output_rate)</callback>
 
   <param>
     <name>Input Rate</name>

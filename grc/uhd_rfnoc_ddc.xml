@@ -27,6 +27,10 @@ for chan in xrange($num_chans):
 </make>
 <callback>for i in xrange($num_chans):
     self.$(id).set_arg("freq", $freq, i)</callback>
+<callback>for i in xrange($num_chans):
+    self.$(id).set_arg("input_rate", $input_rate, i)</callback>
+<callback>for i in xrange($num_chans):
+    self.$(id).set_arg("output_rate", $output_rate, i)</callback>
 
   <param>
     <name>Num Channels</name>
