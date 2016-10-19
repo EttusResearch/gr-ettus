@@ -194,8 +194,8 @@ rfnoc_block_impl::~rfnoc_block_impl()
  * Static members
  ****************************************************************************/
 std::map<std::string, bool> rfnoc_block_impl::_active_streamers;
-::uhd::reusable_barrier rfnoc_block_impl::_tx_barrier;
-::uhd::reusable_barrier rfnoc_block_impl::_rx_barrier;
+reusable_barrier rfnoc_block_impl::_tx_barrier;
+reusable_barrier rfnoc_block_impl::_rx_barrier;
 boost::recursive_mutex rfnoc_block_impl::s_setup_mutex;
 
 /*********************************************************************

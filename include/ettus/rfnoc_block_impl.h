@@ -20,9 +20,9 @@
 #ifndef INCLUDED_ETTUS_RFNOC_BLOCK_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_BLOCK_IMPL_H
 
+#include "barrier.h"
 #include <ettus/rfnoc_block.h>
 #include <uhd/device3.hpp>
-#include <uhd/utils/atomic.hpp>
 #include <uhd/rfnoc/block_ctrl_base.hpp>
 #include <uhd/rfnoc/sink_block_ctrl_base.hpp>
 #include <uhd/rfnoc/source_block_ctrl_base.hpp>
@@ -229,8 +229,8 @@ namespace gr {
       //! Counts the number of instantiations of this block
       // that actually have their own streamers
       static std::map<std::string, bool> _active_streamers;
-      static ::uhd::reusable_barrier _tx_barrier;
-      static ::uhd::reusable_barrier _rx_barrier;
+      static reusable_barrier _tx_barrier;
+      static reusable_barrier _rx_barrier;
       static boost::recursive_mutex s_setup_mutex;
 
     };
