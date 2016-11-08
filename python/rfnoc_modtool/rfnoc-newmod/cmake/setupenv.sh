@@ -1,1 +1,1 @@
-source FPGA_TOP_DIR/usrp3/top/e300/setupenv.sh
+source FPGA_TOP_DIR/usrp3_rfnoc/top/x300/setupenv.sh
