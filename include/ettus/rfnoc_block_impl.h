@@ -110,7 +110,7 @@ namespace gr {
         return the_sptr;
       }
 
-      void set_register(size_t reg, boost::uint32_t value) { _blk_ctrl->sr_write(reg, value); }
+      void set_register(size_t reg, uint32_t value) { _blk_ctrl->sr_write(reg, value); }
 
       void set_arg(const std::string &key, const int val, const size_t port = 0)
       {

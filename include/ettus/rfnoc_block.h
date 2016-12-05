@@ -55,7 +55,7 @@ namespace gr {
      public:
       // Add RFNoC-relevant definitions:
       //! Allows setting a register on the settings bus
-      virtual void set_register(size_t reg, boost::uint32_t value) = 0;
+      virtual void set_register(size_t reg, uint32_t value) = 0;
       //! Return the full actual block ID of this block (e.g. 0/FFT_0)
       virtual std::string get_block_id() const = 0;
 
