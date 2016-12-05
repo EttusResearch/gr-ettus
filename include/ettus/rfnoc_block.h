@@ -50,12 +50,18 @@ namespace gr {
     {
      protected:
       rfnoc_block(const std::string &name); // Defined in rfnoc_block_impl.cc
-      rfnoc_block() {}; // For the virtual subclassing
+      rfnoc_block() {} // For the virtual subclassing
 
      public:
       // Add RFNoC-relevant definitions:
       //! Allows setting a register on the settings bus
-      virtual void set_register(size_t reg, uint32_t value) = 0;
+      virtual void set_register(const size_t reg, const uint32_t value, const size_t port=0) = 0;
+      //! Allows setting a register on the settings bus (named version)
+      virtual void set_register(const std::string &reg, const uint32_t value, const size_t port=0) = 0;
+      //! Allows reading a readback register on the settings bus
+      virtual uint64_t get_register(const uint32_t reg, const size_t port=0) = 0;
+      //! Allows reading a readback register on the settings bus (named register version)
+      virtual uint64_t get_register(const std::string &reg, const size_t port=0) = 0;
       //! Return the full actual block ID of this block (e.g. 0/FFT_0)
       virtual std::string get_block_id() const = 0;
 

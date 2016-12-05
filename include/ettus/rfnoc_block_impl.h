@@ -110,7 +110,11 @@ namespace gr {
         return the_sptr;
       }
 
-      void set_register(size_t reg, uint32_t value) { _blk_ctrl->sr_write(reg, value); }
+      void set_register(const size_t reg, const uint32_t value, const size_t port) { _blk_ctrl->sr_write(reg, value); }
+      void set_register(const std::string &reg, const uint32_t value, const size_t port) { _blk_ctrl->sr_write(reg, value); }
+
+      uint64_t get_register(const uint32_t reg, const size_t port) { _blk_ctrl->user_reg_read64(reg, port); }
+      uint64_t get_register(const std::string &reg, const size_t port) { _blk_ctrl->user_reg_read64(reg, port); }
 
       void set_arg(const std::string &key, const int val, const size_t port = 0)
       {
