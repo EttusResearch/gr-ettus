@@ -117,6 +117,25 @@ namespace gr {
       //get_device()->set_rx_dc_offset(offset, chan);
     }
 
+    std::vector<std::string> rfnoc_radio_impl::get_gpio_banks() const
+    {
+      return _radio_ctrl->get_gpio_banks();
+    }
+
+    void rfnoc_radio_impl::set_gpio_attr(
+        const std::string &bank,
+        const std::string &attr,
+        const uint32_t value,
+        const uint32_t mask
+    ) {
+      _radio_ctrl->set_gpio_attr(bank, attr, value, mask);
+    }
+
+    uint32_t rfnoc_radio_impl::get_gpio_attr(const std::string &bank, const std::string &attr)
+    {
+      return _radio_ctrl->get_gpio_attr(bank, attr);
+    }
+
     uhd::time_spec_t rfnoc_radio_impl::get_time_now(void)
     {
       return _radio_ctrl->get_time_now();

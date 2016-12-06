@@ -67,6 +67,15 @@ namespace gr {
       virtual void set_rx_dc_offset(bool enable, const size_t chan=0) = 0;
       virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
 
+      virtual std::vector<std::string> get_gpio_banks() const = 0;
+      virtual void set_gpio_attr(
+          const std::string &bank,
+          const std::string &attr,
+          const uint32_t value,
+          const uint32_t mask
+      ) = 0;
+      virtual uint32_t get_gpio_attr(const std::string &bank, const std::string &attr) = 0;
+
       virtual uhd::time_spec_t get_time_now(void) = 0;
       virtual void set_command_time(const uhd::time_spec_t &time, const size_t chan=0) = 0;
       virtual void clear_command_time(const size_t chan=0) = 0;
