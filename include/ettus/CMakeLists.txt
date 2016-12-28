@@ -22,6 +22,7 @@
 ########################################################################
 install(FILES
     api.h
+    barrier.h
     device3.h
     rfnoc_block.h
     rfnoc_fir_cci.h
