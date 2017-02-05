@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Wed Sep 10 20:11:20 2014</timestamp>
   <block>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(-8, -4)</value>
+      <value>(0, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -101,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(576, 3)</value>
+      <value>(0, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -124,7 +124,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 3)</value>
+      <value>(168, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -147,7 +147,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>1.982e9</value>
+      <value>2.45e9</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -155,7 +155,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(328, 3)</value>
+      <value>(304, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -171,7 +171,7 @@
     </param>
     <param>
       <key>label</key>
-      <value></value>
+      <value>RX Frequency</value>
     </param>
     <param>
       <key>min_len</key>
@@ -183,15 +183,15 @@
     </param>
     <param>
       <key>start</key>
-      <value>1e9</value>
+      <value>50e6</value>
     </param>
     <param>
       <key>step</key>
-      <value>1</value>
+      <value>1e6</value>
     </param>
     <param>
       <key>stop</key>
-      <value>2.5e9</value>
+      <value>6e9</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -218,7 +218,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 3)</value>
+      <value>(440, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -234,7 +234,7 @@
     </param>
     <param>
       <key>label</key>
-      <value></value>
+      <value>RX Gain</value>
     </param>
     <param>
       <key>min_len</key>
@@ -277,7 +277,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 67)</value>
+      <value>(168, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -289,7 +289,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>8e6</value>
+      <value>10e6</value>
     </param>
   </block>
   <block>
@@ -320,7 +320,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(40, 371)</value>
+      <value>(48, 412)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -379,7 +379,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(800, 147)</value>
+      <value>(608, 252)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -458,7 +458,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 227)</value>
+      <value>(840, 340)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -745,7 +745,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 99)</value>
+      <value>(840, 236)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1099,6 +1099,10 @@
       <value>1</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_ddc</value>
+    </param>
+    <param>
       <key>freq</key>
       <value>0.0</value>
     </param>
@@ -1108,7 +1112,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(536, 187)</value>
+      <value>(360, 236)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1170,12 +1174,16 @@
       <value>-1</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_axi_dma_fifo</value>
+    </param>
+    <param>
       <key>grvlen</key>
       <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(336, 403)</value>
+      <value>(336, 444)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1242,7 +1250,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(56, 155)</value>
+      <value>(48, 196)</value>
     </param>
     <param>
       <key>_rotation</key>
