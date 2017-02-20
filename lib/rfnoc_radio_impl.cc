@@ -86,6 +86,11 @@ namespace gr {
       _radio_ctrl->set_rx_gain(gain, chan);
     }
 
+    void rfnoc_radio_impl::set_bandwidth(const double bandwidth, const size_t chan)
+    {
+      _radio_ctrl->set_bandwidth(bandwidth, chan);
+    }
+
     void rfnoc_radio_impl::set_tx_antenna(const std::string &ant, const size_t chan)
     {
       _radio_ctrl->set_tx_antenna(ant, chan);
