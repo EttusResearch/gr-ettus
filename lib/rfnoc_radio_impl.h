@@ -44,7 +44,6 @@ namespace gr {
       void set_rx_freq(const double freq, const size_t chan);
       void set_tx_gain(const double gain, const size_t chan);
       void set_rx_gain(const double gain, const size_t chan);
-      void set_bandwidth(const double bandwidth, const size_t chan);
       void set_tx_antenna(const std::string &ant, const size_t chan);
       void set_rx_antenna(const std::string &ant, const size_t chan);
       void set_tx_dc_offset(bool enable, const size_t chan);
