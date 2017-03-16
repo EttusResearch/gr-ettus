@@ -365,7 +365,7 @@ class ModToolAdd(ModTool):
         fname_rfnocv = 'noc_block_' +  self._info['blockname'] + '.v'
         self._write_tpl('rfnoc_xml', 'rfnoc/blocks', fname_rfnoc)
         self._write_tpl('rfnoc_v', 'rfnoc/fpga-src', fname_rfnocv)
-        patt_v = re.escape('$(addprefix '+os.path.join(os.getcwd(),'rfnoc','fpga-src','')+', \\\n') #TODO can be replaced with a dummy, as the file is supposed to be empty
+        patt_v = re.escape('$(addprefix SOURCES_PATH, \\\n')
         append_re_line_sequence(self._file['rfnoc_mksrc'],
                                            patt_v,
                                            'noc_block_' + self._info['blockname'] + '.v \\')
