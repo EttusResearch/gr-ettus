@@ -36,8 +36,6 @@ class ModToolAdd(ModTool):
     """ Add block to the out-of-tree module. """
     name = 'add'
     aliases = ('insert',)
-    _block_types = ('sink', 'source', 'sync', 'decimator', 'interpolator',
-                    'general', 'tagged_stream', 'hier', 'noblock', 'rfnoc')
 
     def __init__(self):
         ModTool.__init__(self)
@@ -144,19 +142,13 @@ class ModToolAdd(ModTool):
                 and not self._skip_subdirs['swig']
         )
         has_grc = False
-        if self._info['lang'] == 'cpp':
-            self._run_lib()
-            has_grc = has_swig
-        else: # Python
-            self._run_python()
-            if self._info['blocktype'] != 'noblock':
-                has_grc = True
+        self._run_lib()
+        has_grc = has_swig
         if has_swig:
             self._run_swig()
         if has_grc and not self._skip_subdirs['grc']:
             self._run_grc()
-        if self._info['blocktype'] == 'rfnoc':
-            self._run_rfnoc()
+        self._run_rfnoc()
 
     def _run_lib(self):
         """ Do everything that needs doing in the subdir 'lib' and 'include'.
@@ -230,26 +222,6 @@ class ModToolAdd(ModTool):
             oldfile = regexp.sub('%%{\n%s\n' % include_str, oldfile, count=1)
             open(self._file['swig'], 'w').write(oldfile)
         self.scm.mark_files_updated((self._file['swig'],))
-
-    def _run_python(self):
-        """ Do everything that needs doing in the subdir 'python' to add
-        a Python block.
-        - add .py file
-        - include in CMakeLists.txt
-        - include in __init__.py
-        """
-        fname_py = self._info['blockname'] + '.py'
-        self._write_tpl('block_python', self._info['pydir'], fname_py)
-        append_re_line_sequence(self._file['pyinit'],
-                                '(^from.*import.*\n|# import any pure.*\n)',
-                                'from %s import %s' % (self._info['blockname'], self._info['blockname']))
-        self.scm.mark_files_updated((self._file['pyinit'],))
-        if self._skip_cmakefiles:
-            return
-        ed = CMakeFileEditor(self._file['cmpython'])
-        ed.append_value('GR_PYTHON_INSTALL', fname_py, to_ignore_end='DESTINATION[^()]+')
-        ed.write()
-        self.scm.mark_files_updated((self._file['cmpython'],))
 
     def _run_grc(self):
         """ Do everything that needs doing in the subdir 'grc' to add

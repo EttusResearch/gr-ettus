@@ -55,31 +55,19 @@ ${str_to_fancyc_comment($license)}
 \#define INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H
 
 \#include <${include_dir_prefix}/${blockname}.h>
-#if $blocktype == 'rfnoc'
 \#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
 \#include <ettus/rfnoc_block_impl.h>
-#end if
 
 namespace gr {
   namespace ${modname} {
 
-#if $blocktype == 'rfnoc'
     class ${blockname}_impl : public ${blockname}, public gr::ettus::rfnoc_block_impl
-#else
-    class ${blockname}_impl : public ${blockname}
-#end if
     {
      private:
       // Nothing to declare in this block.
 
-#if $blocktype == 'tagged_stream'
-     protected:
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
-
-#end if
      public:
       ${blockname}_impl(
-#if $blocktype == 'rfnoc'
 #if $arglist:
         ${strip_default_values($arglist)},
 #end if
@@ -88,34 +76,10 @@ namespace gr {
         const ::uhd::stream_args_t &rx_stream_args,
         const int block_select,
         const int device_select
-#else
-        ${strip_default_values($arglist)}
-#end if
       );
       ~${blockname}_impl();
 
       // Where all the action really happens
-#if $blocktype == 'general'
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
-#else if $blocktype == 'tagged_stream'
-      int work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
-#else if $blocktype == 'hier'
-#silent pass
-#else if $blocktype == 'rfnoc'
-#silent pass
-#else
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
-#end if
     };
 
   } // namespace ${modname}
@@ -133,26 +97,11 @@ ${str_to_fancyc_comment($license)}
 \#endif
 
 \#include <gnuradio/io_signature.h>
-#if $blocktype == 'noblock'
-\#include <${include_dir_prefix}/${blockname}.h>
-#else
 \#include "${blockname}_impl.h"
-#end if
 namespace gr {
   namespace ${modname} {
-
-#if $blocktype == 'noblock'
-    $blockname::${blockname}(${strip_default_values($arglist)})
-    {
-    }
-
-    $blockname::~${blockname}()
-    {
-    }
-#else
     ${blockname}::sptr
     ${blockname}::make(
-#if $blocktype == 'rfnoc'
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
@@ -161,14 +110,10 @@ namespace gr {
 #end if
         const int block_select,
         const int device_select
-#else
-      ${strip_default_values($arglist)}
-#end if
     )
     {
       return gnuradio::get_initial_sptr(
         new ${blockname}_impl(
-#if $blocktype == 'rfnoc'
 #if $arglist:
             ${strip_arg_types($arglist)},
 #end if
@@ -177,37 +122,14 @@ namespace gr {
             rx_stream_args,
             block_select,
             device_select
-#else
-            ${strip_arg_types($arglist)}
-#end if
         )
       );
     }
 
-#if $blocktype == 'decimator'
-#set $decimation = ', <+decimation+>'
-#else if $blocktype == 'interpolator'
-#set $decimation = ', <+interpolation+>'
-#else if $blocktype == 'tagged_stream'
-#set $decimation = ', <+len_tag_key+>'
-#else
-#set $decimation = ''
-#end if
-#if $blocktype == 'source'
-#set $inputsig = '0, 0, 0'
-#else
-#set $inputsig = '<+MIN_IN+>, <+MAX_IN+>, sizeof(<+ITYPE+>)'
-#end if
-#if $blocktype == 'sink'
-#set $outputsig = '0, 0, 0'
-#else
-#set $outputsig = '<+MIN_OUT+>, <+MAX_OUT+>, sizeof(<+OTYPE+>)'
-#end if
     /*
      * The private constructor
      */
     ${blockname}_impl::${blockname}_impl(
-#if $blocktype == 'rfnoc'
 #if $arglist
          ${strip_default_values($arglist)},
 #end if
@@ -216,33 +138,14 @@ namespace gr {
          const ::uhd::stream_args_t &rx_stream_args,
          const int block_select,
          const int device_select
-#else
-         ${strip_default_values($arglist)}
-#end if
     )
-#if $blocktype == 'rfnoc'
       : gr::${grblocktype}("${blockname}"),
         gr::${grblocktype}_impl(
             dev,
             gr::${grblocktype}_impl::make_block_id("${blockname}",  block_select, device_select),
             tx_stream_args, rx_stream_args
             )
-#else
-    ${blockname}_impl::${blockname}_impl(${strip_default_values($arglist)})
-      : gr::${grblocktype}("${blockname}",
-              gr::io_signature::make($inputsig),
-              gr::io_signature::make($outputsig)$decimation)
-#end if
-
-#if $blocktype == 'hier'
-    {
-      connect(self(), 0, d_firstblock, 0);
-      // connect other blocks
-      connect(d_lastblock, 0, self(), 0);
-    }
-#else
     {}
-#end if
 
     /*
      * Our virtual destructor.
@@ -250,81 +153,6 @@ namespace gr {
     ${blockname}_impl::~${blockname}_impl()
     {
     }
-
-#if $blocktype == 'general'
-    void
-    ${blockname}_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
-    {
-      /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-    }
-
-    int
-    ${blockname}_impl::general_work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
-    {
-      const <+ITYPE+> *in = (const <+ITYPE+> *) input_items[0];
-      <+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
-
-      // Do <+signal processing+>
-      // Tell runtime system how many input items we consumed on
-      // each input stream.
-      consume_each (noutput_items);
-
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
-#else if $blocktype == 'tagged_stream'
-    int
-    ${blockname}_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
-    {
-      int noutput_items = /* <+set this+> */;
-      return noutput_items ;
-    }
-
-    int
-    ${blockname}_impl::work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
-    {
-      const <+ITYPE+> *in = (const <+ITYPE+> *) input_items[0];
-      <+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
-
-      // Do <+signal processing+>
-
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
-#else if $blocktype == 'hier'
-#silent pass
-#else if $blocktype == 'rfnoc'
-#silent pass
-#else
-    int
-    ${blockname}_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-#if $blocktype == 'source'
-#silent pass
-#else
-      const <+ITYPE+> *in = (const <+ITYPE+> *) input_items[0];
-#end if
-#if $blocktype == 'sink'
-#silent pass
-#else
-      <+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
-#end if
-
-      // Do <+signal processing+>
-
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
-#end if
-#end if
 
   } /* namespace ${modname} */
 } /* namespace gr */
@@ -339,31 +167,13 @@ ${str_to_fancyc_comment($license)}
 \#define INCLUDED_${modname.upper()}_${blockname.upper()}_H
 
 \#include <${include_dir_prefix}/api.h>
-#if $blocktype != 'noblock' and $blocktype!='rfnoc'
-\#include <gnuradio/${grblocktype}.h>
-#end if
-#if $blocktype == 'rfnoc'
 \#include <ettus/device3.h>
 \#include <ettus/rfnoc_block.h>
 \#include <uhd/stream.hpp>
-#end if
 
 namespace gr {
   namespace ${modname} {
 
-#if $blocktype == 'noblock'
-    /*!
-     * \\brief <+description+>
-     *
-     */
-    class ${modname.upper()}_API $blockname
-    {
-    public:
-      ${blockname}(${arglist});
-      ~${blockname}();
-    private:
-    };
-#else
     /*!
      * \\brief <+description of block+>
      * \ingroup ${modname}
@@ -383,7 +193,6 @@ namespace gr {
        * creating new instances.
        */
       static sptr make(
-#if $blocktype == 'rfnoc'
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
@@ -392,12 +201,8 @@ namespace gr {
 #end if
         const int block_select=-1,
         const int device_select=-1
-#else
-         $arglist
-#end if
         );
     };
-#end if
   } // namespace ${modname}
 } // namespace gr
 
@@ -462,16 +267,11 @@ UHD_RFNOC_BLOCK_REGISTER(${blockname}_block_ctrl,"${blockname}");
 
 Templates['grc_xml'] = '''<?xml version="1.0"?>
 <block>
-#if $blocktype == 'rfnoc'
   <name>RFNoC: $blockname</name>
-#else
-  <name>$blockname</name>
-#end if
   <key>${modname}_$blockname</key>
   <category>$modname</category>
   <import>import $modname</import>
   <make>${modname}.${blockname}(
-#if $blocktype == 'rfnoc'
 #if $arglist
           ${strip_arg_types_grc($arglist)},
 #end if
@@ -488,9 +288,6 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
           ),
           \$block_index,
           \$device_index
-#else
-          ${strip_arg_types_grc($arglist)}
-#end if
   )</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
@@ -498,8 +295,6 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
        * key (makes the value accessible as \$keyname, e.g. in the make node)
        * type -->
 
-
-#if $blocktype == 'rfnoc'
   <param>
     <name>Host Data Type</name>
     <key>type</key>
@@ -577,12 +372,6 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
       <key>u8</key>
     </option>
   </param>
-#end if
-  <param>
-    <name>...</name>
-    <key>...</key>
-    <type>...</type>
-  </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)
@@ -631,11 +420,10 @@ Templates['rfnoc_xml'] = '''<?xml version="1.0"?>
 </nocblock>
 '''
 
-
 # RFNoC Verilog file
 Templates['rfnoc_v'] = '''
 //
-// Copyright 2015 Ettus Research
+${str_to_fancyc_comment($license)}
 //
 module noc_block_$blockname \#(
   parameter NOC_ID = 64'h${noc_id},
@@ -818,7 +606,8 @@ endmodule
 '''
 
 # RFNoC Testbench
-Templates['rfnoc_tb'] = '''`timescale 1ns/1ps
+Templates['rfnoc_tb'] = '''${str_to_fancyc_comment($license)}
+`timescale 1ns/1ps
 `define NS_PER_TICK 1
 `define NUM_TEST_CASES 5
 
@@ -923,8 +712,7 @@ endmodule
 # RFNoC Testbenches Makefile
 Templates['tb_makefile'] = '''
 
-# Copyright 2016 Ettus Research
-
+${str_to_python_comment($license)}
 
 \#-------------------------------------------------
 \# Top-of-Makefile
@@ -977,186 +765,6 @@ GR_SWIG_BLOCK_MAGIC2($modname, $blockname);
 #end if
 """
 
-## Old stuff
-# C++ file of a GR block
-Templates['block_cpp36'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-\#ifdef HAVE_CONFIG_H
-\#include "config.h"
-\#endif
-
-#if $blocktype != 'noblock'
-\#include <gr_io_signature.h>
-#end if
-\#include "${modname}_${blockname}.h"
-
-#if $blocktype == 'noblock'
-${modname}_${blockname}::${modname}_${blockname}(${strip_default_values($arglist)})
-{
-}
-
-${modname}_${blockname}::~${modname}_${blockname}()
-{
-}
-#else
-${modname}_${blockname}_sptr
-${modname}_make_${blockname} (${strip_default_values($arglist)})
-{
-  return gnuradio::get_initial_sptr (new ${modname}_${blockname}(${strip_arg_types($arglist)}));
-}
-
-#if $blocktype == 'decimator'
-#set $decimation = ', <+decimation+>'
-#else if $blocktype == 'interpolator'
-#set $decimation = ', <+interpolation+>'
-#else
-#set $decimation = ''
-#end if
-#if $blocktype == 'sink'
-#set $inputsig = '0, 0, 0'
-#else
-#set $inputsig = '<+MIN_IN+>, <+MAX_IN+>, sizeof(<+ITYPE+>)'
-#end if
-#if $blocktype == 'source'
-#set $outputsig = '0, 0, 0'
-#else
-#set $outputsig = '<+MIN_OUT+>, <+MAX_OUT+>, sizeof(<+OTYPE+>)'
-#end if
-
-/*
- * The private constructor
- */
-${modname}_${blockname}::${modname}_${blockname} (${strip_default_values($arglist)})
-  : gr_${grblocktype} ("${blockname}",
-       gr_make_io_signature($inputsig),
-       gr_make_io_signature($outputsig)$decimation)
-{
-#if $blocktype == 'hier'
-  connect(self(), 0, d_firstblock, 0);
-  // <+connect other blocks+>
-  connect(d_lastblock, 0, self(), 0);
-#else
-  // Put in <+constructor stuff+> here
-#end if
-}
-
-
-/*
- * Our virtual destructor.
- */
-${modname}_${blockname}::~${modname}_${blockname}()
-{
-  // Put in <+destructor stuff+> here
-}
-#end if
-
-
-#if $blocktype == 'general'
-void
-${modname}_${blockname}::forecast (int noutput_items, gr_vector_int &ninput_items_required)
-{
-  /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-}
-
-int
-${modname}_${blockname}::general_work (int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items)
-{
-  const <+ITYPE+> *in = (const <+ITYPE+> *) input_items[0];
-  <+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
-
-  // Do <+signal processing+>
-  // Tell runtime system how many input items we consumed on
-  // each input stream.
-  consume_each (noutput_items);
-
-  // Tell runtime system how many output items we produced.
-  return noutput_items;
-}
-#else if $blocktype == 'hier' or $blocktype == 'noblock'
-#pass
-#else
-int
-${modname}_${blockname}::work(int noutput_items,
-      gr_vector_const_void_star &input_items,
-      gr_vector_void_star &output_items)
-{
-  const <+ITYPE+> *in = (const <+ITYPE+> *) input_items[0];
-  <+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
-
-  // Do <+signal processing+>
-
-  // Tell runtime system how many output items we produced.
-  return noutput_items;
-}
-#end if
-
-'''
-
-# Block definition header file (for include/)
-Templates['block_h36'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-
-\#ifndef INCLUDED_${modname.upper()}_${blockname.upper()}_H
-\#define INCLUDED_${modname.upper()}_${blockname.upper()}_H
-
-\#include <${modname}_api.h>
-#if $blocktype == 'noblock'
-class ${modname.upper()}_API $blockname
-{
-  ${blockname}(${arglist});
-  ~${blockname}();
- private:
-};
-
-#else
-\#include <gr_${grblocktype}.h>
-
-class ${modname}_${blockname};
-
-typedef boost::shared_ptr<${modname}_${blockname}> ${modname}_${blockname}_sptr;
-
-${modname.upper()}_API ${modname}_${blockname}_sptr ${modname}_make_${blockname} ($arglist);
-
-/*!
- * \\brief <+description+>
- * \ingroup ${modname}
- *
- */
-class ${modname.upper()}_API ${modname}_${blockname} : public gr_$grblocktype
-{
- private:
-  friend ${modname.upper()}_API ${modname}_${blockname}_sptr ${modname}_make_${blockname} (${strip_default_values($arglist)});
-
-  ${modname}_${blockname}(${strip_default_values($arglist)});
-
- public:
-  ~${modname}_${blockname}();
-
-#if $blocktype == 'general'
-  void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
-  // Where all the action really happens
-  int general_work (int noutput_items,
-      gr_vector_int &ninput_items,
-      gr_vector_const_void_star &input_items,
-      gr_vector_void_star &output_items);
-#else if $blocktype == 'hier'
-#pass
-#else
-  // Where all the action really happens
-  int work (int noutput_items,
-      gr_vector_const_void_star &input_items,
-      gr_vector_void_star &output_items);
-#end if
-};
-#end if
-
-\#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_H */
-
-'''
 # Empty File
 Templates['empty'] = """
 """
