@@ -460,92 +460,6 @@ private:
 UHD_RFNOC_BLOCK_REGISTER(${blockname}_block_ctrl,"${blockname}");
 '''
 
-# C++ file for QA TODO check this
-Templates['qa_cpp'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-
-\#include <gnuradio/attributes.h>
-\#include <cppunit/TestAssert.h>
-\#include "qa_${blockname}.h"
-\#include <${include_dir_prefix}/${blockname}.h>
-
-namespace gr {
-  namespace ${modname} {
-
-    void
-    qa_${blockname}::t1()
-    {
-      // Put test here
-    }
-
-  } /* namespace ${modname} */
-} /* namespace gr */
-
-'''
-
-# Header file for QA  TODO check this
-Templates['qa_h'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-
-\#ifndef _QA_${blockname.upper()}_H_
-\#define _QA_${blockname.upper()}_H_
-
-\#include <cppunit/extensions/HelperMacros.h>
-\#include <cppunit/TestCase.h>
-
-namespace gr {
-  namespace ${modname} {
-
-    class qa_${blockname} : public CppUnit::TestCase
-    {
-    public:
-      CPPUNIT_TEST_SUITE(qa_${blockname});
-      CPPUNIT_TEST(t1);
-      CPPUNIT_TEST_SUITE_END();
-
-    private:
-      void t1();
-    };
-
-  } /* namespace ${modname} */
-} /* namespace gr */
-
-\#endif /* _QA_${blockname.upper()}_H_ */
-
-'''
-
-# Python QA code TODO check this
-Templates['qa_python'] = '''\#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-${str_to_python_comment($license)}
-#
-
-from gnuradio import gr, gr_unittest
-from gnuradio import blocks
-#if $lang == 'cpp'
-import ${modname}_swig as ${modname}
-#else
-from ${blockname} import ${blockname}
-#end if
-
-class qa_$blockname (gr_unittest.TestCase):
-
-    def setUp (self):
-        self.tb = gr.top_block ()
-
-    def tearDown (self):
-        self.tb = None
-
-    def test_001_t (self):
-        # set up fg
-        self.tb.run ()
-        # check data
-
-
-if __name__ == '__main__':
-    gr_unittest.run(qa_${blockname}, "qa_${blockname}.xml")
-'''
-
 Templates['grc_xml'] = '''<?xml version="1.0"?>
 <block>
 #if $blocktype == 'rfnoc'
@@ -1243,32 +1157,6 @@ class ${modname.upper()}_API ${modname}_${blockname} : public gr_$grblocktype
 \#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_H */
 
 '''
-
-# C++ file for QA
-Templates['qa_cpp36'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-
-\#include <boost/test/unit_test.hpp>
-
-BOOST_AUTO_TEST_CASE(qa_${modname}_${blockname}_t1){
-    BOOST_CHECK_EQUAL(2 + 2, 4);
-    // TODO BOOST_* test macros here
-}
-
-BOOST_AUTO_TEST_CASE(qa_${modname}_${blockname}_t2){
-    BOOST_CHECK_EQUAL(2 + 2, 4);
-    // TODO BOOST_* test macros here
-}
-
-'''
-
-# Header file for QA
-Templates['qa_cmakeentry36'] = """
-add_executable($basename $filename)
-target_link_libraries($basename gnuradio-$modname \${Boost_LIBRARIES})
-GR_ADD_TEST($basename $basename)
-"""
-
 # Empty File
 Templates['empty'] = """
 """

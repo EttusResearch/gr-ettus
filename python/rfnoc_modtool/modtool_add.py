@@ -41,8 +41,6 @@ class ModToolAdd(ModTool):
 
     def __init__(self):
         ModTool.__init__(self)
-        self._add_cc_qa = False
-        self._add_py_qa = False
         self._skip_cmakefiles = False
         self._skip_block_ctrl = False
         self._skip_block_interface = False
@@ -59,10 +57,6 @@ class ModToolAdd(ModTool):
                 help="Name of the copyright holder (you or your company) MUST be a quoted string.")
         ogroup.add_option("--argument-list", type="string", default=None,
                 help="The argument list for the constructor and make functions.")
-        ogroup.add_option("--add-python-qa", action="store_true", default=None,
-                help="If given, Python QA code is automatically added if possible.")
-        ogroup.add_option("--add-cpp-qa", action="store_true", default=None,
-                help="If given, C++ QA code is automatically added if possible.")
         ogroup.add_option("--skip-cmakefiles", action="store_true", default=False,
                 help="If given, only source files are written, but CMakeLists.txt files are left unchanged.")
         ogroup.add_option("--skip-block-ctrl", action="store_true", default=None,
@@ -100,13 +94,6 @@ class ModToolAdd(ModTool):
         else:
             self._info['arglist'] = raw_input('Enter valid argument list, including default arguments: ')
 
-        if not (self._info['blocktype'] in ('noblock') or self._skip_subdirs['python']):
-            self._add_py_qa = options.add_python_qa
-            if self._add_py_qa is None:
-                self._add_py_qa = ask_yes_no('Add Python QA code?', True)
-        self._add_cc_qa = options.add_cpp_qa
-        if self._add_cc_qa is None:
-            self._add_cc_qa = ask_yes_no('Add C++ QA code?', not self._add_py_qa)
         self._skip_cmakefiles = options.skip_cmakefiles
         if self._info['version'] == 'autofoo' and not self._skip_cmakefiles:
             print("Warning: Autotools modules are not supported. ",)
@@ -166,8 +153,6 @@ class ModToolAdd(ModTool):
                 has_grc = True
         if has_swig:
             self._run_swig()
-        if self._add_py_qa:
-            self._run_python_qa()
         if has_grc and not self._skip_subdirs['grc']:
             self._run_grc()
         if self._info['blocktype'] == 'rfnoc':
@@ -177,51 +162,7 @@ class ModToolAdd(ModTool):
         """ Do everything that needs doing in the subdir 'lib' and 'include'.
         - add .cc and .h files
         - include them into CMakeLists.txt
-        - check if C++ QA code is req'd
-        - if yes, create qa_*.{cc,h} and add them to CMakeLists.txt
         """
-        def _add_qa():
-            " Add C++ QA files for 3.7 API "
-            fname_qa_h  = 'qa_%s.h'  % self._info['blockname']
-            fname_qa_cc = 'qa_%s.cc' % self._info['blockname']
-            self._write_tpl('qa_cpp', 'lib', fname_qa_cc)
-            self._write_tpl('qa_h',   'lib', fname_qa_h)
-            if not self._skip_cmakefiles:
-                try:
-                    append_re_line_sequence(self._file['cmlib'],
-                                            '\$\{CMAKE_CURRENT_SOURCE_DIR\}/qa_%s.cc.*\n' % self._info['modname'],
-                                            '    ${CMAKE_CURRENT_SOURCE_DIR}/qa_%s.cc' % self._info['blockname'])
-                    append_re_line_sequence(self._file['qalib'],
-                                            '#include.*\n',
-                                            '#include "%s"' % fname_qa_h)
-                    append_re_line_sequence(self._file['qalib'],
-                                            '(addTest.*suite.*\n|new CppUnit.*TestSuite.*\n)',
-                                            '  s->addTest(gr::%s::qa_%s::suite());' % (self._info['modname'],
-                                                                                       self._info['blockname'])
-                                            )
-                    self.scm.mark_files_updated((self._file['qalib'],))
-                except IOError:
-                    print("Can't add C++ QA files.")
-        def _add_qa36():
-            " Add C++ QA files for pre-3.7 API (not autotools) "
-            fname_qa_cc = 'qa_%s.cc' % self._info['fullblockname']
-            self._write_tpl('qa_cpp36', 'lib', fname_qa_cc)
-            if not self._skip_cmakefiles:
-                open(self._file['cmlib'], 'a').write(
-                    str(
-                        Cheetah.Template.Template(
-                            Templates['qa_cmakeentry36'],
-                            searchList={'basename': os.path.splitext(fname_qa_cc)[0],
-                                        'upperbasename': os.path.splitext(fname_qa_cc)[0].upper(),
-                                        'filename': fname_qa_cc,
-                                        'modname': self._info['modname']
-                                       }
-                        )
-                     )
-                )
-                ed = CMakeFileEditor(self._file['cmlib'])
-                ed.remove_double_newlines()
-                ed.write()
         fname_cc = None
         fname_h  = None
         if self._info['version']  == '37':
@@ -263,13 +204,6 @@ class ModToolAdd(ModTool):
             fname_cc = self._info['fullblockname'] + '.cc'
             self._write_tpl('block_h36',   self._info['includedir'], fname_h)
             self._write_tpl('block_cpp36', 'lib',                    fname_cc)
-        if self._add_cc_qa:
-            if self._info['version'] == '37':
-                _add_qa()
-            elif self._info['version'] == '36':
-                _add_qa36()
-            elif self._info['version'] == 'autofoo':
-                print("Warning: C++ QA files not supported for autotools.")
 
     def _run_swig(self):
         """ Do everything that needs doing in the subdir 'swig'.
@@ -296,24 +230,6 @@ class ModToolAdd(ModTool):
             oldfile = regexp.sub('%%{\n%s\n' % include_str, oldfile, count=1)
             open(self._file['swig'], 'w').write(oldfile)
         self.scm.mark_files_updated((self._file['swig'],))
-
-    def _run_python_qa(self):
-        """ Do everything that needs doing in the subdir 'python' to add
-        QA code.
-        - add .py files
-        - include in CMakeLists.txt
-        """
-        fname_py_qa = 'qa_' + self._info['blockname'] + '.py'
-        self._write_tpl('qa_python', self._info['pydir'], fname_py_qa)
-        os.chmod(os.path.join(self._info['pydir'], fname_py_qa), 0755)
-        self.scm.mark_files_updated((os.path.join(self._info['pydir'], fname_py_qa),))
-        if self._skip_cmakefiles or CMakeFileEditor(self._file['cmpython']).check_for_glob('qa_*.py'):
-            return
-        print("Editing %s/CMakeLists.txt..." % self._info['pydir'])
-        open(self._file['cmpython'], 'a').write(
-                'GR_ADD_TEST(qa_%s ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % \
-                  (self._info['blockname'], fname_py_qa))
-        self.scm.mark_files_updated((self._file['cmpython'],))
 
     def _run_python(self):
         """ Do everything that needs doing in the subdir 'python' to add
