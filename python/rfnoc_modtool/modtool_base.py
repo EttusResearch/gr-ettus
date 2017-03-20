@@ -20,13 +20,14 @@
 #
 """ Base class for the modules """
 
+from __future__ import print_function
 import os
 import re
-from optparse import OptionParser, OptionGroup
-
+from argparse import ArgumentParser
+import sys
 from gnuradio import gr
-from util_functions import get_modname
-from scm import SCMRepoFactory
+from .util_functions import get_modname
+from .scm import SCMRepoFactory
 
 class ModToolException(BaseException):
     """ Standard exception for modtool classes. """
@@ -34,9 +35,11 @@ class ModToolException(BaseException):
 
 class ModTool(object):
     """ Base class for all modtool command classes. """
+    # pylint: disable=too-many-instance-attributes
     name = 'base'
     def __init__(self):
-        self._subdirs = ['lib', 'include', 'python', 'swig', 'grc', 'rfnoc'] #List subdirs where stuff happens
+        #List subdirs where stuff happens
+        self._subdirs = ['lib', 'include', 'python', 'swig', 'grc', 'rfnoc']
         self._has_subdirs = {}
         self._skip_subdirs = {}
         self._info = {}
@@ -50,65 +53,87 @@ class ModTool(object):
     def setup_parser(self):
         """ Init the option parser. If derived classes need to add options,
         override this and call the parent function. """
-        parser = OptionParser(add_help_option=False)
-        parser.usage = '%prog ' + self.name + ' [options] <PATTERN> \n' + \
-                       ' Call "%prog ' + self.name + '" without any options to run it interactively.'
-        ogroup = OptionGroup(parser, "General options")
-        ogroup.add_option("-h", "--help", action="help", help="Displays this help message.")
-        ogroup.add_option("-d", "--directory", type="string", default=".",
-                help="Base directory of the module. Defaults to the cwd.")
-        ogroup.add_option("-n", "--module-name", type="string", default=None,
-                help="Use this to override the current module's name (is normally autodetected).")
-        ogroup.add_option("-N", "--block-name", type="string", default=None,
-                help="Name of the block, where applicable.")
-        ogroup.add_option("--skip-lib", action="store_true", default=False,
-                help="Don't do anything in the lib/ subdirectory.")
-        ogroup.add_option("--skip-swig", action="store_true", default=False,
-                help="Don't do anything in the swig/ subdirectory.")
-        ogroup.add_option("--skip-python", action="store_true", default=False,
-                help="Don't do anything in the python/ subdirectory.")
-        ogroup.add_option("--skip-grc", action="store_true", default=False,
-                help="Don't do anything in the grc/ subdirectory.")
-        ogroup.add_option("--skip-rfnoc", action="store_true", default=False,
-                help="Don't do anything in the rfnoc/ subdirectory.")
-        ogroup.add_option("--scm-mode", type="choice", choices=('yes', 'no', 'auto'),
-                default=gr.prefs().get_string('rfnocmodtool', 'scm_mode', 'no'),
-                help="Use source control management (yes, no or auto).")
-        ogroup.add_option("-y", "--yes", action="store_true", default=False,
-                help="Answer all questions with 'yes'. This can overwrite and delete your files, so be careful.")
-        parser.add_option_group(ogroup)
+        parser = ArgumentParser(
+            usage='%(prog)s ' + self.name + ' [options] <PATTERN> \n' + \
+            ' Call "%(prog)s ' + self.name + '" without any options to run it' + \
+            ' interactively.',
+            add_help=False
+            )
+        agroup = parser.add_argument_group("General options")
+        agroup.add_argument("-h", "--help",
+                            action="help",
+                            help="Displays this help message.")
+        agroup.add_argument("-d", "--directory",
+                            default=".",
+                            help="Base directory of the module. Defaults to the cwd.")
+        agroup.add_argument("-n", "--module-name",
+                            default=None,
+                            help="Use this to override the current module's name" + \
+                                    " (is normally autodetected).")
+        agroup.add_argument("-N", "--block-name",
+                            default=None,
+                            help="Name of the block, where applicable.")
+        agroup.add_argument("--skip-lib",
+                            action="store_true",
+                            default=False,
+                            help="Don't do anything in the lib/ subdirectory.")
+        agroup.add_argument("--skip-swig",
+                            action="store_true",
+                            default=False,
+                            help="Don't do anything in the swig/ subdirectory.")
+        agroup.add_argument("--skip-python",
+                            action="store_true",
+                            default=False,
+                            help="Don't do anything in the python/ subdirectory.")
+        agroup.add_argument("--skip-grc",
+                            action="store_true",
+                            default=False,
+                            help="Don't do anything in the grc/ subdirectory.")
+        agroup.add_argument("--skip-rfnoc",
+                            action="store_true",
+                            default=False,
+                            help="Don't do anything in the rfnoc/ subdirectory.")
+        agroup.add_argument("--scm-mode",
+                            choices=('yes', 'no', 'auto'),
+                            default=gr.prefs().get_string('rfnocmodtool', 'scm_mode', 'no'),
+                            help="Use source control management (yes, no or auto).")
+        agroup.add_argument("-y", "--yes",
+                            action="store_true",
+                            default=False,
+                            help="Answer all questions with 'yes'. This " + \
+                                 "can overwrite and delete your files, so be careful.")
         return parser
 
-    def setup(self, options, args):
+    def setup(self, args, positional):
         """ Initialise all internal variables, such as the module name etc. """
-        self._dir = options.directory
+        self._dir = args.directory
         if not self._check_directory(self._dir):
             raise ModToolException('No RFNoC module found in the given directory.')
-        if options.module_name is not None:
-            self._info['modname'] = options.module_name
+        if args.module_name is not None:
+            self._info['modname'] = args.module_name
         else:
             self._info['modname'] = get_modname()
         if self._info['modname'] is None:
             raise ModToolException('No RFNoC module found in the given directory.')
-        print "RFNoC module name identified: " + self._info['modname']
+        print("RFNoC module name identified: " + self._info['modname'])
         if self._info['version'] == '36' and (
                 os.path.isdir(os.path.join('include', self._info['modname'])) or
                 os.path.isdir(os.path.join('include', 'gnuradio', self._info['modname']))
                 ):
             self._info['version'] = '37'
-        if options.skip_lib or not self._has_subdirs['lib']:
+        if args.skip_lib or not self._has_subdirs['lib']:
             self._skip_subdirs['lib'] = True
-        if options.skip_python or not self._has_subdirs['python']:
+        if args.skip_python or not self._has_subdirs['python']:
             self._skip_subdirs['python'] = True
-        if options.skip_swig or self._get_mainswigfile() is None or not self._has_subdirs['swig']:
+        if args.skip_swig or self._get_mainswigfile() is None or not self._has_subdirs['swig']:
             self._skip_subdirs['swig'] = True
-        if options.skip_grc or not self._has_subdirs['grc']:
+        if args.skip_grc or not self._has_subdirs['grc']:
             self._skip_subdirs['grc'] = True
             ###TODO: add skip for rfnoc?
-        self._info['blockname'] = options.block_name
+        self._info['blockname'] = args.block_name
         self._setup_files()
-        self._info['yes'] = options.yes
-        self.options = options
+        self._info['yes'] = args.yes
+        self.args = args
         self._setup_scm()
 
     def _setup_files(self):
@@ -138,11 +163,11 @@ class ModTool(object):
     def _setup_scm(self, mode='active'):
         """Initialize source control management. """
         if mode == 'active':
-            self.scm = SCMRepoFactory(self.options, '.').make_active_scm_manager()
+            self.scm = SCMRepoFactory(self.args, '.').make_active_scm_manager()
         else:
-            self.scm = SCMRepoFactory(self.options, '.').make_empty_scm_manager()
+            self.scm = SCMRepoFactory(self.args, '.').make_empty_scm_manager()
         if self.scm is None:
-            print "Error: can't set up SCM"
+            print("Error: can't set up SCM")
             exit(1)
 
     def _check_directory(self, directory):
@@ -154,7 +179,7 @@ class ModTool(object):
             files = os.listdir(directory)
             os.chdir(directory)
         except OSError:
-            print "Can't read or chdir to directory %s." % directory
+            print("Can't read or chdir to directory %s." % directory)
             return False
         self._info['is_component'] = False
         for f in files:
@@ -192,12 +217,12 @@ class ModTool(object):
 def get_class_dict(the_globals):
     " Return a dictionary of the available commands in the form command->class "
     classdict = {}
-    for g in the_globals:
+    for glob in the_globals:
         try:
-            if issubclass(g, ModTool):
-                classdict[g.name] = g
-                for a in g.aliases:
-                    classdict[a] = g
+            if issubclass(glob, ModTool):
+                classdict[glob.name] = glob
+                for alias in glob.aliases:
+                    classdict[alias] = glob
         except (TypeError, AttributeError):
             pass
     return classdict

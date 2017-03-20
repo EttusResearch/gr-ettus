@@ -24,11 +24,11 @@ import os
 import re
 import glob
 
-from modtool_base import ModTool, ModToolException
-from parser_cc_block import ParserCCBlock
-from grc_xml_generator import GRCXMLGenerator
-from cmakefile_editor import CMakeFileEditor
-from util_functions import ask_yes_no
+from .modtool_base import ModTool, ModToolException
+from .parser_cc_block import ParserCCBlock
+from .grc_xml_generator import GRCXMLGenerator
+from .cmakefile_editor import CMakeFileEditor
+from .util_functions import ask_yes_no
 
 
 class ModToolMakeXML(ModTool):
@@ -42,19 +42,20 @@ class ModToolMakeXML(ModTool):
     def setup_parser(self):
         """ Initialise the option parser for 'gr_modtool makexml' """
         parser = ModTool.setup_parser(self)
-        parser.usage = """%prog info [options]. \n Call %prog without any options to run it interactively.
+        parser.usage = '%(prog)s ' + self.name + ' [options]. \n Call "%(prog)s ' \
+        + self.name + """\" without any options to run it interactively.
 
         Note: This does not work on Python blocks!
         """
         return parser
 
-    def setup(self, options, args):
-        ModTool.setup(self, options, args)
+    def setup(self, args, positional):
+        ModTool.setup(self, args, positional)
 
-        if options.block_name is not None:
-            self._info['pattern'] = options.block_name
-        elif len(args) >= 2:
-            self._info['pattern'] = args[1]
+        if args.block_name is not None:
+            self._info['pattern'] = args.block_name
+        elif len(positional) >=2:
+            self._info['pattern'] = positional[1]
         else:
             self._info['pattern'] = raw_input('Which blocks do you want to parse? (Regex): ')
         if len(self._info['pattern']) == 0:

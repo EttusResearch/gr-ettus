@@ -1,5 +1,5 @@
 """ Edit CMakeLists.txt files """
-
+from __future__ import print_function
 import re
 
 class CMakeFileEditor(object):
@@ -106,9 +106,11 @@ class CMakeFileEditor(object):
             comment_out_re = r'\n' + self.indent + comment_out_re
         (self.cfile, nsubs) = re.subn(r'(\b'+fname+r'\b)\s*', comment_out_re, self.cfile)
         if nsubs == 0:
-            print "Warning: A replacement failed when commenting out %s. Check the CMakeFile.txt manually." % fname
+            print("Warning: A replacement failed when commenting out {}. " \
+                    "Check the CMakeFile.txt manually.".format(fname))
         elif nsubs > 1:
-            print "Warning: Replaced %s %d times (instead of once). Check the CMakeFile.txt manually." % (fname, nsubs)
+            print("Warning: Replaced {:s} {:d} times (instead of once). Check " \
+                  "the CMakeFile.txt manually.".format(fname, nsubs))
 
     def comment_out_lines(self, pattern, comment_str='#'):
         """ Comments out all lines that match with pattern """
@@ -120,4 +122,3 @@ class CMakeFileEditor(object):
         """ Returns true if a glob as in globstr is found in the cmake file """
         glob_re = r'GLOB\s[a-z_]+\s"%s"' % globstr.replace('*', '\*')
         return re.search(glob_re, self.cfile, flags=re.MULTILINE|re.IGNORECASE) is not None
-

@@ -20,11 +20,12 @@
 #
 """ Returns information about a module """
 
+from __future__ import print_function
 import os
-from optparse import OptionGroup
+from argparse import ArgumentParser
 
-from modtool_base import ModTool, ModToolException
-from util_functions import get_modname
+from .modtool_base import ModTool, ModToolException
+from .util_functions import get_modname
 
 
 class ModToolInfo(ModTool):
@@ -41,20 +42,18 @@ class ModToolInfo(ModTool):
     def setup_parser(self):
         """ Initialise the option parser for 'gr_modtool info' """
         parser = ModTool.setup_parser(self)
-        parser.usage = '%prog info [options]. \n Call %prog without any options to run it interactively.'
-        ogroup = OptionGroup(parser, "Info options")
-        ogroup.add_option("--python-readable", action="store_true", default=None,
-                help="Return the output in a format that's easier to read for Python scripts.")
-        ogroup.add_option("--suggested-dirs", default=None, type="string",
-                help="Suggest typical include dirs if nothing better can be detected.")
-        parser.add_option_group(ogroup)
+        agroup = parser.add_argument_group("Info options")
+        agroup.add_argument("--python-readable", action="store_true", default=None,
+                            help="Return the output in a format that's easier to read for Python scripts.")
+        agroup.add_argument("--suggested-dirs", default=None,
+                            help="Suggest typical include dirs if nothing better can be detected.")
         return parser
 
-    def setup(self, options, args):
+    def setup(self, args, positional):
         # Won't call parent's setup(), because that's too chatty
-        self._directory = options.directory
-        self._python_readable = options.python_readable
-        self._suggested_dirs = options.suggested_dirs
+        self._directory = args.directory
+        self._python_readable = args.python_readable
+        self._suggested_dirs = args.suggested_dirs
 
     def run(self):
         """ Go, go, go! """
@@ -85,7 +84,7 @@ class ModToolInfo(ModTool):
             mod_info['build_dir'] = build_dir
             mod_info['incdirs'] += self._get_include_dirs(mod_info)
         if self._python_readable:
-            print str(mod_info)
+            print(str(mod_info))
         else:
             self._pretty_print(mod_info)
 
@@ -146,10 +145,10 @@ class ModToolInfo(ModTool):
                        'incdirs': 'Include directories'}
         for key in mod_info.keys():
             if key == 'version':
-                print "        API version: %s" % {
+                print("        API version: %s" % {
                         '36': 'pre-3.7',
                         '37': 'post-3.7',
                         'autofoo': 'Autotools (pre-3.5)'
-                        }[mod_info['version']]
+                        }[mod_info['version']])
             else:
-                print '%19s: %s' % (index_names[key], mod_info[key])
+                print('%19s: %s' % (index_names[key], mod_info[key]))

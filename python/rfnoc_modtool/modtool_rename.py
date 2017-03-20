@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2014 Free Software Foundation, Inc.
 #
@@ -22,19 +23,20 @@
 
 import os
 import re
-from optparse import OptionGroup
+from argparse import ArgumentParser
 
-from util_functions import append_re_line_sequence, ask_yes_no
-from cmakefile_editor import CMakeFileEditor
-from modtool_base import ModTool, ModToolException
-from templates import Templates
-from code_generator import get_template
+from .util_functions import append_re_line_sequence, ask_yes_no
+from .cmakefile_editor import CMakeFileEditor
+from .modtool_base import ModTool, ModToolException
+from .templates import Templates
+from .code_generator import get_template
 import Cheetah.Template
 
 
 class ModToolRename(ModTool):
-    """ Rename a block in the out-of-tree module. """
+    """ Rename a block in the RFNoC out-of-tree module. """
     name = 'rename'
+    description = 'Rename a block in the RFNoC out-of-tree module'
     aliases = ('mv',)
 
     def __init__(self):
@@ -46,24 +48,23 @@ class ModToolRename(ModTool):
 
     def setup_parser(self):
         parser = ModTool.setup_parser(self)
-        ogroup = OptionGroup(parser, "Rename module options")
-        ogroup.add_option("-o", "--old-name", type="string", default=None, help="Current name of the block to rename.")
-        ogroup.add_option("-u", "--new-name", type="string", default=None, help="New name of the block.")
-        parser.add_option_group(ogroup)
+        agroup = parser.add_argument_group("Rename module options")
+        agroup.add_argument("-o", "--old-name", default=None, help="Current name of the block to rename.")
+        agroup.add_argument("-u", "--new-name", default=None, help="New name of the block.")
         return parser
 
-    def setup(self, options, args):
-        ModTool.setup(self, options, args)
+    def setup(self, args, positional):
+        ModTool.setup(self, args, positional)
 
         if ((self._skip_subdirs['lib'] and self._info['lang'] == 'cpp')
              or (self._skip_subdirs['python'] and self._info['lang'] == 'python')):
             raise ModToolException('Missing or skipping relevant subdir.')
 
         # first make sure the old block name is provided
-        self._info['oldname'] = options.old_name
+        self._info['oldname'] = args.old_name
         if self._info['oldname'] is None:
-            if len(args) >= 2:
-                self._info['oldname'] = args[1]
+            if len(positional) >= 2:
+                self._info['oldname'] = positional[1]
             else:
                 self._info['oldname'] = raw_input("Enter name of block/code to rename (without module name prefix): ")
         if not re.match('[a-zA-Z0-9_]+', self._info['oldname']):
@@ -72,10 +73,10 @@ class ModToolRename(ModTool):
         self._info['fulloldname'] = self._info['modname'] + '_' + self._info['oldname']
 
         # now get the new block name
-        self._info['newname'] = options.new_name
+        self._info['newname'] = args.new_name
         if self._info['newname'] is None:
-            if len(args) >= 2:
-                self._info['newname'] = args[2]
+            if len(positional) >= 2:
+                self._info['newname'] = positional[2]
             else:
                 self._info['newname'] = raw_input("Enter name of block/code (without module name prefix): ")
         if not re.match('[a-zA-Z0-9_]+', self._info['newname']):

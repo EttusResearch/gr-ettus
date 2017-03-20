@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ###RFNoC Modtool
 
 ''' All the templates for skeleton files (needed by ModToolAdd) '''

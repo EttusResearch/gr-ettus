@@ -25,9 +25,9 @@ import re
 import sys
 import glob
 
-from util_functions import remove_pattern_from_file
-from modtool_base import ModTool
-from cmakefile_editor import CMakeFileEditor
+from .util_functions import remove_pattern_from_file
+from .modtool_base import ModTool
+from .cmakefile_editor import CMakeFileEditor
 
 
 class ModToolRemove(ModTool):
@@ -38,13 +38,12 @@ class ModToolRemove(ModTool):
     def __init__(self):
         ModTool.__init__(self)
 
-    def setup(self, options, args):
-        ModTool.setup(self, options, args)
-
-        if options.block_name is not None:
-            self._info['pattern'] = options.block_name
-        elif len(args) >= 2:
-            self._info['pattern'] = args[1]
+    def setup(self, args, positional):
+        ModTool.setup(self, args, positional)
+        if args.block_name is not None:
+            self._info['pattern'] = args.block_name
+        elif len(positional) >= 2:
+            self._info['pattern'] = positional[1]
         else:
             self._info['pattern'] = raw_input('Which blocks do you want to delete? (Regex): ')
         if len(self._info['pattern']) == 0:

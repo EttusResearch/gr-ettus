@@ -19,7 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 """ The help module """
-
+from __future__ import print_function
 from ettus.rfnoc_modtool import *
 from util_functions import get_command_from_argv
 from templates import Templates
@@ -35,10 +35,10 @@ def print_class_descriptions():
                 desclist.append((gvar.name, ','.join(gvar.aliases), gvar.__doc__))
         except (TypeError, AttributeError):
             pass
-    print 'Name      Aliases          Description'
-    print '====================================================================='
+    print('Name      Aliases          Description')
+    print('=====================================================================')
     for description in desclist:
-        print '%-8s  %-12s    %s' % description
+        print('%-8s  %-12s    %s' % description)
 
 
 class ModToolHelp(ModTool):
@@ -49,7 +49,14 @@ class ModToolHelp(ModTool):
     def __init__(self):
         ModTool.__init__(self)
 
-    def setup(self, options, args):
+    def setup_parser(self):
+        " Sets up help subparser "
+        parser = ModTool.setup_parser(self)
+        subparser = parser.add_subparsers()
+        agroup = subparser.add_parser("help")
+        return parser
+
+    def setup(self, args, positional):
         pass
 
     def run(self):
@@ -60,9 +67,10 @@ class ModToolHelp(ModTool):
             cmds.remove(a)
         help_requested_for = get_command_from_argv(cmds)
         if help_requested_for is None:
-            print 'Usage:' + Templates['usage']
-            print '\nList of possible commands:\n'
+            print( 'Usage:' + Templates['usage'])
+            print( '\nList of possible commands:\n')
             print_class_descriptions()
             return
         cmd_dict[help_requested_for]().setup_parser().print_help()
+
 

@@ -20,15 +20,14 @@
 #
 """ Module to add new blocks """
 
+from __future__ import print_function
 import os
 import re
-from optparse import OptionGroup
-
-from util_functions import append_re_line_sequence, ask_yes_no, id_process
-from cmakefile_editor import CMakeFileEditor
-from modtool_base import ModTool, ModToolException
-from templates import Templates
-from code_generator import get_template
+from .util_functions import append_re_line_sequence, ask_yes_no, id_process
+from .cmakefile_editor import CMakeFileEditor
+from .modtool_base import ModTool, ModToolException
+from .templates import Templates
+from .code_generator import get_template
 import Cheetah.Template
 
 
@@ -46,67 +45,69 @@ class ModToolAdd(ModTool):
 
     def setup_parser(self):
         parser = ModTool.setup_parser(self)
-        ogroup = OptionGroup(parser, "Add module options")
-        ogroup.add_option("--license-file", type="string", default=None,
-                          help="File containing the license header for every source code file.")
-        ogroup.add_option("--noc_id", type="string", default=None,
-                help="The ID number with which the RFNoC block will identify itself at the SW/Hw interface")
-        ogroup.add_option("--copyright", type="string", default=None,
-                help="Name of the copyright holder (you or your company) MUST be a quoted string.")
-        ogroup.add_option("--argument-list", type="string", default=None,
-                help="The argument list for the constructor and make functions.")
-        ogroup.add_option("--skip-cmakefiles", action="store_true", default=False,
-                help="If given, only source files are written, but CMakeLists.txt files are left unchanged.")
-        ogroup.add_option("--skip-block-ctrl", action="store_true", default=None,
-                help="If given, skips the generation of the RFNoC Block Controllers.")
-        ogroup.add_option("--skip-block-interface", action="store_true", default=None,
-                help="If given, skips the generation of the RFNoC interface files.")
-        parser.add_option_group(ogroup)
+        agroup = parser.add_argument_group('add', "Add module options")
+        agroup.add_argument("--license-file", default=None,
+                            help="File containing the license header for every source code file.")
+        agroup.add_argument("--noc_id", default=None,
+                            help="The ID number with which the RFNoC block will" +
+                            "identify itself at the SW/Hw interface")
+        agroup.add_argument("--copyright", default=None,
+                            help="Name of the copyright holder (you or your " + \
+                                 "company) MUST be a quoted string.")
+        agroup.add_argument("--argument-list", default=None,
+                            help="The argument list for the constructor and make functions.")
+        agroup.add_argument("--skip-cmakefiles", action="store_true", default=False,
+                            help="If given, only source files are written, " + \
+                                 "but CMakeLists.txt files are left unchanged.")
+        agroup.add_argument("--skip-block-ctrl", action="store_true", default=None,
+                            help="If given, skips the generation of the RFNoC Block Controllers.")
+        agroup.add_argument("--skip-block-interface", action="store_true", default=None,
+                            help="If given, skips the generation of the RFNoC interface files.")
         return parser
 
-    def setup(self, options, args):
-        ModTool.setup(self, options, args)
+    def setup(self, args, positional):
+        ModTool.setup(self, args, positional)
         self._info['blocktype'] = 'rfnoc'
         self._info['lang'] = 'cpp'
         if (self._skip_subdirs['lib']) or (self._skip_subdirs['python']):
             raise ModToolException('Missing or skipping relevant subdir.')
         if self._info['blockname'] is None:
-            if len(args) >= 2:
-                self._info['blockname'] = args[1]
+            if len(positional) >= 2:
+                self._info['blockname'] = positional[1]
             else:
                 self._info['blockname'] = raw_input("Enter name of block/code (without module name prefix): ")
         if not re.match('^([a-zA-Z]+[0-9a-zA-Z]*)$', self._info['blockname']):
             raise ModToolException('Invalid block name.')
         print("Block/code identifier: " + self._info['blockname'])
         self._info['fullblockname'] = self._info['modname'] + '_' + self._info['blockname']
-        if not options.license_file:
-            self._info['copyrightholder'] = options.copyright
+        if not args.license_file:
+            self._info['copyrightholder'] = args.copyright
             if self._info['copyrightholder'] is None:
                 self._info['copyrightholder'] = '<+YOU OR YOUR COMPANY+>'
             elif self._info['is_component']:
                 print("For GNU Radio components the FSF is added as copyright holder")
-        self._license_file = options.license_file
+        self._license_file = args.license_file
         self._info['license'] = self.setup_choose_license()
-        if options.argument_list is not None:
-            self._info['arglist'] = options.argument_list
+        if args.argument_list is not None:
+            self._info['arglist'] = args.argument_list
         else:
             self._info['arglist'] = raw_input('Enter valid argument list, including default arguments: ')
 
-        self._skip_cmakefiles = options.skip_cmakefiles
+        self._skip_cmakefiles = args.skip_cmakefiles
         if self._info['version'] == 'autofoo' and not self._skip_cmakefiles:
             print("Warning: Autotools modules are not supported. ",)
             print("Files will be created, but Makefiles will not be edited.")
             self._skip_cmakefiles = True
         #NOC ID parse
-        self._info['noc_id'] = options.noc_id
+        self._info['noc_id'] = args.noc_id
         if self._info['noc_id'] is None:
             self._info['noc_id'] = id_process(raw_input("Block NoC ID (Hexadecimal): "))
         if not re.match(r'\A[0-9A-F]+\Z', self._info['noc_id']):
             raise ModToolException('Invalid NoC ID - Only Hexadecimal Values accepted.')
-        self._skip_block_ctrl = options.skip_block_ctrl
+        self._skip_block_ctrl = args.skip_block_ctrl
         if self._skip_block_ctrl is None:
             self._skip_block_ctrl = ask_yes_no('Skip Block Controllers Generation? [UHD block ctrl files]', False)
-        self._skip_block_interface = options.skip_block_interface
+        self._skip_block_interface = args.skip_block_interface
         if self._skip_block_interface is None:
             self._skip_block_interface = ask_yes_no('Skip Block interface files Generation? [GRC block ctrl files]', False)
 

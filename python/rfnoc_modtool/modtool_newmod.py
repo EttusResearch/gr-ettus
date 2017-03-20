@@ -23,10 +23,10 @@
 import shutil
 import os
 import re
-from optparse import OptionGroup
+import sys
 from gnuradio import gr
-from modtool_base import ModTool, ModToolException
-from scm import SCMRepoFactory
+from .modtool_base import ModTool, ModToolException
+from .scm import SCMRepoFactory
 
 class ModToolNewModule(ModTool):
     """ Create a new out-of-tree module """
@@ -38,24 +38,22 @@ class ModToolNewModule(ModTool):
     def setup_parser(self):
         " Initialise the option parser for 'rfnoc_modtool newmod'"
         parser = ModTool.setup_parser(self)
-        parser.usage = '%prog nm [options]. \n Call %prog without any options to run it interactively.'
-        ogroup = OptionGroup(parser, "New out-of-tree module options")
-        ogroup.add_option("--srcdir", type="string",
-                help="Source directory for the module template.")
-        parser.add_option_group(ogroup)
+        agroup = parser.add_argument_group('newmod', "New out-of-tree module options")
+        agroup.add_argument("--srcdir",
+                            help="Source directory for the module template.")
         return parser
 
-    def setup(self, options, args):
+    def setup(self, args, positional):
         # Don't call ModTool.setup(), that assumes an existing module.
-        self._info['modname'] = options.module_name
+        self._info['modname'] = args.module_name
         if self._info['modname'] is None:
-            if len(args) >= 2:
-                self._info['modname'] = args[1]
+            if len(positional) >= 2:
+                self._info['modname'] = positional[1]
             else:
                 self._info['modname'] = raw_input('Name of the new module: ')
         if not re.match('[a-zA-Z0-9_]+$', self._info['modname']):
             raise ModToolException('Invalid module name.')
-        self._dir = options.directory
+        self._dir = args.directory
         if self._dir == '.':
             self._dir = './rfnoc-%s' % self._info['modname']
         try:
@@ -64,16 +62,17 @@ class ModToolNewModule(ModTool):
             pass # This is what should happen
         else:
             raise ModToolException('The given directory exists.')
-        if options.srcdir is None:
+        if args.srcdir is None:
             post_path = os.path.join('share','gr-ettus','rfnoc_modtool','rfnoc-newmod')
             if os.environ.get('PYBOMBS_PREFIX'):
-                options.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'),post_path)
+                args.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'),post_path)
             else:
-                options.srcdir = os.path.join('/usr', 'local', post_path)
-        self._srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path', options.srcdir)
+                args.srcdir = os.path.join('/usr', 'local', post_path)
+        self._srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path',
+                args.srcdir)
         if not os.path.isdir(self._srcdir):
             raise ModToolException('Could not find rfnoc-newmod source dir')
-        self.options = options
+        self.args = args
         self._setup_scm(mode='new')
 
     def run(self):
