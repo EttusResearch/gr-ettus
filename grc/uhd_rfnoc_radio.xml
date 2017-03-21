@@ -27,6 +27,7 @@
     $radio_index, $device_index
 )
 self.$(id).set_rate($rate)
+self.$(id).set_bandwidth($rx_bandwidth)
 for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)
     self.$(id).set_${direction}_gain($gain, i)
@@ -143,6 +144,13 @@ for i in xrange($num_channels):
     <name>Gain</name>
     <key>gain</key>
     <value>20</value>
+    <type>real</type>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>Analog Bandwidth (Hz)</name>
+    <key>rx_bandwidth</key>
+    <value>56e6</value>
     <type>real</type>
     <tab>RF Options</tab>
   </param>
