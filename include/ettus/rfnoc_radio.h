@@ -67,6 +67,9 @@ namespace gr {
       virtual void set_rx_dc_offset(bool enable, const size_t chan=0) = 0;
       virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
 
+      virtual void set_rx_lo_source(const std::string &src, const std::string &name, const size_t chan=0) = 0;
+      virtual void set_rx_lo_export_enabled(bool enabled, const std::string &name, const size_t chan=0) = 0;
+
       virtual std::vector<std::string> get_gpio_banks() const = 0;
       virtual void set_gpio_attr(
           const std::string &bank,

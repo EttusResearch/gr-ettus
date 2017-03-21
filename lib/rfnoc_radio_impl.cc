@@ -117,6 +117,16 @@ namespace gr {
       //get_device()->set_rx_dc_offset(offset, chan);
     }
 
+    void rfnoc_radio_impl::set_rx_lo_source(const std::string &src, const std::string &name, const size_t chan)
+    {
+        _radio_ctrl->set_rx_lo_source(src, "all", chan);
+    }
+
+    void rfnoc_radio_impl::set_rx_lo_export_enabled(bool enabled, const std::string &name, const size_t chan)
+    {
+        _radio_ctrl->set_rx_lo_export_enabled(enabled, "all", chan);
+    }
+
     std::vector<std::string> rfnoc_radio_impl::get_gpio_banks() const
     {
       return _radio_ctrl->get_gpio_banks();
