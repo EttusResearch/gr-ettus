@@ -117,14 +117,49 @@ namespace gr {
       //get_device()->set_rx_dc_offset(offset, chan);
     }
 
+    std::vector<std::string> rfnoc_radio_impl::get_rx_lo_names(const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_names(chan);
+    }
+
+    std::vector<std::string> rfnoc_radio_impl::get_rx_lo_sources(const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_sources(name, chan);
+    }
+
+    uhd::freq_range_t rfnoc_radio_impl::get_rx_lo_freq_range(const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_freq_range(name, chan);
+    }
+
     void rfnoc_radio_impl::set_rx_lo_source(const std::string &src, const std::string &name, const size_t chan)
     {
-        _radio_ctrl->set_rx_lo_source(src, "all", chan);
+        _radio_ctrl->set_rx_lo_source(src, name, chan);
+    }
+
+    const std::string rfnoc_radio_impl::get_rx_lo_source(const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_source(name, chan);
     }
 
     void rfnoc_radio_impl::set_rx_lo_export_enabled(bool enabled, const std::string &name, const size_t chan)
     {
         _radio_ctrl->set_rx_lo_export_enabled(enabled, "all", chan);
+    }
+
+    bool rfnoc_radio_impl::get_rx_lo_export_enabled(const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_export_enabled(name, chan);
+    }
+
+    double rfnoc_radio_impl::set_rx_lo_freq(double freq, const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->set_rx_lo_freq(freq, name, chan);
+    }
+
+    double rfnoc_radio_impl::get_rx_lo_freq(const std::string &name, const size_t chan)
+    {
+        return _radio_ctrl->get_rx_lo_freq(name, chan);
     }
 
     std::vector<std::string> rfnoc_radio_impl::get_gpio_banks() const

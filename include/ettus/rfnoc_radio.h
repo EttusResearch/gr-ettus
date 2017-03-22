@@ -25,6 +25,7 @@
 #include <ettus/device3.h>
 #include <ettus/rfnoc_block.h>
 #include <uhd/stream.hpp>
+#include <uhd/types/ranges.hpp>
 
 namespace gr {
   namespace ettus {
@@ -67,8 +68,18 @@ namespace gr {
       virtual void set_rx_dc_offset(bool enable, const size_t chan=0) = 0;
       virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
 
+      virtual std::vector<std::string> get_rx_lo_names(const size_t chan=0) = 0;
+      virtual std::vector<std::string> get_rx_lo_sources(const std::string &name, const size_t chan=0) = 0;
+      virtual uhd::freq_range_t get_rx_lo_freq_range(const std::string &name, const size_t chan=0) = 0;
+
       virtual void set_rx_lo_source(const std::string &src, const std::string &name, const size_t chan=0) = 0;
+      virtual const std::string get_rx_lo_source(const std::string &name, const size_t chan=0) = 0;
+
       virtual void set_rx_lo_export_enabled(bool enabled, const std::string &name, const size_t chan=0) = 0;
+      virtual bool get_rx_lo_export_enabled(const std::string &name, const size_t chan=0) = 0;
+
+      virtual double set_rx_lo_freq(double freq, const std::string &name, const size_t chan=0) = 0;
+      virtual double get_rx_lo_freq(const std::string &name, const size_t chan=0) = 0;
 
       virtual std::vector<std::string> get_gpio_banks() const = 0;
       virtual void set_gpio_attr(
