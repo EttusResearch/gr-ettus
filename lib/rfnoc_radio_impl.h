@@ -23,6 +23,7 @@
 #include <ettus/rfnoc_radio.h>
 #include <ettus/rfnoc_block_impl.h>
 #include <uhd/rfnoc/radio_ctrl.hpp>
+#include <uhd/types/ranges.hpp>
 
 namespace gr {
   namespace ettus {
@@ -51,8 +52,18 @@ namespace gr {
       void set_rx_dc_offset(bool enable, const size_t chan);
       void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan);
 
+      std::vector<std::string> get_rx_lo_names(const size_t chan);
+      std::vector<std::string> get_rx_lo_sources(const std::string &name, const size_t chan);
+      uhd::freq_range_t get_rx_lo_freq_range(const std::string &name, const size_t chan);
+
       void set_rx_lo_source(const std::string &src, const std::string &name, const size_t chan);
+      const std::string get_rx_lo_source(const std::string &name, const size_t chan);
+
       void set_rx_lo_export_enabled(bool enabled, const std::string &name, const size_t chan);
+      bool get_rx_lo_export_enabled(const std::string &name, const size_t chan);
+
+      double set_rx_lo_freq(double freq, const std::string &name, const size_t chan);
+      double get_rx_lo_freq(const std::string &name, const size_t chan);
 
       std::vector<std::string> get_gpio_banks() const;
       void set_gpio_attr(
