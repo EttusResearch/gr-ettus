@@ -19,7 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 """ Remove blocks module """
-
+from __future__ import print_function
 import os
 import re
 import sys
@@ -63,7 +63,7 @@ class ModToolRemove(ModTool):
                                              '^#include "%s"\s*$' % filename)
                     remove_pattern_from_file(self._file['qalib'],
                                              '^\s*s->addTest\(gr::%s::%s::suite\(\)\);\s*$' % (
-                                                    self._info['modname'], base)
+                                                 self._info['modname'], base)
                                             )
                     self.scm.mark_file_updated(self._file['qalib'])
                 elif ext == '.cc':
@@ -115,8 +115,9 @@ class ModToolRemove(ModTool):
         if not self._skip_subdirs['grc']:
             self._run_subdir('grc', ('*.xml',), ('install',))
         if not self._skip_subdirs['rfnoc']:
-            self._run_subdir(os.path.join('rfnoc','blocks'),('*.xml',), ('install',))
-            self._run_subdir_mk(os.path.join('rfnoc','fpga-src'),('*.v',),)
+            self._run_subdir(os.path.join('rfnoc', 'blocks'),('*.xml',), ('install',))
+            self._run_subdir_mk(os.path.join('rfnoc', 'fpga-src'),('*.v',),)
+            self._run_tb(os.path.join('rfnoc', 'testbenches'))
 
     def _run_subdir(self, path, globs, makefile_vars, cmakeedit_func=None):
         """ Delete all files that match a certain pattern in path.
@@ -131,12 +132,12 @@ class ModToolRemove(ModTool):
         for g in globs:
             files = files + glob.glob("%s/%s"% (path, g))
         files_filt = []
-        print "Searching for matching files in %s/:" % path
+        print("Searching for matching files in {}/:".format(path))
         for f in files:
             if re.search(self._info['pattern'], os.path.basename(f)) is not None:
                 files_filt.append(f)
         if len(files_filt) == 0:
-            print "None found."
+            print("None found.")
             return []
         # 2. Delete files, Makefile entries and other occurrences
         files_deleted = []
@@ -153,10 +154,10 @@ class ModToolRemove(ModTool):
                 if ans == 'n':
                     continue
             files_deleted.append(b)
-            print "Deleting %s." % f
+            print("Deleting {}.".format(f))
             self.scm.remove_file(f)
             os.unlink(f)
-            print "Deleting occurrences of %s from %s/CMakeLists.txt..." % (b, path)
+            print("Deleting occurrences of {} from {}/CMakeLists.txt...".format(b, path))
             for var in makefile_vars:
                 ed.remove_value(var, b)
             if cmakeedit_func is not None:
@@ -165,22 +166,22 @@ class ModToolRemove(ModTool):
         self.scm.mark_files_updated(('%s/CMakeLists.txt' % path,))
         return files_deleted
 
-    def _run_subdir_mk(self, path, globs, cmakeedit_func=None):
+    def _run_subdir_mk(self, path, globs):
         """
         Runs almost like _run_subdir function, but intended for filename occurrences
-        at  the rfnoc/fpga-src folder, which has no CMakelist.txt
+        at  the rfnoc/fpga-src folder
         """
         # 1. Create a filtered list
         files = []
         for g in globs:
             files = files + glob.glob("%s/%s"% (path, g))
         files_filt = []
-        print "Searching for matching files in %s/:" % path
+        print("Searching for matching files in {}/:".format(path))
         for f in files:
             if re.search(self._info['pattern'], os.path.basename(f)) is not None:
                 files_filt.append(f)
         if len(files_filt) == 0:
-            print "None found."
+            print("None found.")
             return []
         # 2. Delete files, Makefile entries and other occurrences
         files_deleted = []
@@ -196,11 +197,42 @@ class ModToolRemove(ModTool):
                 if ans == 'n':
                     continue
             files_deleted.append(b)
-            print "Deleting %s." % f
+            print("Deleting {}.".format(f))
             self.scm.remove_file(f)
             os.unlink(f)
-            print "Deleting occurrences of %s from %s/Makefile.srcs..." % (b, path)
+            print("Deleting occurrences of {} from {}/Makefile.srcs...".format(b, path))
             b = re.escape(b +' \\\n')
-            remove_pattern_from_file(os.path.join(path,'Makefile.srcs'),b)
+            remove_pattern_from_file(os.path.join(path, 'Makefile.srcs'),b)
         self.scm.mark_files_updated(('%s/Makefile.srcs' % path,))
         return files_deleted
+
+    def _run_tb(self, path):
+        """
+        Remove the directories that match the blockname ocurrence. Intended for
+        testbench directory removal
+        """
+        import shutil
+        pattern = self._info['pattern']
+        dirs_in_path = []
+        dir_to_delete = []
+        print("Searching for matching directories in {}".format(path))
+        dirs_in_path = [dirs[0] for dirs in os.walk(path)]
+        dir_to_delete.extend([dirs for dirs in dirs_in_path if re.search(pattern, dirs)])
+        yes = self._info['yes']
+        for item in dir_to_delete:
+            if not yes:
+                ans = raw_input("Really delete {}? [Y/n/a/q]: ".format(item)).lower().strip()
+                if ans == 'a':
+                    yes = True
+                if ans == 'q':
+                    sys.exit(0)
+                if ans == 'n':
+                    continue
+            print("Deleting {}".format(item))
+            shutil.rmtree(item)
+            base = os.path.basename(item)
+            print("Deleting occurrences of {} from {}/" + \
+                  "CMakeLists.txt...".format(base, item))
+            cmake_pattern = re.escape("add_subdirectory("+ base + ")\n")
+            print(cmake_pattern)
+            remove_pattern_from_file(os.path.join(path, 'CMakeLists.txt'), cmake_pattern)
