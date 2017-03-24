@@ -352,7 +352,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   </param>
 </%text>
   <param>
-    <name>${blockname.upper()} Select</name><%text>
+    <name>${blockname} Select</name><%text>
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
@@ -669,7 +669,7 @@ module noc_block_${blockname}_tb();
     `TEST_CASE_START("Check NoC ID");
     // Read NOC IDs
     tb_streamer.read_reg(sid_noc_block_${blockname}, RB_NOC_ID, readback);
-    $display("Read ${blockname.upper()} NOC ID: %16x", readback);
+    $display("Read ${blockname} NOC ID: %16x", readback);
     `ASSERT_ERROR(readback == noc_block_${blockname}.NOC_ID, "Incorrect NOC ID");
     `TEST_CASE_DONE(1);
 
