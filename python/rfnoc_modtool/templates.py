@@ -1,5 +1,25 @@
 #!/usr/bin/env python
-###RFNoC Modtool
+#
+# Copyright 2013-2017 Free Software Foundation, Inc.
+#
+# This file is part of GNU Radio
+#
+# GNU Radio is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GNU Radio is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Radio; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street,
+# Boston, MA 02110-1301, USA.
+#
+
 
 ''' All the templates for skeleton files (needed by ModToolAdd) '''
 
@@ -10,7 +30,7 @@ Templates = {}
 
 # Default licence
 Templates['defaultlicense'] = '''
-Copyright %d ${copyrightholder}.
+Copyright {0} <+YOU OR YOUR COMPANY+>.
 
 This is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,10 +46,10 @@ You should have received a copy of the GNU General Public License
 along with this software; see the file COPYING.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Street,
 Boston, MA 02110-1301, USA.
-''' % datetime.now().year
+'''.format(datetime.now().year)
 
 Templates['grlicense'] = '''
-Copyright %d Free Software Foundation, Inc.
+Copyright {0} Free Software Foundation, Inc.
 
 This file is part of GNU Radio
 
@@ -47,17 +67,17 @@ You should have received a copy of the GNU General Public License
 along with GNU Radio; see the file COPYING.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Street,
 Boston, MA 02110-1301, USA.
-''' % datetime.now().year
+'''.format(datetime.now().year)
 
 # Header file of a sync/decimator/interpolator block
 Templates['block_impl_h'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-\#ifndef INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H
-\#define INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H
+${str_to_fancyc_comment(license)}
+#ifndef INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H
+#define INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H
 
-\#include <${include_dir_prefix}/${blockname}.h>
-\#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
-\#include <ettus/rfnoc_block_impl.h>
+#include <${include_dir_prefix}/${blockname}.h>
+#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
+#include <ettus/rfnoc_block_impl.h>
 
 namespace gr {
   namespace ${modname} {
@@ -69,9 +89,9 @@ namespace gr {
 
      public:
       ${blockname}_impl(
-#if $arglist:
-        ${strip_default_values($arglist)},
-#end if
+% if arglist:
+        ${strip_default_values(arglist)},
+% endif
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
@@ -86,19 +106,19 @@ namespace gr {
   } // namespace ${modname}
 } // namespace gr
 
-\#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H */
+#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_IMPL_H */
 
 '''
 
 # C++ file of a GR block
 Templates['block_impl_cpp'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
-\#ifdef HAVE_CONFIG_H
-\#include "config.h"
-\#endif
+${str_to_fancyc_comment(license)}
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-\#include <gnuradio/io_signature.h>
-\#include "${blockname}_impl.h"
+#include <gnuradio/io_signature.h>
+#include "${blockname}_impl.h"
 namespace gr {
   namespace ${modname} {
     ${blockname}::sptr
@@ -106,18 +126,18 @@ namespace gr {
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
-#if $arglist:
-        ${strip_default_values($arglist)},
-#end if
+% if arglist:
+        ${strip_default_values(arglist)},
+% endif
         const int block_select,
         const int device_select
     )
     {
       return gnuradio::get_initial_sptr(
         new ${blockname}_impl(
-#if $arglist:
-            ${strip_arg_types($arglist)},
-#end if
+% if arglist:
+            ${strip_arg_types(arglist)},
+% endif
             dev,
             tx_stream_args,
             rx_stream_args,
@@ -131,19 +151,19 @@ namespace gr {
      * The private constructor
      */
     ${blockname}_impl::${blockname}_impl(
-#if $arglist
-         ${strip_default_values($arglist)},
-#end if
+% if arglist:
+         ${strip_default_values(arglist)},
+% endif
          const gr::ettus::device3::sptr &dev,
          const ::uhd::stream_args_t &tx_stream_args,
          const ::uhd::stream_args_t &rx_stream_args,
          const int block_select,
          const int device_select
     )
-      : gr::${grblocktype}("${blockname}"),
-        gr::${grblocktype}_impl(
+      : gr::ettus::rfnoc_block("${blockname}"),
+        gr::ettus::rfnoc_block_impl(
             dev,
-            gr::${grblocktype}_impl::make_block_id("${blockname}",  block_select, device_select),
+            gr::ettus::rfnoc_block_impl::make_block_id("${blockname}",  block_select, device_select),
             tx_stream_args, rx_stream_args
             )
     {}
@@ -162,15 +182,15 @@ namespace gr {
 
 # Block definition header file (for include/)
 Templates['block_def_h'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
+${str_to_fancyc_comment(license)}
 
-\#ifndef INCLUDED_${modname.upper()}_${blockname.upper()}_H
-\#define INCLUDED_${modname.upper()}_${blockname.upper()}_H
+#ifndef INCLUDED_${modname.upper()}_${blockname.upper()}_H
+#define INCLUDED_${modname.upper()}_${blockname.upper()}_H
 
-\#include <${include_dir_prefix}/api.h>
-\#include <ettus/device3.h>
-\#include <ettus/rfnoc_block.h>
-\#include <uhd/stream.hpp>
+#include <${include_dir_prefix}/api.h>
+#include <ettus/device3.h>
+#include <ettus/rfnoc_block.h>
+#include <uhd/stream.hpp>
 
 namespace gr {
   namespace ${modname} {
@@ -180,7 +200,7 @@ namespace gr {
      * \ingroup ${modname}
      *
      */
-    class ${modname.upper()}_API ${blockname} : virtual public gr::$grblocktype
+    class ${modname.upper()}_API ${blockname} : virtual public gr::ettus::rfnoc_block
     {
      public:
       typedef boost::shared_ptr<${blockname}> sptr;
@@ -197,9 +217,9 @@ namespace gr {
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
-#if $arglist
-        $arglist,
-#end if
+% if arglist:
+        ${arglist},
+% endif
         const int block_select=-1,
         const int device_select=-1
         );
@@ -207,18 +227,18 @@ namespace gr {
   } // namespace ${modname}
 } // namespace gr
 
-\#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_H */
+#endif /* INCLUDED_${modname.upper()}_${blockname.upper()}_H */
 
 '''
 # Header for RFNoC Block Controller (UHD Host-part)
 Templates['block_ctrl_hpp'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
+${str_to_fancyc_comment(license)}
 
-\#ifndef INCLUDED_LIBUHD_RFNOC_${modname.upper()}_${blockname.upper()}_HPP
-\#define INCLUDED_LIBUHD_RFNOC_${modname.upper()}_${blockname.upper()}_HPP
+#ifndef INCLUDED_LIBUHD_RFNOC_${modname.upper()}_${blockname.upper()}_HPP
+#define INCLUDED_LIBUHD_RFNOC_${modname.upper()}_${blockname.upper()}_HPP
 
-\#include <uhd/rfnoc/source_block_ctrl_base.hpp>
-\#include <uhd/rfnoc/sink_block_ctrl_base.hpp>
+#include <uhd/rfnoc/source_block_ctrl_base.hpp>
+#include <uhd/rfnoc/sink_block_ctrl_base.hpp>
 
 namespace uhd {
     namespace rfnoc {
@@ -243,11 +263,11 @@ public:
 
 # RFNoC Block Controller (UHD Host-part)
 Templates['block_ctrl_cpp'] = '''/* -*- c++ -*- */
-${str_to_fancyc_comment($license)}
+${str_to_fancyc_comment(license)}
 
-\#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
-\#include <uhd/convert.hpp>
-\#include <uhd/utils/msg.hpp>
+#include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
+#include <uhd/convert.hpp>
+#include <uhd/utils/msg.hpp>
 
 using namespace uhd::rfnoc;
 
@@ -268,32 +288,32 @@ UHD_RFNOC_BLOCK_REGISTER(${blockname}_block_ctrl,"${blockname}");
 
 Templates['grc_xml'] = '''<?xml version="1.0"?>
 <block>
-  <name>RFNoC: $blockname</name>
-  <key>${modname}_$blockname</key>
-  <category>$modname</category>
-  <import>import $modname</import>
+  <name>RFNoC: ${blockname}</name>
+  <key>${modname}_${blockname}</key>
+  <category>${modname}</category>
+  <import>import ${modname}</import>
   <make>${modname}.${blockname}(
-#if $arglist
-          ${strip_arg_types_grc($arglist)},
-#end if
-          self.device3,
-          uhd.stream_args( \# TX Stream Args
-                cpu_format="\$type",
-                otw_format="\$otw",
-                args="gr_vlen={0},{1}".format(\${grvlen}, "" if \$grvlen == 1 else "spp={0}".format(\$grvlen)),
+% if arglist:
+          ${strip_arg_types_grc(arglist)},
+% endif
+<%text>          self.device3,
+          uhd.stream_args( # TX Stream Args
+                cpu_format="$type",
+                otw_format="$otw",
+                args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
           ),
-          uhd.stream_args( \# RX Stream Args
-                cpu_format="\$type",
-                otw_format="\$otw",
-                args="gr_vlen={0},{1}".format(\${grvlen}, "" if \$grvlen == 1 else "spp={0}".format(\$grvlen)),
+          uhd.stream_args( # RX Stream Args
+                cpu_format="$type",
+                otw_format="$otw",
+                args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
           ),
-          \$block_index,
-          \$device_index
+          $block_index,
+          $device_index
   )</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
-       * key (makes the value accessible as \$keyname, e.g. in the make node)
+       * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
 
   <param>
@@ -327,19 +347,19 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
     <key>device_index</key>
     <value>-1</value>
     <type>int</type>
-    <hide>\#if int(\$device_index()) &lt; 0 then 'part' else 'none'\#</hide>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
-
+</%text>
   <param>
-    <name>${blockname.upper()} Select</name>
+    <name>${blockname.upper()} Select</name><%text>
     <key>block_index</key>
     <value>-1</value>
     <type>int</type>
-    <hide>\#if int(\$block_index()) &lt; 0 then 'part' else 'none'\#</hide>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
-
+</%text>
   <param>
     <name>FPGA Module Name</name>
     <key>fpga_module_name</key>
@@ -348,7 +368,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
     <hide>all</hide>
     <tab>RFNoC Config</tab>
   </param>
-
+<%text>
   <param>
     <name>Force Vector Length</name>
     <key>grvlen</key>
@@ -381,8 +401,8 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
        * optional (set to 1 for optional inputs) -->
   <sink>
     <name>in</name>
-    <type>\$type.type</type>
-    <vlen>\$grvlen</vlen>
+    <type>$type.type</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </sink>
 
@@ -393,11 +413,11 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
        * optional (set to 1 for optional inputs) -->
   <source>
     <name>out</name>
-    <type>\$type.type</type>
-    <vlen>\$grvlen</vlen>
+    <type>$type.type</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </source>
-</block>
+</block></%text>
 '''
 
 # Block Controller xml at rfnoc/
@@ -424,9 +444,9 @@ Templates['rfnoc_xml'] = '''<?xml version="1.0"?>
 # RFNoC Verilog file
 Templates['rfnoc_v'] = '''
 //
-${str_to_fancyc_comment($license)}
+${str_to_fancyc_comment(license)}
 //
-module noc_block_$blockname \#(
+module noc_block_${blockname} #(
   parameter NOC_ID = 64'h${noc_id},
   parameter STR_SINK_FIFOSIZE = 11)
 (
@@ -607,7 +627,7 @@ endmodule
 '''
 
 # RFNoC Testbench
-Templates['rfnoc_tb'] = '''${str_to_fancyc_comment($license)}
+Templates['rfnoc_tb'] = '''${str_to_fancyc_comment(license)}
 `timescale 1ns/1ps
 `define NS_PER_TICK 1
 `define NUM_TEST_CASES 5
@@ -618,8 +638,8 @@ Templates['rfnoc_tb'] = '''${str_to_fancyc_comment($license)}
 
 module noc_block_${blockname}_tb();
   `TEST_BENCH_INIT("noc_block_${blockname}",`NUM_TEST_CASES,`NS_PER_TICK);
-  localparam BUS_CLK_PERIOD = \$ceil(1e9/166.67e6);
-  localparam CE_CLK_PERIOD  = \$ceil(1e9/200e6);
+  localparam BUS_CLK_PERIOD = $ceil(1e9/166.67e6);
+  localparam CE_CLK_PERIOD  = $ceil(1e9/200e6);
   localparam NUM_CE         = 1;  // Number of Computation Engines / User RFNoC blocks to simulate
   localparam NUM_STREAMS    = 1;  // Number of test bench streams
   `RFNOC_SIM_INIT(NUM_CE, NUM_STREAMS, BUS_CLK_PERIOD, CE_CLK_PERIOD);
@@ -649,7 +669,7 @@ module noc_block_${blockname}_tb();
     `TEST_CASE_START("Check NoC ID");
     // Read NOC IDs
     tb_streamer.read_reg(sid_noc_block_${blockname}, RB_NOC_ID, readback);
-    \$display("Read ${blockname.upper()} NOC ID: %16x", readback);
+    $display("Read ${blockname.upper()} NOC ID: %16x", readback);
     `ASSERT_ERROR(readback == noc_block_${blockname}.NOC_ID, "Incorrect NOC ID");
     `TEST_CASE_DONE(1);
 
@@ -665,15 +685,15 @@ module noc_block_${blockname}_tb();
     ** Test 4 -- Write / readback user registers
     ********************************************************/
     `TEST_CASE_START("Write / readback user registers");
-    random_word = \$random();
+    random_word = $random();
     tb_streamer.write_user_reg(sid_noc_block_${blockname}, noc_block_${blockname}.SR_TEST_REG_0, random_word);
     tb_streamer.read_user_reg(sid_noc_block_${blockname}, 0, readback);
-    \$sformat(s, "User register 0 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
+    $sformat(s, "User register 0 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
     `ASSERT_ERROR(readback[31:0] == random_word, s);
-    random_word = \$random();
+    random_word = $random();
     tb_streamer.write_user_reg(sid_noc_block_${blockname}, noc_block_${blockname}.SR_TEST_REG_1, random_word);
     tb_streamer.read_user_reg(sid_noc_block_${blockname}, 1, readback);
-    \$sformat(s, "User register 1 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
+    $sformat(s, "User register 1 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
     `ASSERT_ERROR(readback[31:0] == random_word, s);
     `TEST_CASE_DONE(1);
 
@@ -698,7 +718,7 @@ module noc_block_${blockname}_tb();
         tb_streamer.recv(recv_payload,md);
         for (int i = 0; i < SPP/2; i++) begin
           expected_value = i;
-          \$sformat(s, "Incorrect value received! Expected: %0d, Received: %0d", expected_value, recv_payload[i]);
+          $sformat(s, "Incorrect value received! Expected: %0d, Received: %0d", expected_value, recv_payload[i]);
           `ASSERT_ERROR(recv_payload[i] == expected_value, s);
         end
       end
@@ -713,37 +733,37 @@ endmodule
 # RFNoC Testbenches Makefile
 Templates['tb_makefile'] = '''
 
-${str_to_python_comment($license)}
+${str_to_python_comment(license)}
 
-\#-------------------------------------------------
-\# Top-of-Makefile
-\#-------------------------------------------------
-\# Define BASE_DIR to point to the "top" dir
-BASE_DIR = \$(FPGA_TOP_DIR)/usrp3/top
-\# Include viv_sim_preample after defining BASE_DIR
-include \$(BASE_DIR)/../tools/make/viv_sim_preamble.mak
+#-------------------------------------------------
+# Top-of-Makefile
+#-------------------------------------------------
+# Define BASE_DIR to point to the "top" dir
+BASE_DIR = $(FPGA_TOP_DIR)/usrp3/top
+# Include viv_sim_preample after defining BASE_DIR
+include $(BASE_DIR)/../tools/make/viv_sim_preamble.mak
 
-\#-------------------------------------------------
-\# Testbench Specific
-\#-------------------------------------------------
-\# Define only one toplevel module
+#-------------------------------------------------
+# Testbench Specific
+#-------------------------------------------------
+# Define only one toplevel module
 SIM_TOP = noc_block_${blockname}_tb
 
-\# Add test bench, user design under test, and
-\# additional user created files
-SIM_SRCS = \\
-\$(abspath noc_block_${blockname}_tb.sv) \\
-\$(abspath ../../fpga-src/noc_block_${blockname}.v)
+# Add test bench, user design under test, and
+# additional user created files
+SIM_SRCS = <%text>\</%text>
+$(abspath noc_block_${blockname}_tb.sv) <%text>\</%text>
+$(abspath ../../fpga-src/noc_block_${blockname}.v)
 
 MODELSIM_USER_DO =
 
-\#-------------------------------------------------
-\# Bottom-of-Makefile
-\#-------------------------------------------------
-\# Include all simulator specific makefiles here
-\# Each should define a unique target to simulate
-\# e.g. xsim, vsim, etc and a common "clean" target
-include \$(BASE_DIR)/../tools/make/viv_simulator.mak
+#-------------------------------------------------
+# Bottom-of-Makefile
+#-------------------------------------------------
+# Include all simulator specific makefiles here
+# Each should define a unique target to simulate
+# e.g. xsim, vsim, etc and a common "clean" target
+include $(BASE_DIR)/../tools/make/viv_simulator.mak
 '''
 
 # Usage
@@ -753,17 +773,17 @@ rfnocmodtool help -- Show a list of commands.
 rfnocmodtool help <command> -- Shows the help for a given command. '''
 
 # SWIG string
-Templates['swig_block_magic'] = """#if $version == '36'
-#if $blocktype != 'noblock'
+Templates['swig_block_magic'] = """% if version == '36':
+% if blocktype != 'noblock':
 GR_SWIG_BLOCK_MAGIC($modname, $blockname);
-#end if
-%include "${modname}_${blockname}.h"
-#else
-%include "${include_dir_prefix}/${blockname}.h"
-#if $blocktype != 'noblock'
-GR_SWIG_BLOCK_MAGIC2($modname, $blockname);
-#end if
-#end if
+% endif
+%%include "${modname}_${blockname}.h"
+% else:
+%%include "${include_dir_prefix}/${blockname}.h"
+    % if blocktype != 'noblock':
+GR_SWIG_BLOCK_MAGIC2(${modname}, ${blockname});
+    % endif
+% endif
 """
 
 # Empty File

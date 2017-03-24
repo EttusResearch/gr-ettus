@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2014 Free Software Foundation, Inc.
+# Copyright 2014-2017 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -29,9 +29,6 @@ from .util_functions import append_re_line_sequence, ask_yes_no
 from .cmakefile_editor import CMakeFileEditor
 from .modtool_base import ModTool, ModToolException
 from .templates import Templates
-from .code_generator import get_template
-import Cheetah.Template
-
 
 class ModToolRename(ModTool):
     """ Rename a block in the RFNoC out-of-tree module. """

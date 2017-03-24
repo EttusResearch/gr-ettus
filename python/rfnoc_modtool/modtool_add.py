@@ -27,9 +27,7 @@ from .util_functions import append_re_line_sequence, ask_yes_no, id_process
 from .cmakefile_editor import CMakeFileEditor
 from .modtool_base import ModTool, ModToolException
 from .templates import Templates
-from .code_generator import get_template
-import Cheetah.Template
-
+from .code_generator import render_template
 
 class ModToolAdd(ModTool):
     """ Add block to the out-of-tree module. """
@@ -127,13 +125,13 @@ class ModToolAdd(ModTool):
         elif self._info['is_component']:
             return Templates['grlicense']
         else:
-            return get_template('defaultlicense', **self._info)
+            return render_template('defaultlicense', **self._info)
 
     def _write_tpl(self, tpl, path, fname):
         """ Shorthand for writing a substituted template to a file"""
         path_to_file = os.path.join(path, fname)
         print("Adding file '%s'..." % path_to_file)
-        open(path_to_file, 'w').write(get_template(tpl, **self._info))
+        open(path_to_file, 'w').write(render_template(tpl, **self._info))
         self.scm.add_files((path_to_file,))
 
     def run(self):
@@ -209,7 +207,7 @@ class ModToolAdd(ModTool):
         mod_block_sep = '/'
         if self._info['version'] == '36':
             mod_block_sep = '_'
-        swig_block_magic_str = get_template('swig_block_magic', **self._info)
+        swig_block_magic_str = render_template('swig_block_magic', **self._info)
         open(self._file['swig'], 'a').write(swig_block_magic_str)
         include_str = '#include "%s%s%s.h"' % (
                 {True: 'gnuradio/' + self._info['modname'], False: self._info['modname']}[self._info['is_component']],
