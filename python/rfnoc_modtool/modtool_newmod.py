@@ -24,6 +24,7 @@ import shutil
 import os
 import re
 import sys
+from builtins import input
 from gnuradio import gr
 from .modtool_base import ModTool, ModToolException
 from .scm import SCMRepoFactory
@@ -50,7 +51,7 @@ class ModToolNewModule(ModTool):
             if len(positional) >= 2:
                 self._info['modname'] = positional[1]
             else:
-                self._info['modname'] = raw_input('Name of the new module: ')
+                self._info['modname'] = input('Name of the new module: ')
         if not re.match('[a-zA-Z0-9_]+$', self._info['modname']):
             raise ModToolException('Invalid module name.')
         self._dir = args.directory

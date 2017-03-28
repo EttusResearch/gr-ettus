@@ -5,6 +5,7 @@
 import re
 import sys
 import random
+from builtins import input
 
 # None of these must depend on other modtool stuff!
 
@@ -123,7 +124,7 @@ def ask_yes_no(question, default):
     """ Asks a binary question. Returns True for yes, False for no.
     default is given as a boolean. """
     question += {True: ' [Y/n] ', False: ' [y/N] '}[default]
-    if raw_input(question).lower() != {True: 'n', False: 'y'}[default]:
+    if input(question).lower() != {True: 'n', False: 'y'}[default]:
         return default
     else:
         return not default

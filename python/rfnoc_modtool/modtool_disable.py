@@ -20,6 +20,7 @@
 #
 """ Disable blocks module """
 from __future__ import print_function
+from builtins import input
 import os
 import re
 import sys
@@ -43,7 +44,7 @@ class ModToolDisable(ModTool):
         elif len(positional) >= 2:
             self._info['pattern'] = positional[1]
         else:
-            self._info['pattern'] = raw_input('Which blocks do you want to disable? (Regex): ')
+            self._info['pattern'] = input('Which blocks do you want to disable? (Regex): ')
         if len(self._info['pattern']) == 0:
             self._info['pattern'] = '.'
 
@@ -139,7 +140,7 @@ class ModToolDisable(ModTool):
             for fname in filenames:
                 file_disabled = False
                 if not yes:
-                    ans = raw_input("Really disable %s? [Y/n/a/q]: " % fname).lower().strip()
+                    ans = input("Really disable %s? [Y/n/a/q]: " % fname).lower().strip()
                     if ans == 'a':
                         yes = True
                     if ans == 'q':

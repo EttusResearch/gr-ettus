@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from util_functions import is_number, xml_indent
+from .util_functions import is_number, xml_indent
 
 try:
     import lxml.etree

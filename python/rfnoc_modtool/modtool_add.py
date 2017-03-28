@@ -21,6 +21,7 @@
 """ Module to add new blocks """
 
 from __future__ import print_function
+from builtins import input
 import os
 import re
 from .util_functions import append_re_line_sequence, ask_yes_no, id_process
@@ -73,7 +74,7 @@ class ModToolAdd(ModTool):
             if len(positional) >= 2:
                 self._info['blockname'] = positional[1]
             else:
-                self._info['blockname'] = raw_input("Enter name of block/code (without module name prefix): ")
+                self._info['blockname'] = input("Enter name of block/code (without module name prefix): ")
         if not re.match('^([a-zA-Z]+[0-9a-zA-Z]*)$', self._info['blockname']):
             raise ModToolException('Invalid block name.')
         print("Block/code identifier: " + self._info['blockname'])
@@ -89,7 +90,7 @@ class ModToolAdd(ModTool):
         if args.argument_list is not None:
             self._info['arglist'] = args.argument_list
         else:
-            self._info['arglist'] = raw_input('Enter valid argument list, including default arguments: ')
+            self._info['arglist'] = input('Enter valid argument list, including default arguments: ')
 
         self._skip_cmakefiles = args.skip_cmakefiles
         if self._info['version'] == 'autofoo' and not self._skip_cmakefiles:
@@ -99,7 +100,7 @@ class ModToolAdd(ModTool):
         #NOC ID parse
         self._info['noc_id'] = args.noc_id
         if self._info['noc_id'] is None:
-            self._info['noc_id'] = id_process(raw_input("Block NoC ID (Hexadecimal): "))
+            self._info['noc_id'] = id_process(input("Block NoC ID (Hexadecimal): "))
         if not re.match(r'\A[0-9A-F]+\Z', self._info['noc_id']):
             raise ModToolException('Invalid NoC ID - Only Hexadecimal Values accepted.')
         self._skip_block_ctrl = args.skip_block_ctrl

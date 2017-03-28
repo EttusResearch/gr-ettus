@@ -21,6 +21,7 @@
 #
 """ Module to rename blocks """
 from __future__ import print_function
+from builtins import input
 import os
 import re
 from .util_functions import  ask_yes_no
@@ -59,7 +60,7 @@ class ModToolRename(ModTool):
             if len(positional) >= 2:
                 self._info['oldname'] = positional[1]
             else:
-                self._info['oldname'] = raw_input("Enter name of block/code to rename (without module name prefix): ")
+                self._info['oldname'] = input("Enter name of block/code to rename (without module name prefix): ")
         if not re.match('[a-zA-Z0-9_]+', self._info['oldname']):
             raise ModToolException('Invalid block name.')
         print("Block/code to rename identifier: " + self._info['oldname'])
@@ -71,7 +72,7 @@ class ModToolRename(ModTool):
             if len(positional) >= 2:
                 self._info['newname'] = positional[2]
             else:
-                self._info['newname'] = raw_input("Enter name of block/code (without module name prefix): ")
+                self._info['newname'] = input("Enter name of block/code (without module name prefix): ")
         if not re.match('[a-zA-Z0-9_]+', self._info['newname']):
             raise ModToolException('Invalid block name.')
         print("Block/code identifier: " + self._info['newname'])

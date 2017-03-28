@@ -23,6 +23,7 @@
 import os
 import re
 import glob
+from builtins import input
 
 from .modtool_base import ModTool, ModToolException
 from .parser_cc_block import ParserCCBlock
@@ -57,7 +58,7 @@ class ModToolMakeXML(ModTool):
         elif len(positional) >=2:
             self._info['pattern'] = positional[1]
         else:
-            self._info['pattern'] = raw_input('Which blocks do you want to parse? (Regex): ')
+            self._info['pattern'] = input('Which blocks do you want to parse? (Regex): ')
         if len(self._info['pattern']) == 0:
             self._info['pattern'] = '.'
 

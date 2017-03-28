@@ -20,6 +20,7 @@
 #
 """ Remove blocks module """
 from __future__ import print_function
+from builtins import input
 import os
 import re
 import sys
@@ -45,7 +46,7 @@ class ModToolRemove(ModTool):
         elif len(positional) >= 2:
             self._info['pattern'] = positional[1]
         else:
-            self._info['pattern'] = raw_input('Which blocks do you want to delete? (Regex): ')
+            self._info['pattern'] = input('Which blocks do you want to delete? (Regex): ')
         if len(self._info['pattern']) == 0:
             self._info['pattern'] = '.'
 
@@ -96,7 +97,7 @@ class ModToolRemove(ModTool):
             return regexp
         # Go, go, go!
         if not self._skip_subdirs['lib']:
-            self._run_subdir('lib', ('*.cc', '*.h','*.cpp','*.hpp',), ('add_library', 'list'),
+            self._run_subdir('lib', ('*.cc', '*.h', '*.cpp', '*.hpp',), ('add_library', 'list'),
                              cmakeedit_func=_remove_cc_test_case)
         if not self._skip_subdirs['include']:
             incl_files_deleted = self._run_subdir(self._info['includedir'], ('*.h','*.hpp',), ('install',))
@@ -115,8 +116,8 @@ class ModToolRemove(ModTool):
         if not self._skip_subdirs['grc']:
             self._run_subdir('grc', ('*.xml',), ('install',))
         if not self._skip_subdirs['rfnoc']:
-            self._run_subdir(os.path.join('rfnoc', 'blocks'),('*.xml',), ('install',))
-            self._run_subdir_mk(os.path.join('rfnoc', 'fpga-src'),('*.v',),)
+            self._run_subdir(os.path.join('rfnoc', 'blocks'), ('*.xml',), ('install',))
+            self._run_subdir_mk(os.path.join('rfnoc', 'fpga-src'), ('*.v',),)
             self._run_tb(os.path.join('rfnoc', 'testbenches'))
 
     def _run_subdir(self, path, globs, makefile_vars, cmakeedit_func=None):
@@ -146,7 +147,7 @@ class ModToolRemove(ModTool):
         for f in files_filt:
             b = os.path.basename(f)
             if not yes:
-                ans = raw_input("Really delete %s? [Y/n/a/q]: " % f).lower().strip()
+                ans = input("Really delete %s? [Y/n/a/q]: " % f).lower().strip()
                 if ans == 'a':
                     yes = True
                 if ans == 'q':
@@ -189,7 +190,7 @@ class ModToolRemove(ModTool):
         for f in files_filt:
             b = os.path.basename(f)
             if not yes:
-                ans = raw_input("Really delete %s? [Y/n/a/q]: " % f).lower().strip()
+                ans = input("Really delete %s? [Y/n/a/q]: " % f).lower().strip()
                 if ans == 'a':
                     yes = True
                 if ans == 'q':
@@ -202,7 +203,7 @@ class ModToolRemove(ModTool):
             os.unlink(f)
             print("Deleting occurrences of {} from {}/Makefile.srcs...".format(b, path))
             b = re.escape(b +' \\\n')
-            remove_pattern_from_file(os.path.join(path, 'Makefile.srcs'),b)
+            remove_pattern_from_file(os.path.join(path, 'Makefile.srcs'), b)
         self.scm.mark_files_updated(('%s/Makefile.srcs' % path,))
         return files_deleted
 
@@ -221,7 +222,7 @@ class ModToolRemove(ModTool):
         yes = self._info['yes']
         for item in dir_to_delete:
             if not yes:
-                ans = raw_input("Really delete {}? [Y/n/a/q]: ".format(item)).lower().strip()
+                ans = input("Really delete {}? [Y/n/a/q]: ".format(item)).lower().strip()
                 if ans == 'a':
                     yes = True
                 if ans == 'q':
@@ -231,7 +232,7 @@ class ModToolRemove(ModTool):
             print("Deleting {}".format(item))
             shutil.rmtree(item)
             base = os.path.basename(item)
-            print("Deleting occurrences of {} from {}/" + \
+            print("Deleting occurrences of {} from {}/"
                   "CMakeLists.txt...".format(base, item))
             cmake_pattern = re.escape("add_subdirectory("+ base + ")\n")
             print(cmake_pattern)
