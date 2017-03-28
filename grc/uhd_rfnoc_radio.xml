@@ -27,6 +27,7 @@
     $radio_index, $device_index
 )
 self.$(id).set_rate($rate)
+self.$(id).set_bandwidth($rx_bandwidth)
 for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)
     self.$(id).set_${direction}_gain($gain, i)
@@ -47,6 +48,7 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
 
 </make>
 <callback>self.$(id).set_rate($rate)</callback>
+<callback>self.$(id).set_bandwidth($rx_bandwidth)</callback>
 <callback>for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)</callback>
 <callback>for i in xrange($num_channels):
@@ -231,6 +233,13 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
       <name>False</name>
       <key>false</key>
     </option>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>Ch0: Analog Bandwidth (Hz)</name>
+    <key>rx_bandwidth0</key>
+    <value>56e6</value>
+    <type>real</type>
     <tab>RF Options</tab>
   </param>
 
