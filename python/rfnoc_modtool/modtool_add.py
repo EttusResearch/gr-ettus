@@ -137,10 +137,9 @@ class ModToolAdd(ModTool):
 
     def run(self):
         """ Go, go, go. """
-        has_swig = (
-                self._info['lang'] == 'cpp'
-                and not self._skip_subdirs['swig']
-        )
+        has_swig = (self._info['lang'] == 'cpp'
+                    and not self._skip_subdirs['swig']
+                   )
         has_grc = False
         self._run_lib()
         has_grc = has_swig
@@ -156,20 +155,22 @@ class ModToolAdd(ModTool):
         - include them into CMakeLists.txt
         """
         fname_cc = None
-        fname_h  = None
-        if self._info['version']  == '37':
+        fname_h = None
+        if self._info['version'] == '37':
             #RFNoC block Interface
-            if(self._skip_block_interface == False):
-                fname_h  = self._info['blockname'] + '.h'
+            if self._skip_block_interface is False:
+                fname_h = self._info['blockname'] + '.h'
                 fname_cc = self._info['blockname'] + '.cc'
                 fname_cc = self._info['blockname'] + '_impl.cc'
-                self._write_tpl('block_impl_h',   'lib', self._info['blockname'] + '_impl.h')
+                self._write_tpl('block_impl_h', 'lib', self._info['blockname'] + '_impl.h')
                 self._write_tpl('block_impl_cpp', 'lib', fname_cc)
-                self._write_tpl('block_def_h',    self._info['includedir'], fname_h)
+                self._write_tpl('block_def_h', self._info['includedir'], fname_h)
                 if not self._skip_cmakefiles:
                     ed = CMakeFileEditor(self._file['cmlib'])
                     cmake_list_var = '[a-z]*_?' + self._info['modname'] + '_sources'
-                    if not ed.append_value('list', fname_cc, to_ignore_start='APPEND ' + cmake_list_var):
+                    if not ed.append_value('list',
+                                           fname_cc,
+                                           to_ignore_start='APPEND ' + cmake_list_var):
                         ed.append_value('add_library', fname_cc)
                     ed.write()
                     ed = CMakeFileEditor(self._file['cminclude'])
@@ -177,10 +178,10 @@ class ModToolAdd(ModTool):
                     ed.write()
                     self.scm.mark_files_updated((self._file['cminclude'], self._file['cmlib']))
             #RFNoC block Controllers
-            if (self._skip_block_ctrl == False):
+            if self._skip_block_ctrl is False:
                 fname_ctrl_cpp = self._info['blockname'] + '_block_ctrl_impl.cpp'
                 fname_ctrl_hpp = self._info['blockname'] + '_block_ctrl.hpp'
-                self._write_tpl('block_ctrl_hpp',    self._info['includedir'], fname_ctrl_hpp)
+                self._write_tpl('block_ctrl_hpp', self._info['includedir'], fname_ctrl_hpp)
                 self._write_tpl('block_ctrl_cpp', 'lib', fname_ctrl_cpp)
                 if not self._skip_cmakefiles:
                     ed = CMakeFileEditor(self._file['cmlib'])
@@ -192,10 +193,10 @@ class ModToolAdd(ModTool):
                     ed.write()
                     self.scm.mark_files_updated((self._file['cminclude'], self._file['cmlib']))
         else: # Pre-3.7 or autotools
-            fname_h  = self._info['fullblockname'] + '.h'
+            fname_h = self._info['fullblockname'] + '.h'
             fname_cc = self._info['fullblockname'] + '.cc'
-            self._write_tpl('block_h36',   self._info['includedir'], fname_h)
-            self._write_tpl('block_cpp36', 'lib',                    fname_cc)
+            self._write_tpl('block_h36', self._info['includedir'], fname_h)
+            self._write_tpl('block_cpp36', 'lib', fname_cc)
 
     def _run_swig(self):
         """ Do everything that needs doing in the subdir 'swig'.
@@ -211,14 +212,14 @@ class ModToolAdd(ModTool):
         swig_block_magic_str = render_template('swig_block_magic', **self._info)
         open(self._file['swig'], 'a').write(swig_block_magic_str)
         include_str = '#include "%s%s%s.h"' % (
-                {True: 'gnuradio/' + self._info['modname'], False: self._info['modname']}[self._info['is_component']],
-                mod_block_sep,
-                self._info['blockname'])
+            {True: 'gnuradio/' + self._info['modname'], False: self._info['modname']}[self._info['is_component']],
+            mod_block_sep,
+            self._info['blockname'])
         if re.search('#include', open(self._file['swig'], 'r').read()):
             append_re_line_sequence(self._file['swig'], '^#include.*\n', include_str)
         else: # I.e., if the swig file is empty
             oldfile = open(self._file['swig'], 'r').read()
-            regexp = re.compile('^%\{\n', re.MULTILINE)
+            regexp = re.compile(r'^%\{\n', re.MULTILINE)
             oldfile = regexp.sub('%%{\n%s\n' % include_str, oldfile, count=1)
             open(self._file['swig'], 'w').write(oldfile)
         self.scm.mark_files_updated((self._file['swig'],))
@@ -255,8 +256,8 @@ class ModToolAdd(ModTool):
         self._write_tpl('rfnoc_v', 'rfnoc/fpga-src', fname_rfnocv)
         patt_v = re.escape('$(addprefix SOURCES_PATH, \\\n')
         append_re_line_sequence(self._file['rfnoc_mksrc'],
-                                           patt_v,
-                                           'noc_block_' + self._info['blockname'] + '.v \\')
+                                patt_v,
+                                'noc_block_' + self._info['blockname'] + '.v \\')
         ed = CMakeFileEditor(self._file['cmrfnoc'], '\n    ')
         self._run_testbenches()
         self._build()
@@ -283,10 +284,11 @@ class ModToolAdd(ModTool):
         self._write_tpl('tb_makefile', new_tbdir, 'Makefile')
         self._write_tpl('empty', new_tbdir, 'CMakeLists.txt')
         append_re_line_sequence('rfnoc/testbenches/CMakeLists.txt',
-               "--------------------",
-               'add_subdirectory({})'.format(dirname) + '\n')
+                                "--------------------",
+                                'add_subdirectory({})'.format(dirname) + '\n')
 
-    def _build(args):
+    @staticmethod
+    def _build():
         """
         Run the make command that sets up the fpga repository path. Assumes
         that the  script is run in the newly created OOT mod, which is the

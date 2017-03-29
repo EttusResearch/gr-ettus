@@ -25,7 +25,6 @@ from __future__ import absolute_import
 import os
 import re
 from argparse import ArgumentParser
-import sys
 from gnuradio import gr
 from .util_functions import get_modname
 from .scm import SCMRepoFactory
@@ -119,8 +118,7 @@ class ModTool(object):
         print("RFNoC module name identified: " + self._info['modname'])
         if self._info['version'] == '36' and (
                 os.path.isdir(os.path.join('include', self._info['modname'])) or
-                os.path.isdir(os.path.join('include', 'gnuradio', self._info['modname']))
-                ):
+                os.path.isdir(os.path.join('include', 'gnuradio', self._info['modname']))):
             self._info['version'] = '37'
         if args.skip_lib or not self._has_subdirs['lib']:
             self._skip_subdirs['lib'] = True
@@ -144,12 +142,12 @@ class ModTool(object):
         self._info['pydir'] = 'python'
         if os.path.isdir(os.path.join('python', self._info['modname'])):
             self._info['pydir'] = os.path.join('python', self._info['modname'])
-        self._file['qalib']    = os.path.join('lib',    'qa_%s.cc' % self._info['modname'])
-        self._file['pyinit']   = os.path.join(self._info['pydir'], '__init__.py')
-        self._file['cmlib']    = os.path.join('lib',    'CMakeLists.txt')
-        self._file['cmgrc']    = os.path.join('grc',    'CMakeLists.txt')
-        self._file['cmrfnoc']    = os.path.join('rfnoc','blocks',  'CMakeLists.txt')
-        self._file['rfnoc_mksrc']    = os.path.join('rfnoc','fpga-src',  'Makefile.srcs')
+        self._file['qalib'] = os.path.join('lib', 'qa_%s.cc' % self._info['modname'])
+        self._file['pyinit'] = os.path.join(self._info['pydir'], '__init__.py')
+        self._file['cmlib'] = os.path.join('lib', 'CMakeLists.txt')
+        self._file['cmgrc'] = os.path.join('grc', 'CMakeLists.txt')
+        self._file['cmrfnoc'] = os.path.join('rfnoc', 'blocks', 'CMakeLists.txt')
+        self._file['rfnoc_mksrc'] = os.path.join('rfnoc', 'fpga-src', 'Makefile.srcs')
         self._file['cmpython'] = os.path.join(self._info['pydir'], 'CMakeLists.txt')
         if self._info['is_component']:
             self._info['includedir'] = os.path.join('include', 'gnuradio', self._info['modname'])
@@ -185,7 +183,7 @@ class ModTool(object):
         self._info['is_component'] = False
         for f in files:
             if os.path.isfile(f) and f == 'CMakeLists.txt':
-                if re.search('find_package\(Gnuradio', open(f).read()) is not None:
+                if re.search(r'find_package\(Gnuradio', open(f).read()) is not None:
                     self._info['version'] = '36' # Might be 37, check that later
                     has_makefile = True
                 elif re.search('GR_REGISTER_COMPONENT', open(f).read()) is not None:
@@ -194,7 +192,7 @@ class ModTool(object):
                     has_makefile = True
             # TODO search for autofoo
             elif os.path.isdir(f):
-                if (f in self._has_subdirs.keys()):
+                if f in self._has_subdirs.keys():
                     self._has_subdirs[f] = True
                 else:
                     self._skip_subdirs[f] = True

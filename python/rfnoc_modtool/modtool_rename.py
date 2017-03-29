@@ -24,7 +24,6 @@ from __future__ import print_function
 from builtins import input
 import os
 import re
-from .util_functions import  ask_yes_no
 from .modtool_base import ModTool, ModToolException
 
 class ModToolRename(ModTool):
@@ -43,15 +42,21 @@ class ModToolRename(ModTool):
     def setup_parser(self):
         parser = ModTool.setup_parser(self)
         agroup = parser.add_argument_group("Rename module options")
-        agroup.add_argument("-o", "--old-name", default=None, help="Current name of the block to rename.")
-        agroup.add_argument("-u", "--new-name", default=None, help="New name of the block.")
+        agroup.add_argument("-o",
+                            "--old-name",
+                            default=None,
+                            help="Current name of the block to rename.")
+        agroup.add_argument("-u",
+                            "--new-name",
+                            default=None,
+                            help="New name of the block.")
         return parser
 
     def setup(self, args, positional):
         ModTool.setup(self, args, positional)
 
-        if ((self._skip_subdirs['lib'] and self._info['lang'] == 'cpp')
-             or (self._skip_subdirs['python'] and self._info['lang'] == 'python')):
+        if ((self._skip_subdirs['lib'] and self._info['lang'] == 'cpp') or
+                (self._skip_subdirs['python'] and self._info['lang'] == 'python')):
             raise ModToolException('Missing or skipping relevant subdir.')
 
         # first make sure the old block name is provided
@@ -204,7 +209,8 @@ class ModToolRename(ModTool):
         if nsubs < 1:
             print("'{}' wasn't in '{}'.".format(first, filename))
 
-    def _run_file_rename(self, path, old, new):
+    @staticmethod
+    def _run_file_rename(path, old, new):
         files = os.listdir(path)
         for fil in files:
             if fil.find(old) > -1 and fil.find(old) < 3:
@@ -226,7 +232,8 @@ class ModToolRename(ModTool):
         self.scm.mark_file_updated(filename)
         return nsubs
 
-    def _run_dir_rename(self, old_dirname, new_dirname):
+    @staticmethod
+    def _run_dir_rename(old_dirname, new_dirname):
         " Renames a directory"
         if not os.path.isdir(old_dirname):
             return False

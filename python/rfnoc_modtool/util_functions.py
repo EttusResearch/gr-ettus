@@ -1,7 +1,7 @@
 ###RFNoC Modtool
 
 """ Utility functions for gr_modtool """
-
+from __future__ import print_function
 import re
 import sys
 import random
@@ -52,7 +52,7 @@ def str_to_python_comment(text):
 
 def strip_default_values(string):
     """ Strip default values from a C++ argument list. """
-    return re.sub(' *=[^,)]*','' , string)
+    return re.sub(' *=[^,)]*', '', string)
 
 def strip_arg_types(string):
     """"
@@ -64,8 +64,8 @@ def strip_arg_types(string):
     """
     string = strip_default_values(string)
     return ", ".join(
-                [part.strip().split(' ')[-1] for part in string.split(',')]
-            ).translate(None, '*&')
+        [part.strip().split(' ')[-1] for part in string.split(',')]
+        ).translate(None, '*&')
 
 def strip_arg_types_grc(string):
     """" Strip the argument types from a list of arguments for GRC make tag.
@@ -132,8 +132,8 @@ def ask_yes_no(question, default):
 def random_id_generator():
     """ Generates a 16 HeX long string to be used as a NoC ID when the argument
     is left blank during the generation process"""
-    ID = "{:X}".format(random.randint(0,2**64-1))
-    return ID
+    noc_id = "{:X}".format(random.randint(0, 2**64-1))
+    return noc_id
 
 def id_process(noc_id):
     """
@@ -141,12 +141,12 @@ def id_process(noc_id):
     it generates a random ID of length 16. If it is shorter than 16, it pads
     the until 16 with zeros. If it is longer, throws error, as it is not allowed
     """
-    if (len(noc_id) > 16):
+    if len(noc_id) > 16:
         print("Invalid NoC ID - Please provide an ID shorter than 16 Hex Digits")
         sys.exit(0)
     elif len(noc_id) == 0:
         noc_id = random_id_generator()
         print("Random NoC ID generated: {}".format(noc_id))
     else:
-        noc_id + '0' * (16 - len(noc_id))
+        '{:0>16}'.format(noc_id)
     return noc_id

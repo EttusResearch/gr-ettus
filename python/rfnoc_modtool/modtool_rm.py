@@ -100,7 +100,9 @@ class ModToolRemove(ModTool):
             self._run_subdir('lib', ('*.cc', '*.h', '*.cpp', '*.hpp',), ('add_library', 'list'),
                              cmakeedit_func=_remove_cc_test_case)
         if not self._skip_subdirs['include']:
-            incl_files_deleted = self._run_subdir(self._info['includedir'], ('*.h','*.hpp',), ('install',))
+            incl_files_deleted = self._run_subdir(self._info['includedir'],
+                                                  ('*.h', '*.hpp',),
+                                                  ('install',))
         if not self._skip_subdirs['swig']:
             swig_files_deleted = self._run_subdir('swig', ('*.i',), ('install',))
             for f in incl_files_deleted + swig_files_deleted:
@@ -235,5 +237,4 @@ class ModToolRemove(ModTool):
             print("Deleting occurrences of {} from {}/"
                   "CMakeLists.txt...".format(base, item))
             cmake_pattern = re.escape("add_subdirectory("+ base + ")\n")
-            print(cmake_pattern)
             remove_pattern_from_file(os.path.join(path, 'CMakeLists.txt'), cmake_pattern)

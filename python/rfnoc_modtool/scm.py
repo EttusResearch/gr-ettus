@@ -1,5 +1,6 @@
 """ Class to handle source code management repositories. """
 
+from __future__ import print_function
 import subprocess
 
 try:
@@ -58,7 +59,8 @@ class SCMRepository(object):
         self.mark_files_updated([path_to_file])
 
     def is_active(self):
-        """ Returns true if this repository manager is operating on an active, source-controlled directory. """
+        """ Returns true if this repository manager is operating on an active,
+        source-controlled directory. """
         return self.is_empty
 
 
@@ -176,7 +178,7 @@ class SCMRepoFactory(object):
                 if issubclass(glbl, SCMRepository):
                     the_scm = glbl(self.path_to_repo)
                     if the_scm.is_active():
-                        print 'Found SCM of type:', the_scm.handles_scm_type
+                        print('Found SCM of type:', the_scm.handles_scm_type)
                         return the_scm
             except (TypeError, AttributeError, InvalidSCMError):
                 pass
@@ -198,4 +200,3 @@ class SCMRepoFactory(object):
         if self.options == 'yes':
             return None
         return SCMRepository(self.path_to_repo)
-

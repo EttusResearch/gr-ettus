@@ -21,8 +21,8 @@
 """ The help module """
 from __future__ import print_function
 from ettus.rfnoc_modtool import *
-from util_functions import get_command_from_argv
-from templates import Templates
+from .util_functions import get_command_from_argv
+from .templates import Templates
 
 
 def print_class_descriptions():
@@ -53,7 +53,7 @@ class ModToolHelp(ModTool):
         " Sets up help subparser "
         parser = ModTool.setup_parser(self)
         subparser = parser.add_subparsers()
-        agroup = subparser.add_parser("help")
+        subparser.add_parser("help")
         return parser
 
     def setup(self, args, positional):
@@ -63,14 +63,12 @@ class ModToolHelp(ModTool):
         cmd_dict = get_class_dict(globals().values())
         cmds = cmd_dict.keys()
         cmds.remove(self.name)
-        for a in self.aliases:
-            cmds.remove(a)
+        for alias in self.aliases:
+            cmds.remove(alias)
         help_requested_for = get_command_from_argv(cmds)
         if help_requested_for is None:
-            print( 'Usage:' + Templates['usage'])
-            print( '\nList of possible commands:\n')
+            print('Usage:' + Templates['usage'])
+            print('\nList of possible commands:\n')
             print_class_descriptions()
             return
         cmd_dict[help_requested_for]().setup_parser().print_help()
-
-

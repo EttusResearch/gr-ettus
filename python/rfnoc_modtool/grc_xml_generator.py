@@ -1,3 +1,5 @@
+" GRC XML generator "
+
 import xml.etree.ElementTree as ET
 from .util_functions import is_number, xml_indent
 
@@ -30,10 +32,9 @@ class GRCXMLGenerator(object):
 
     def _lxml_prettyprint(self):
         """ XML pretty printer using lxml """
-        return lxml.etree.tostring(
-                   lxml.etree.fromstring(ET.tostring(self.root, encoding="UTF-8")),
-                   pretty_print=True
-               )
+        return lxml.etree.tostring(lxml.etree.fromstring(ET.tostring(self.root, encoding="UTF-8")),
+                                   pretty_print=True
+                                  )
 
     def _manual_prettyprint(self):
         """ XML pretty printer using xml_indent """

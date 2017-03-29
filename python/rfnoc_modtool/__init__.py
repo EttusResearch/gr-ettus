@@ -17,6 +17,7 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
+""" Initialing our modtool package """
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
@@ -34,4 +35,17 @@ from .templates import Templates
 #
 from .modtool_help import ModToolHelp
 from .parser_cc_block import ParserCCBlock
-from .util_functions import *
+from .util_functions import (get_command_from_argv,
+                             append_re_line_sequence,
+                             remove_pattern_from_file,
+                             str_to_fancyc_comment,
+                             str_to_python_comment,
+                             strip_default_values,
+                             strip_arg_types,
+                             strip_arg_types_grc,
+                             get_modname,
+                             is_number,
+                             xml_indent,
+                             ask_yes_no,
+                             random_id_generator,
+                             id_process)

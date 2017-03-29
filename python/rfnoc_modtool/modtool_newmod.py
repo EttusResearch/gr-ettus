@@ -20,19 +20,18 @@
 #
 """ Create a whole new out-of-tree module """
 
+from __future__ import print_function
 import shutil
 import os
 import re
-import sys
 from builtins import input
 from gnuradio import gr
 from .modtool_base import ModTool, ModToolException
-from .scm import SCMRepoFactory
 
 class ModToolNewModule(ModTool):
     """ Create a new out-of-tree module """
     name = 'newmod'
-    aliases =('nm', 'create')
+    aliases = ('nm', 'create')
     def __init__(self):
         ModTool.__init__(self)
 
@@ -64,13 +63,13 @@ class ModToolNewModule(ModTool):
         else:
             raise ModToolException('The given directory exists.')
         if args.srcdir is None:
-            post_path = os.path.join('share','gr-ettus','rfnoc_modtool','rfnoc-newmod')
+            post_path = os.path.join('share', 'gr-ettus', 'rfnoc_modtool', 'rfnoc-newmod')
             if os.environ.get('PYBOMBS_PREFIX'):
-                args.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'),post_path)
+                args.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'), post_path)
             else:
                 args.srcdir = os.path.join('/usr', 'local', post_path)
         self._srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path',
-                args.srcdir)
+                                             args.srcdir)
         if not os.path.isdir(self._srcdir):
             raise ModToolException('Could not find rfnoc-newmod source dir')
         self.args = args
@@ -82,25 +81,26 @@ class ModToolNewModule(ModTool):
         * Open all files, rename rfnoc_example and RFNOC_EXAMPLE to the module name
         * Rename files and directories that contain the word rfnoc_example
         """
-        print "Creating out-of-tree module in %s..." %self._dir,
+        print("Creating out-of-tree module in {}...".format(self._dir), end=" ")
         try:
             shutil.copytree(self._srcdir, self._dir)
             os.chdir(self._dir)
         except OSError:
-            raise ModToolException('Could not create directory %s.' % self._dir)
-        for root, dirs, files in  os.walk('.'):
+            raise ModToolException('Could not create directory {}.'.format(self._dir))
+        for root, _, files in  os.walk('.'):
             for filename in files:
-                f = os.path.join(root,filename)
+                f = os.path.join(root, filename)
                 s = open(f, 'r').read()
                 s = s.replace('rfnoc_example', self._info['modname'])
                 s = s.replace('RFNOC_EXAMPLE', self._info['modname'].upper())
                 open(f, 'w').write(s)
                 if filename.find('rfnoc_example') != -1:
-                    os.rename(f, os.path.join(root, filename.replace('rfnoc_example', self._info['modname'])))
+                    os.rename(f, os.path.join(root,
+                                              filename.replace('rfnoc_example',
+                                                               self._info['modname'])))
             if os.path.basename(root) == 'rfnoc_example':
                 os.rename(root, os.path.join(os.path.dirname(root), self._info['modname']))
-        print "Done."
+        print("Done.")
         if self.scm.init_repo(path_to_repo="."):
-            print "Created repository... you might want to commit before continuing."
-        print "Use 'rfnocmodtool add' to add a new block to this currently empty module."
-
+            print("Created repository... you might want to commit before continuing.")
+        print("Use 'rfnocmodtool add' to add a new block to this currently empty module.")

@@ -20,6 +20,7 @@
 #
 """ Automatically create XML bindings for GRC from block code """
 
+from __future__ import print_function
 import os
 import re
 import glob
@@ -55,7 +56,7 @@ class ModToolMakeXML(ModTool):
 
         if args.block_name is not None:
             self._info['pattern'] = args.block_name
-        elif len(positional) >=2:
+        elif len(positional) >= 2:
             self._info['pattern'] = positional[1]
         else:
             self._info['pattern'] = input('Which blocks do you want to parse? (Regex): ')
@@ -64,7 +65,7 @@ class ModToolMakeXML(ModTool):
 
     def run(self):
         """ Go, go, go! """
-        print "Warning: This is an experimental feature. Don't expect any magic."
+        print("Warning: This is an experimental feature. Don't expect any magic.")
         # 1) Go through lib/
         if not self._skip_subdirs['lib']:
             if self._info['version'] == '37':
@@ -83,12 +84,12 @@ class ModToolMakeXML(ModTool):
         """ Search for files matching pattern in the given path. """
         files = glob.glob("%s/%s"% (path, path_glob))
         files_filt = []
-        print "Searching for matching files in %s/:" % path
+        print("Searching for matching files in {}/:".format(path))
         for f in files:
             if re.search(self._info['pattern'], os.path.basename(f)) is not None:
                 files_filt.append(f)
         if len(files_filt) == 0:
-            print "None found."
+            print("None found.")
         return files_filt
 
     def _make_grc_xml_from_block_data(self, params, iosig, blockname):
@@ -113,13 +114,12 @@ class ModToolMakeXML(ModTool):
                     return
             else:
                 file_exists = True
-                print "Warning: Overwriting existing GRC file."
-        grc_generator = GRCXMLGenerator(
-                modname=self._info['modname'],
-                blockname=blockname,
-                params=params,
-                iosig=iosig
-        )
+                print("Warning: Overwriting existing GRC file.")
+        grc_generator = GRCXMLGenerator(modname=self._info['modname'],
+                                        blockname=blockname,
+                                        params=params,
+                                        iosig=iosig
+                                       )
         grc_generator.save(path_to_xml)
         if file_exists:
             self.scm.mark_files_updated((path_to_xml,))
@@ -128,7 +128,7 @@ class ModToolMakeXML(ModTool):
         if not self._skip_subdirs['grc']:
             ed = CMakeFileEditor(self._file['cmgrc'])
             if re.search(fname_xml, ed.cfile) is None and not ed.check_for_glob('*.xml'):
-                print "Adding GRC bindings to grc/CMakeLists.txt..."
+                print("Adding GRC bindings to grc/CMakeLists.txt...")
                 ed.append_value('install', fname_xml, to_ignore_end='DESTINATION[^()]+')
                 ed.write()
                 self.scm.mark_files_updated(self._file['cmgrc'])
@@ -147,8 +147,9 @@ class ModToolMakeXML(ModTool):
                               'std::vector<int>': 'int_vector',
                               'std::vector<float>': 'real_vector',
                               'std::vector<gr_complex>': 'complex_vector',
-                              }
-            if p_type in ('int',) and default_v is not None and len(default_v) > 1 and default_v[:2].lower() == '0x':
+                             }
+            if p_type in ('int',) and default_v is not None and \
+               len(default_v) > 1 and default_v[:2].lower() == '0x':
                 return 'hex'
             try:
                 return translate_dict[p_type]
@@ -161,7 +162,7 @@ class ModToolMakeXML(ModTool):
             blockname = blockname.replace(self._info['modname']+'_', '', 1)
             return (blockname, fname_h)
         # Go, go, go
-        print "Making GRC bindings for %s..." % fname_cc
+        print("Making GRC bindings for {}...".format(fname_cc))
         (blockname, fname_h) = _get_blockdata(fname_cc)
         try:
             parser = ParserCCBlock(fname_cc,
@@ -171,7 +172,6 @@ class ModToolMakeXML(ModTool):
                                    _type_translate
                                   )
         except IOError:
-            raise ModToolException("Can't open some of the files necessary to parse {}.".format(fname_cc))
-
+            raise ModToolException(
+                "Can't open some of the files necessary to parse {}.".format(fname_cc))
         return (parser.read_params(), parser.read_io_signature(), blockname)
-

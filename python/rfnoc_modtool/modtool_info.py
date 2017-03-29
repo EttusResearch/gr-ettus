@@ -22,8 +22,6 @@
 
 from __future__ import print_function
 import os
-from argparse import ArgumentParser
-
 from .modtool_base import ModTool, ModToolException
 from .util_functions import get_modname
 
@@ -67,8 +65,7 @@ class ModToolInfo(ModTool):
             raise ModToolException('{}' if self._python_readable else "No module found.")
         if self._info['version'] == '36' and (
                 os.path.isdir(os.path.join('include', mod_info['modname'])) or
-                os.path.isdir(os.path.join('include', 'gnuradio', mod_info['modname']))
-                ):
+                os.path.isdir(os.path.join('include', 'gnuradio', mod_info['modname']))):
             self._info['version'] = '37'
         mod_info['version'] = self._info['version']
         if 'is_component' in self._info.keys() and self._info['is_component']:
@@ -94,26 +91,28 @@ class ModToolInfo(ModTool):
         if self._check_directory(base_dir):
             return base_dir
         else:
-            (up_dir, this_dir) = os.path.split(base_dir)
+            (up_dir, _) = os.path.split(base_dir)
             if os.path.split(up_dir)[1] == 'include':
                 up_dir = os.path.split(up_dir)[0]
             if self._check_directory(up_dir):
                 return up_dir
         return None
 
-    def _get_build_dir(self, mod_info):
+    @staticmethod
+    def _get_build_dir(mod_info):
         """ Figure out the build dir (i.e. where you run 'cmake'). This checks
         for a file called CMakeCache.txt, which is created when running cmake.
         If that hasn't happened, the build dir cannot be detected, unless it's
         called 'build', which is then assumed to be the build dir. """
         base_build_dir = mod_info['base_dir']
         if 'is_component' in mod_info.keys():
-            (base_build_dir, rest_dir) = os.path.split(base_build_dir)
-        has_build_dir = os.path.isdir(os.path.join(base_build_dir , 'build'))
-        if (has_build_dir and os.path.isfile(os.path.join(base_build_dir, 'CMakeCache.txt'))):
+            (base_build_dir, _) = os.path.split(base_build_dir)
+        has_build_dir = os.path.isdir(os.path.join(base_build_dir, 'build'))
+        if has_build_dir and os.path.isfile(os.path.join(base_build_dir,
+                                                         'CMakeCache.txt')):
             return os.path.join(base_build_dir, 'build')
         else:
-            for (dirpath, dirnames, filenames) in os.walk(base_build_dir):
+            for (dirpath, _, filenames) in os.walk(base_build_dir):
                 if 'CMakeCache.txt' in filenames:
                     return dirpath
         if has_build_dir:
@@ -136,7 +135,8 @@ class ModToolInfo(ModTool):
             inc_dirs = [os.path.normpath(path) for path in self._suggested_dirs.split(':') if os.path.isdir(path)]
         return inc_dirs
 
-    def _pretty_print(self, mod_info):
+    @staticmethod
+    def _pretty_print(mod_info):
         """ Output the module info in human-readable format """
         index_names = {'base_dir': 'Base directory',
                        'modname':  'Module name',
@@ -146,9 +146,9 @@ class ModToolInfo(ModTool):
         for key in mod_info.keys():
             if key == 'version':
                 print("        API version: %s" % {
-                        '36': 'pre-3.7',
-                        '37': 'post-3.7',
-                        'autofoo': 'Autotools (pre-3.5)'
-                        }[mod_info['version']])
+                    '36': 'pre-3.7',
+                    '37': 'post-3.7',
+                    'autofoo': 'Autotools (pre-3.5)'
+                    }[mod_info['version']])
             else:
                 print('%19s: %s' % (index_names[key], mod_info[key]))
