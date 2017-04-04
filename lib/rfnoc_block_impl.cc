@@ -85,6 +85,9 @@ static void set_signature_from_block(
   ::uhd::rfnoc::stream_sig_t sig = tx
         ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_signature(block_port)
         : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_signature(block_port);
+  nchans = tx
+        ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_ports().size()
+        : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_ports().size();
   vlen = (sig.vlen == 0) ? 1 : sig.vlen;
   if (gr_vlen != -1) {
     if (gr_vlen == 1) {
@@ -175,6 +178,22 @@ rfnoc_block_impl::rfnoc_block_impl(
   //// Final configuration for the GNU Radio block:
   set_tag_propagation_policy(TPP_DONT);
   update_gr_io_signature();
+
+  if (tx_stream_args.channels.size() > _tx.nchans) {
+    GR_LOG_ERROR(d_logger, str(
+          boost::format("Tx stream args request %d channels, block only has %d!")
+          % tx_stream_args.channels.size() % _tx.nchans
+    ));
+    throw std::runtime_error("Invalid stream args.");
+  }
+  if (rx_stream_args.channels.size() > _rx.nchans) {
+    GR_LOG_ERROR(d_logger, str(
+          boost::format("Rx stream args request %d channels, block only has %d!")
+          % rx_stream_args.channels.size() % _rx.nchans
+    ));
+    throw std::runtime_error("Invalid stream args.");
+  }
+
 
   // Add message ports
   message_port_register_in(pmt::mp("rfnoc"));
