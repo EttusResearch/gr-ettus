@@ -27,11 +27,14 @@
     $radio_index, $device_index
 )
 self.$(id).set_rate($rate)
-self.$(id).set_bandwidth($rx_bandwidth)
 for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)
     self.$(id).set_${direction}_gain($gain, i)
     self.$(id).set_${direction}_dc_offset($dcenable, i)
+self.$(id).set_rx_bandwidth($rx_bandwidth0, 0)
+#if ($num_channels() > 1):
+self.$(id).set_rx_bandwidth($rx_bandwidth1, 1)
+#end if
 
 self.$(id).set_${direction}_antenna($ant0, 0)
 #if ($num_channels() > 1)
@@ -311,6 +314,20 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
       <name>False</name>
       <key>false</key>
     </option>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>Ch1: Analog Bandwidth (Hz)</name>
+    <key>rx_bandwidth1</key>
+    <value>56e6</value>
+    <type>real</type>
+    <hide>
+      #if $num_channels() > 1
+        $direction.hide_source
+      #else
+        all
+      #end if
+    </hide>
     <tab>RF Options</tab>
   </param>
 
