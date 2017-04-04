@@ -20,8 +20,8 @@
     "DDC", $block_index, $device_index,
 )
 for chan in xrange($num_chans):
-    self.$(id).set_arg("input_rate", $input_rate, chan)
-    self.$(id).set_arg("output_rate", $output_rate, chan)
+    self.$(id).set_arg("input_rate", float($input_rate), chan)
+    self.$(id).set_arg("output_rate", float($output_rate), chan)
     self.$(id).set_arg("fullscale", $fullscale, chan)
     self.$(id).set_arg("freq", $freq, chan)
 </make>
