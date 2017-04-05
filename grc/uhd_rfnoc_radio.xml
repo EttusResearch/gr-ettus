@@ -31,8 +31,10 @@ for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)
     self.$(id).set_${direction}_gain($gain, i)
     self.$(id).set_${direction}_dc_offset($dcenable, i)
+#if (str($direction()) == "rx")
+
 self.$(id).set_rx_bandwidth($rx_bandwidth0, 0)
-#if ($num_channels() > 1):
+#else if ($num_channels() > 1):
 self.$(id).set_rx_bandwidth($rx_bandwidth1, 1)
 #end if
 
@@ -40,7 +42,8 @@ self.$(id).set_${direction}_antenna($ant0, 0)
 #if ($num_channels() > 1)
 self.$(id).set_${direction}_antenna($ant1, 1)
 #end if
-#if str($direction) == "rx"
+#if (str($direction()) == "rx" and not $hide_lo_controls())
+
 self.$(id).set_rx_lo_source(${lo_source0},  "all", 0)
 self.$(id).set_rx_lo_export_enabled(${lo_export0}, "all", 0)
 #if ($num_channels() > 1)
@@ -58,10 +61,26 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
     self.$(id).set_${direction}_gain($gain)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant0)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant1)</callback>
-<callback>self.$(id).set_rx_lo_export_enabled($lo_export0, "all", 0)</callback>
-<callback>self.$(id).set_rx_lo_export_enabled($lo_export1, "all", 1)</callback>
-<callback>self.$(id).set_rx_lo_source($lo_source0, "all", 0)</callback>
-<callback>self.$(id).set_rx_lo_source($lo_source1, "all", 1)</callback>
+<callback>
+#if str($direction()) == "rx" and not $hide_lo_controls() and $num_channels > 0
+    self.$(id).set_rx_lo_export_enabled($lo_export0, "all", 0)
+#end if
+</callback>
+<callback>
+#if str($direction()) == "rx" and not $hide_lo_controls() and $num_channels > 1
+    self.$(id).set_rx_lo_export_enabled($lo_export1, "all", 1)
+#end if
+</callback>
+<callback>
+#if str($direction()) == "rx" and not $hide_lo_controls and $num_channels > 0
+    self.$(id).set_rx_lo_source($lo_source0, "all", 0)
+#end if
+</callback>
+<callback>
+#if str($direction()) == "rx" and not $hide_lo_controls and $num_channels > 1
+    self.$(id).set_rx_lo_source($lo_source1, "all", 1)
+#end if
+</callback>
 
   <param>
     <name>Radio Select</name>
@@ -157,7 +176,7 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
   <param>
     <name>Sampling Rate</name>
     <key>rate</key>
-    <value>1e6</value>
+    <value>samp_rate</value>
     <type>real</type>
     <tab>RF Options</tab>
   </param>
@@ -173,7 +192,7 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
     <key>ant0</key>
     <type>enum</type>
     <hide>
-      #if not $num_channels() >= 1 
+      #if not $num_channels() >= 1
         all
       #end if
     </hide>
@@ -194,13 +213,16 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
   <param>
     <name>Ch0: LO Source</name>
     <key>lo_source0</key>
+    <value>"internal"</value>
     <type>string</type>
     <hide>
-      #if $num_channels() > 0
-      $direction.hide_source
-      #else
-      all
-      #end if
+    #if not $num_channels() > 0
+    all
+    #elif $hide_lo_controls()
+    all
+    #else
+    $direction.hide_source
+    #end if
     </hide>
     <option>
       <name>Internal</name>
@@ -222,19 +244,21 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
     <value>False</value>
     <type>bool</type>
     <hide>
-      #if $num_channels() > 0
-      $direction.hide_source
-      #else
-      all
-      #end if
+    #if not $num_channels() > 0
+    all
+    #elif $hide_lo_controls()
+    all
+    #else
+    $direction.hide_source
+    #end if
     </hide>
     <option>
       <name>True</name>
-      <key>true</key>
+      <key>True</key>
     </option>
     <option>
       <name>False</name>
-      <key>false</key>
+      <key>False</key>
     </option>
     <tab>RF Options</tab>
   </param>
@@ -272,13 +296,16 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
   <param>
     <name>Ch1: LO Source</name>
     <key>lo_source1</key>
+    <value>"internal"</value>
     <type>string</type>
     <hide>
-      #if $num_channels() > 1
-        $direction.hide_source
-      #else
-        all
-      #end if
+    #if not $num_channels() > 1
+    all
+    #elif $hide_lo_controls()
+    all
+    #else
+    $direction.hide_source
+    #end if
     </hide>
     <option>
       <name>Internal</name>
@@ -300,19 +327,21 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
     <value>False</value>
     <type>bool</type>
     <hide>
-      #if $num_channels() > 1
-        $direction.hide_source
-      #else
-        all
-      #end if
+    #if not $num_channels() > 1
+    all
+    #elif $hide_lo_controls()
+    all
+    #else
+    $direction.hide_source
+    #end if
     </hide>
     <option>
       <name>True</name>
-      <key>true</key>
+      <key>True</key>
     </option>
     <option>
       <name>False</name>
-      <key>false</key>
+      <key>False</key>
     </option>
     <tab>RF Options</tab>
   </param>
@@ -361,6 +390,23 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
     <value>1</value>
     <type>int</type>
     <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+     <name>Show LO Controls</name>
+     <key>hide_lo_controls</key>
+     <value>True</value>
+     <type>bool</type>
+     <hide>part</hide>
+     <option>
+        <name>Yes</name>
+        <key>False</key>
+     </option>
+     <option>
+        <name>No</name>
+        <key>True</key>
+     </option>
+     <tab>Advanced</tab>
   </param>
 
   <sink>
