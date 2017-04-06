@@ -89,12 +89,12 @@ namespace gr {
 
      public:
       ${blockname}_impl(
-% if arglist:
-        ${strip_default_values(arglist)},
-% endif
         const gr::ettus::device3::sptr &dev,
         const ::uhd::stream_args_t &tx_stream_args,
         const ::uhd::stream_args_t &rx_stream_args,
+% if arglist:
+        ${strip_default_values(arglist)},
+% endif
         const int block_select,
         const int device_select
       );
@@ -135,12 +135,12 @@ namespace gr {
     {
       return gnuradio::get_initial_sptr(
         new ${blockname}_impl(
-% if arglist:
-            ${strip_arg_types(arglist)},
-% endif
             dev,
             tx_stream_args,
             rx_stream_args,
+% if arglist:
+            ${strip_arg_types(arglist)},
+% endif
             block_select,
             device_select
         )
@@ -151,12 +151,12 @@ namespace gr {
      * The private constructor
      */
     ${blockname}_impl::${blockname}_impl(
-% if arglist:
-         ${strip_default_values(arglist)},
-% endif
          const gr::ettus::device3::sptr &dev,
          const ::uhd::stream_args_t &tx_stream_args,
          const ::uhd::stream_args_t &rx_stream_args,
+% if arglist:
+         ${strip_default_values(arglist)},
+% endif
          const int block_select,
          const int device_select
     )
@@ -292,9 +292,6 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   <category>${modname}</category>
   <import>import ${modname}</import>
   <make>${modname}.${blockname}(
-% if arglist:
-          ${strip_arg_types_grc(arglist)},
-% endif
 <%text>          self.device3,
           uhd.stream_args( # TX Stream Args
                 cpu_format="$type",
@@ -305,8 +302,11 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
                 cpu_format="$type",
                 otw_format="$otw",
                 args="gr_vlen={0},{1}".format(${grvlen}, "" if $grvlen == 1 else "spp={0}".format($grvlen)),
-          ),
-          $block_index,
+          ),</%text>
+% if arglist:
+          ${strip_arg_types_grc(arglist)},
+% endif
+ <%text>         $block_index,
           $device_index
   )</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
