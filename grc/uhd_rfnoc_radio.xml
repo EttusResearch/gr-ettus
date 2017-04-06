@@ -58,7 +58,7 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
 <callback>for i in xrange($num_channels):
     self.$(id).set_${direction}_freq($freq, i)</callback>
 <callback>for i in xrange($num_channels):
-    self.$(id).set_${direction}_gain($gain)</callback>
+    self.$(id).set_${direction}_gain($gain, i)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant0)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant1)</callback>
 <callback>
