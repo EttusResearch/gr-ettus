@@ -63,22 +63,22 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
 <callback>self.$(id).set_${direction}_antenna($ant1)</callback>
 <callback>
 #if str($direction()) == "rx" and not $hide_lo_controls() and $num_channels > 0
-    self.$(id).set_rx_lo_export_enabled($lo_export0, "all", 0)
+self.$(id).set_rx_lo_export_enabled($lo_export0, "all", 0)
 #end if
 </callback>
 <callback>
 #if str($direction()) == "rx" and not $hide_lo_controls() and $num_channels > 1
-    self.$(id).set_rx_lo_export_enabled($lo_export1, "all", 1)
+self.$(id).set_rx_lo_export_enabled($lo_export1, "all", 1)
 #end if
 </callback>
 <callback>
 #if str($direction()) == "rx" and not $hide_lo_controls and $num_channels > 0
-    self.$(id).set_rx_lo_source($lo_source0, "all", 0)
+self.$(id).set_rx_lo_source($lo_source0, "all", 0)
 #end if
 </callback>
 <callback>
 #if str($direction()) == "rx" and not $hide_lo_controls and $num_channels > 1
-    self.$(id).set_rx_lo_source($lo_source1, "all", 1)
+self.$(id).set_rx_lo_source($lo_source1, "all", 1)
 #end if
 </callback>
 
