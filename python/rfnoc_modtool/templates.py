@@ -267,7 +267,6 @@ ${str_to_fancyc_comment(license)}
 
 #include <${include_dir_prefix}/${blockname}_block_ctrl.hpp>
 #include <uhd/convert.hpp>
-#include <uhd/utils/msg.hpp>
 
 using namespace uhd::rfnoc;
 
