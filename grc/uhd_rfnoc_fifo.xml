@@ -82,7 +82,7 @@
   <param>
     <name>FPGA Module Name</name>
     <key>fpga_module_name</key>
-    <value>noc_block_axi_dma_fifo</value>
+    <value>noc_block_axi_fifo_loopback</value>
     <type>string</type>
     <hide>all</hide>
     <tab>RFNoC Config</tab>

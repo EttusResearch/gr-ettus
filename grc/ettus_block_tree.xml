@@ -5,7 +5,7 @@
 ###################################################
  -->
 <cat>
-	<name></name> <!-- Blank for Root Name -->
+	<name>[Core]</name> <!-- Blank for Root Name -->
 	<cat>
 		<name>UHD</name>
 		<cat>
@@ -30,7 +30,8 @@
 			<block>uhd_rfnoc_ofdm_schmidlcox</block>
 			<block>uhd_rfnoc_ofdm_eq</block>
 			<block>uhd_rfnoc_ofdm_demap</block>
-			<block>uhd_rfnoc_siggen</block>
+			<block>uhd_rfnoc_streamer_packet_resizer</block>
+			<block>uhd_rfnoc_streamer_siggen</block>
 			<block>uhd_rfnoc_dma_fifo</block>
 			<block>uhd_rfnoc_digital_gain</block>
 		</cat>

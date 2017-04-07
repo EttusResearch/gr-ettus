@@ -81,6 +81,15 @@
   </param>
 
   <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_split_stream</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
     <name>Force Vector Length</name>
     <key>grvlen</key>
     <value>1</value>
