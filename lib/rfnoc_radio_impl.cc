@@ -186,9 +186,19 @@ namespace gr {
       return _radio_ctrl->get_gpio_attr(bank, attr);
     }
 
+    void rfnoc_radio_impl::set_time_next_pps(const uhd::time_spec_t &spec)
+    {
+      _radio_ctrl->set_time_next_pps(spec);
+    }
+
     uhd::time_spec_t rfnoc_radio_impl::get_time_now(void)
     {
       return _radio_ctrl->get_time_now();
+    }
+
+    uhd::time_spec_t rfnoc_radio_impl::get_time_last_pps(void)
+    {
+      return _radio_ctrl->get_time_last_pps();
     }
 
     void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time, const size_t chan)
