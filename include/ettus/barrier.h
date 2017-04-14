@@ -15,7 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// This is copied from atomic.hpp in UHD. UHD deprecated the reusable_barrier.
+// This is copied from atomic.hpp in UHD. UHD deprecated the reusable_barrier
+// and removed atomic_uint32_t.
 
 #ifndef INCLUDED_UHD_BARRIER_H
 #define INCLUDED_UHD_BARRIER_H
@@ -27,8 +28,48 @@
 #include <boost/thread/condition_variable.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
 
+#define BOOST_IPC_DETAIL boost::interprocess::ipcdetail
+
 namespace gr{
     namespace ettus{
+
+    //! A 32-bit integer that can be atomically accessed
+    class ETTUS_API atomic_uint32_t{
+    public:
+
+        //! Create a new atomic 32-bit integer, initialized to zero
+        UHD_INLINE atomic_uint32_t(void){
+            this->write(0);
+        }
+
+        //! Compare with cmp, swap with newval if same, return old value
+        UHD_INLINE uint32_t cas(uint32_t newval, uint32_t cmp){
+            return BOOST_IPC_DETAIL::atomic_cas32(&_num, newval, cmp);
+        }
+
+        //! Sets the atomic integer to a new value
+        UHD_INLINE void write(const uint32_t newval){
+            BOOST_IPC_DETAIL::atomic_write32(&_num, newval);
+        }
+
+        //! Gets the current value of the atomic integer
+        UHD_INLINE uint32_t read(void){
+            return BOOST_IPC_DETAIL::atomic_read32(&_num);
+        }
+
+        //! Increment by 1 and return the old value
+        UHD_INLINE uint32_t inc(void){
+            return BOOST_IPC_DETAIL::atomic_inc32(&_num);
+        }
+
+        //! Decrement by 1 and return the old value
+        UHD_INLINE uint32_t dec(void){
+            return BOOST_IPC_DETAIL::atomic_dec32(&_num);
+        }
+
+    private:
+        volatile uint32_t _num;
+    };
 
     class ETTUS_API reusable_barrier{
     public:
@@ -82,9 +123,9 @@ namespace gr{
 
     private:
         size_t _size;
-        ::uhd::atomic_uint32_t _entry_counter;
-        ::uhd::atomic_uint32_t _exit_counter;
-        ::uhd::atomic_uint32_t _done;
+        ettus::atomic_uint32_t _entry_counter;
+        ettus::atomic_uint32_t _exit_counter;
+        ettus::atomic_uint32_t _done;
         boost::mutex _mutex;
         boost::condition_variable _cond;
 
