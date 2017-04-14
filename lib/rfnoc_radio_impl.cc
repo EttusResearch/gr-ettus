@@ -61,9 +61,19 @@ namespace gr {
       /* nop */
     }
 
+    double rfnoc_radio_impl::get_rate()
+    {
+      return _radio_ctrl->get_rate();
+    }
+
     void rfnoc_radio_impl::set_rate(const double rate)
     {
       _radio_ctrl->set_rate(rate);
+    }
+
+    double rfnoc_radio_impl::get_tx_freq(const size_t chan)
+    {
+      return _radio_ctrl->get_tx_frequency(chan);
     }
 
     void rfnoc_radio_impl::set_tx_freq(const double freq, const size_t chan)
@@ -71,9 +81,19 @@ namespace gr {
       _radio_ctrl->set_tx_frequency(freq, chan);
     }
 
+    double rfnoc_radio_impl::get_rx_freq(const size_t chan)
+    {
+      return _radio_ctrl->get_rx_frequency(chan);
+    }
+
     void rfnoc_radio_impl::set_rx_freq(const double freq, const size_t chan)
     {
       _radio_ctrl->set_rx_frequency(freq, chan);
+    }
+
+    double rfnoc_radio_impl::get_tx_gain(const size_t chan)
+    {
+      return _radio_ctrl->get_tx_gain(chan);
     }
 
     void rfnoc_radio_impl::set_tx_gain(const double gain, const size_t chan)
@@ -81,9 +101,19 @@ namespace gr {
       _radio_ctrl->set_tx_gain(gain, chan);
     }
 
+    double rfnoc_radio_impl::get_rx_gain(const size_t chan)
+    {
+      return _radio_ctrl->get_rx_gain(chan);
+    }
+
     void rfnoc_radio_impl::set_rx_gain(const double gain, const size_t chan)
     {
       _radio_ctrl->set_rx_gain(gain, chan);
+    }
+
+    double rfnoc_radio_impl::get_rx_bandwidth(const size_t chan)
+    {
+      return _radio_ctrl->get_rx_bandwidth(chan);
     }
 
     void rfnoc_radio_impl::set_rx_bandwidth(const double bandwidth, const size_t chan)
@@ -91,9 +121,19 @@ namespace gr {
       _radio_ctrl->set_rx_bandwidth(bandwidth, chan);
     }
 
+    std::string rfnoc_radio_impl::get_tx_antenna(const size_t chan)
+    {
+      return _radio_ctrl->get_tx_antenna(chan);
+    }
+
     void rfnoc_radio_impl::set_tx_antenna(const std::string &ant, const size_t chan)
     {
       _radio_ctrl->set_tx_antenna(ant, chan);
+    }
+
+    std::string rfnoc_radio_impl::get_rx_antenna(const size_t chan)
+    {
+      return _radio_ctrl->get_rx_antenna(chan);
     }
 
     void rfnoc_radio_impl::set_rx_antenna(const std::string &ant, const size_t chan)
@@ -201,6 +241,11 @@ namespace gr {
       return _radio_ctrl->get_time_last_pps();
     }
 
+    uhd::time_spec_t rfnoc_radio_impl::get_command_time(const size_t chan)
+    {
+      return _radio_ctrl->get_command_time(chan);
+    }
+
     void rfnoc_radio_impl::set_command_time(const uhd::time_spec_t &time, const size_t chan)
     {
       _radio_ctrl->set_command_time(time, chan);
@@ -211,6 +256,10 @@ namespace gr {
       _radio_ctrl->clear_command_time(chan);
     }
 
+    void rfnoc_radio_impl::set_command_tick_rate(const double tick_rate, const size_t chan)
+    {
+      _radio_ctrl->set_command_tick_rate(chan);
+    }
   } /* namespace ettus */
 } /* namespace gr */
 

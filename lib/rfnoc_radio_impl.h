@@ -40,6 +40,15 @@ namespace gr {
       );
       ~rfnoc_radio_impl();
 
+      double get_rate();
+      double get_tx_freq(const size_t chan);
+      double get_rx_freq(const size_t chan);
+      double get_tx_gain(const size_t chan);
+      double get_rx_gain(const size_t chan);
+      double get_rx_bandwidth(const size_t chan);
+      std::string get_tx_antenna(const size_t chan);
+      std::string get_rx_antenna(const size_t chan);
+
       void set_rate(const double rate);
       void set_tx_freq(const double freq, const size_t chan);
       void set_rx_freq(const double freq, const size_t chan);
@@ -75,11 +84,16 @@ namespace gr {
       );
       uint32_t get_gpio_attr(const std::string &bank, const std::string &attr);
 
-      void set_time_next_pps(const uhd::time_spec_t &spec);
+      void set_command_tick_rate(const double tick_rate, const size_t chan);
+
       uhd::time_spec_t get_time_now(void);
       uhd::time_spec_t get_time_last_pps(void);
+      void set_time_next_pps(const uhd::time_spec_t &spec);
+
+      uhd::time_spec_t get_command_time(const size_t chan);
       void set_command_time(const uhd::time_spec_t &time, const size_t chan);
       void clear_command_time(const size_t chan);
+
      private:
       ::uhd::rfnoc::radio_ctrl::sptr _radio_ctrl;
     };
