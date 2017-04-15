@@ -146,7 +146,8 @@ rfnoc_block_impl::rfnoc_block_impl(
     const ::uhd::stream_args_t &rx_stream_args
 ) : _dev(dev->get_device()),
     _tx(tx_stream_args),
-    _rx(rx_stream_args)
+    _rx(rx_stream_args),
+    _start_time_set(false)
 {
   std::vector< ::uhd::rfnoc::block_id_t > blocks =
           dev->get_device()->find_blocks(block_id);
@@ -350,7 +351,13 @@ bool rfnoc_block_impl::start()
   // Start the streamers
   if (!_rx.streamers.empty()) {
     ::uhd::stream_cmd_t stream_cmd(::uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
-    stream_cmd.stream_now = true;
+    if (_start_time_set) {
+        stream_cmd.stream_now = false;
+        stream_cmd.time_spec = _start_time;
+        _start_time_set = false;
+    } else {
+        stream_cmd.stream_now = true;
+    }
     for (size_t i = 0; i < _rx.streamers.size(); i++) {
       _rx.streamers[i]->issue_stream_cmd(stream_cmd);
     }

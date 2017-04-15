@@ -73,6 +73,12 @@ namespace gr {
       virtual uhd::time_spec_t get_command_time(const size_t port = 0) = 0;
       virtual void clear_command_time(const size_t port) = 0;
 
+      /*! Specify a time stamp at which to start streaming
+       *
+       * This is valid for the next run only.
+       */
+      virtual void set_start_time(const uhd::time_spec_t &spec) = 0;
+
       // GNU Radio-specific overrides (defined in rfnoc_block_impl.cc)
       virtual int general_work(
           int noutput_items,

@@ -96,6 +96,9 @@ namespace gr {
 
      private:
       ::uhd::rfnoc::radio_ctrl::sptr _radio_ctrl;
+
+      bool _start_time_set = false;
+      uhd::time_spec_t _start_time;
     };
 
   } // namespace ettus

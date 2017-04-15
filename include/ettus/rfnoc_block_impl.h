@@ -146,6 +146,13 @@ namespace gr {
           _blk_ctrl->clear_command_time(port);
       }
 
+      void set_start_time(const uhd::time_spec_t &start_time)
+      {
+          _start_time_set = true;
+          _start_time = start_time;
+      }
+
+
       /*********************************************************************
        * Workers and Helpers
        *********************************************************************/
@@ -227,6 +234,10 @@ namespace gr {
 
       /*** Message handling ********************************/
       void handle_rfnoc_msg(pmt::pmt_t msg);
+
+      /*** Stream commands *********************************/
+      bool _start_time_set;
+      ::uhd::time_spec_t _start_time;
 
       /*** Multi-Streamer Sync and concurrency stuff ********/
       boost::recursive_mutex d_mutex;
