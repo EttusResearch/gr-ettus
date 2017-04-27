@@ -69,6 +69,14 @@ namespace gr {
       virtual void set_rx_dc_offset(const std::complex< double > &offset, const size_t chan=0) = 0;
       virtual void set_rx_bandwidth(const double bandwidth, const size_t chan=0) = 0;
 
+      virtual double get_rate() = 0;
+      virtual double get_tx_freq(const size_t chan=0) = 0;
+      virtual double get_rx_freq(const size_t chan=0) = 0;
+      virtual double get_tx_gain(const size_t chan=0) = 0;
+      virtual double get_rx_gain(const size_t chan=0) = 0;
+      virtual std::string get_tx_antenna(const size_t chan=0) = 0;
+      virtual std::string get_rx_antenna(const size_t chan=0) = 0;
+
       virtual std::vector<std::string> get_rx_lo_names(const size_t chan=0) = 0;
       virtual std::vector<std::string> get_rx_lo_sources(const std::string &name, const size_t chan=0) = 0;
       virtual uhd::freq_range_t get_rx_lo_freq_range(const std::string &name, const size_t chan=0) = 0;
