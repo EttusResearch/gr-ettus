@@ -144,6 +144,11 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
       <opt>type:sc16</opt>
     </option>
     <option>
+      <name>Real int16</name>
+      <key>s16</key>
+      <opt>type:s16</opt>
+    </option>
+    <option>
       <name>VITA word32</name>
       <key>item32</key>
       <opt>type:s32</opt>
@@ -158,6 +163,11 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
       <name>Complex int16</name>
       <key>sc16</key>
       <opt>type:sc16</opt>
+    </option>
+    <option>
+      <name>Real int16</name>
+      <key>s16</key>
+      <opt>type:s16</opt>
     </option>
   </param>
   <param>
