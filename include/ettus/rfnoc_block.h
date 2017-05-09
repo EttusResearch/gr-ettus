@@ -63,7 +63,7 @@ namespace gr {
       //! Allows reading a readback register on the settings bus (named register version)
       virtual uint64_t get_register(const std::string &reg, const size_t port=0) = 0;
       //! Return the full actual block ID of this block (e.g. 0/FFT_0)
-      virtual std::string get_block_id() const = 0;
+      virtual std::string get_block_id(const size_t port=0) const = 0;
 
       virtual void set_arg(const std::string &key, const int val,          const size_t port = 0) = 0;
       virtual void set_arg(const std::string &key, const double val,       const size_t port = 0) = 0;

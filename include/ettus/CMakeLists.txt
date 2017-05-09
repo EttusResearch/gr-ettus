@@ -30,6 +30,7 @@ install(FILES
     rfnoc_block_impl.h
     rfnoc_radio.h
     rfnoc_generic.h
+    rfnoc_generic_multi.h
     rfnoc_fosphor_c.h
     DESTINATION include/ettus
 )

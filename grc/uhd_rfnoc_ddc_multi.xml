@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <block>
-  <name>RFNoC: DDC</name>
-  <key>uhd_rfnoc_streamer_ddc</key>
+  <name>RFNoC: DDC (multi)</name>
+  <key>uhd_rfnoc_streamer_ddc_multi</key>
   <import>import ettus</import>
-  <make>ettus.rfnoc_generic(
+  <make>ettus.rfnoc_generic_multi(
     self.device3,
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
@@ -44,6 +44,14 @@ for chan in xrange($num_chans):
     <option>
       <name>2</name>
       <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
     </option>
   </param>
 
