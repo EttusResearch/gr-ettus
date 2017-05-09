@@ -40,6 +40,7 @@ list(APPEND ettus_sources
     rfnoc_window_cci_impl.cc
     rfnoc_radio_impl.cc
     rfnoc_generic_impl.cc
+    rfnoc_generic_multi_impl.cc
     rfnoc_fosphor_c_impl.cc
 )
 
