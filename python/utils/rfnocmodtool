@@ -3,6 +3,7 @@
 """ OOT modules for RFNoC """
 
 from __future__ import print_function
+import sys
 from ettus.rfnoc_modtool import *
 
 def main():
