@@ -56,15 +56,16 @@ static ::uhd::device_addr_t merge_args(
 // TODO needs to receive the entire list of block controls
 static void set_signature_from_block(
     ::uhd::stream_args_t stream_args,
-    ::uhd::rfnoc::block_ctrl_base::sptr blk_ctrl,
+    std::vector<::uhd::rfnoc::block_ctrl_base::sptr> blk_ctrls,
     size_t &itemsize,
     size_t &nchans,
     size_t &vlen,
     bool tx
 ) {
-  // If the pointer is not set, the block does not support
+
+  // If the vector is empty, no blocks support
   // this direction (tx or rx)
-  if (!blk_ctrl) {
+  if (blk_ctrls.empty()) {
     itemsize = 0;
     nchans   = 0;
     vlen     = 0;
@@ -76,8 +77,8 @@ static void set_signature_from_block(
   if (stream_args.cpu_format.empty()) {
     throw std::runtime_error(str(
         boost::format("%s: No cpu_format specified on %s.")
-        % blk_ctrl->unique_id() % dir
-    ));
+        % blk_ctrls.front()->unique_id() % dir
+    )); // TODO, print message with all valid block IDs
   }
 
   itemsize = ::uhd::convert::get_bytes_per_item(stream_args.cpu_format);
@@ -85,13 +86,19 @@ static void set_signature_from_block(
   int gr_vlen = stream_args.args.cast<int>("gr_vlen", -1);
   size_t block_port = 0; // TODO more options
   ::uhd::rfnoc::stream_sig_t sig = tx
-        ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_signature(block_port)
-        : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_signature(block_port);
-  // TODO issue exists near here?
+        ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrls.front())->get_input_signature(block_port)
+        : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrls.front())->get_output_signature(block_port);
+  // TODO compose a signature from all blocks
 
-  nchans = tx
-        ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_ports().size()
-        : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_ports().size();
+  size_t num_chans = 0;
+  for (auto blk_ctrl : blk_ctrls) {
+    size_t temp = num_chans;
+    num_chans += tx
+             ? boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl)->get_input_ports().size()
+             : boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl)->get_output_ports().size();
+    std::cout << str(boost::format("%s has %d %s ports") % blk_ctrl->get_block_id().get() % (num_chans-temp) % (tx ? "input" : "output")) << std::endl;
+  }
+  nchans = num_chans;
 
   vlen = (sig.vlen == 0) ? 1 : sig.vlen;
   if (gr_vlen != -1) {
@@ -198,7 +205,6 @@ rfnoc_block_impl::rfnoc_block_impl(
   }
 
   // Find all blocks
-  std::vector<::uhd::rfnoc::block_ctrl_base::sptr> block_ctls;
   for (size_t i = 0; i < block_ids.size(); i++) {
 
     // Get a list of all blocks with this ID
@@ -206,14 +212,14 @@ rfnoc_block_impl::rfnoc_block_impl(
     std::vector<::uhd::rfnoc::block_id_t> blocks = dev->get_device()->find_blocks(block_ids[i]);
 
     // Select the first matching block
-    block_ctls.push_back(dev->get_device()->get_block_ctrl(blocks[0]));
+    _blk_ctrls.push_back(dev->get_device()->get_block_ctrl(blocks[0]));
   }
 
   // Map all the input ports of RFNoC blocks to GNU Radio block ports
   size_t port_index = 0;
-  for (size_t block_index = 0; block_index < block_ctls.size(); block_index++) {
+  for (size_t block_index = 0; block_index < _blk_ctrls.size(); block_index++) {
     size_t block_port = 0;
-    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = block_ctls[block_index];
+    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = _blk_ctrls[block_index];
 
     ::uhd::rfnoc::source_block_ctrl_base::sptr source_block_ctrl = boost::dynamic_pointer_cast<::uhd::rfnoc::source_block_ctrl_base>(block_ctl);
     if (source_block_ctrl) {
@@ -229,9 +235,10 @@ rfnoc_block_impl::rfnoc_block_impl(
   }
 
   // Map all the output ports of RFNoC blocks to GNU Radio block ports
-  for (size_t block_index = 0; block_index < block_ctls.size(); block_index++) {
+  for (size_t block_index = 0; block_index < _blk_ctrls.size(); block_index++) {
     size_t block_port = 0;
-    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = block_ctls[block_index];
+    port_index = 0;
+    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = _blk_ctrls[block_index];
 
     ::uhd::rfnoc::sink_block_ctrl_base::sptr sink_block_ctrl = boost::dynamic_pointer_cast<::uhd::rfnoc::sink_block_ctrl_base>(block_ctl);
     if (sink_block_ctrl) {
@@ -250,9 +257,9 @@ rfnoc_block_impl::rfnoc_block_impl(
   const std::set< std::string > excluded_keys = boost::assign::list_of("align")("gr_vlen");
   _merged_args = merge_args(tx_stream_args.args, rx_stream_args.args, excluded_keys);
 
-  for (size_t block_index = 0; block_index < block_ctls.size(); block_index++) {
+  for (size_t block_index = 0; block_index < _blk_ctrls.size(); block_index++) {
     size_t block_port = 0;
-    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = block_ctls[block_index];
+    ::uhd::rfnoc::block_ctrl_base::sptr block_ctl = _blk_ctrls[block_index];
 
     // Configure the block
     if (_merged_args.size()) {
@@ -271,20 +278,16 @@ rfnoc_block_impl::rfnoc_block_impl(
 
   std::cout <<  "RX args:" << std::endl;
   BOOST_FOREACH(const size_t chan_idx, _rx.stream_args.channels) {
-          _rx.stream_args.args[str(boost::format("block_port%d") % chan_idx)] = str(boost::format("%d") % chan_idx);
+          _rx.stream_args.args[str(boost::format("block_port%d") % chan_idx)] = str(boost::format("%d") % get_block_port_from_port(chan_idx));
           _rx.stream_args.args[str(boost::format("block_id%d") % chan_idx)]   = get_block_ctrl_from_port(chan_idx)->get_block_id().get();
           std::cout <<  str(boost::format("block_port%d = %d\nblock_id%d = %s")
                             % chan_idx % chan_idx % chan_idx % get_block_ctrl_from_port(chan_idx)->get_block_id().get()) << std::endl;
         }
 
-  //// Final configuration for the GNU Radio block:
+  // Final configuration for the GNU Radio block:
   set_tag_propagation_policy(TPP_DONT);
 
   update_gr_io_signature();
-
-  std::cout << "tx.nchans: " << _tx.nchans << std::endl;
-  std::cout << "rx.nchans: " << _rx.nchans << std::endl;
-  _tx.nchans = 4; // FIXME this value is being incorrectly set in multi_block use case.
 
   if (tx_stream_args.channels.size() > _tx.nchans) {
     GR_LOG_ERROR(d_logger, str(
@@ -324,12 +327,9 @@ rfnoc_block_impl::~rfnoc_block_impl()
 void rfnoc_block_impl::add_block_ctrl_by_port(::uhd::rfnoc::block_ctrl_base::sptr blk_ctrl, const size_t port)
 {
   std::pair<std::map<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr>::iterator, bool> ret;
-  ret = _blk_ctrls.insert(std::pair<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr>(port, blk_ctrl));
-  if (ret.second == false) {
-    std::string existing_block = _blk_ctrls[port]->get_block_id().get();
-    throw std::runtime_error(
-            str(boost::format("External port %d is already mapped to %s. Unable to map it to %s")
-                % port % existing_block % blk_ctrl->get_block_id().get()));
+  ret = _blk_ctrl_map.insert(std::pair<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr>(port, blk_ctrl));
+  if (ret.second != false) {
+    std::cout << "Mapped port " << port << " to " << blk_ctrl->get_block_id().get() << std::endl;
   }
 }
 
@@ -337,8 +337,8 @@ void rfnoc_block_impl::map_port_to_block_port(const size_t port, const size_t bl
 {
   std::pair<std::map<const size_t, const size_t>::iterator, bool> ret;
   ret = _port_map.insert(std::pair<const size_t, const size_t>(port, block_port));
-  if (ret.second == false) {
-    throw std::runtime_error(str(boost::format("External port %d is already mapped to a block port.") % port));
+  if (ret.second != false) {
+    std::cout << "Mapped external port " << port << " to " << block_port << std::endl;
   }
 }
 
@@ -350,7 +350,7 @@ void rfnoc_block_impl::map_port_to_block_port(const size_t port, const size_t bl
 
   try {
     std::cout << "getting block control for port " << port << std::endl;
-    return _blk_ctrls.at(port);
+    return _blk_ctrl_map.at(port);
   } catch (std::exception e) {
     throw std::runtime_error(str(boost::format("No block is mapped to port %d") % port));
   }
@@ -600,21 +600,32 @@ void rfnoc_block_impl::flush(size_t streamer_index)
  ********************************************************************/
 // This function means "update our local copy of what we think
 // the IO signature is based on what the RFNoC block tells us
-// TODO correctly handle multi_blocks in gr_signature
 void rfnoc_block_impl::update_rfnoc_io_signature()
 {
+
+  std::vector<::uhd::rfnoc::block_ctrl_base::sptr> sink_ctrls;
+  std::vector<::uhd::rfnoc::block_ctrl_base::sptr> source_ctrls;
+  for (::uhd::rfnoc::block_ctrl_base::sptr ctrl : _blk_ctrls) {
+    ::uhd::rfnoc::sink_block_ctrl_base::sptr base = boost::dynamic_pointer_cast<::uhd::rfnoc::sink_block_ctrl_base>(ctrl);
+    if (boost::dynamic_pointer_cast<::uhd::rfnoc::sink_block_ctrl_base>(ctrl)) {
+      sink_ctrls.push_back(ctrl);
+    }
+    if (boost::dynamic_pointer_cast<::uhd::rfnoc::source_block_ctrl_base>(ctrl)) {
+      source_ctrls.push_back(ctrl);
+    }
+  }
+
   set_signature_from_block(
       _tx.stream_args,
-      // TODO we need to pass in a list of controllers
-      get_block_ctrl< ::uhd::rfnoc::sink_block_ctrl_base >(),
+      sink_ctrls,
       _tx.itemsize, _tx.nchans, _tx.vlen,
       true
   );
+
   // Output signature / Rx:
   set_signature_from_block(
       _rx.stream_args,
-      // TODO also pass vector here.
-      get_block_ctrl< ::uhd::rfnoc::source_block_ctrl_base >(),
+      source_ctrls,
       _rx.itemsize, _rx.nchans, _rx.vlen,
       false
   );

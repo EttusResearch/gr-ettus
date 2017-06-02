@@ -55,8 +55,6 @@ namespace gr {
           const std::string &block_name,
           std::vector<int> block_select,
           std::vector<int> device_select
-          //const int block_select=-1,
-          //const int device_select=-1
       );
 
       /*********************************************************************
@@ -132,7 +130,7 @@ namespace gr {
 
       void set_arg(const std::string &key, const double val, const size_t port = 0)
       {
-          get_block_ctrl_from_port(port)->set_arg<double>(key, val, get_block_port_from_port(port));
+        get_block_ctrl_from_port(port)->set_arg<double>(key, val, get_block_port_from_port(port));
       }
 
       void set_arg(const std::string &key, const std::string &val, const size_t port = 0)
@@ -208,7 +206,8 @@ namespace gr {
        ********************************************************************/
       /*** Device and block controls ***********************/
       ::uhd::device3::sptr                _dev;
-      std::map<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr> _blk_ctrls;
+      std::vector< ::uhd::rfnoc::block_ctrl_base::sptr > _blk_ctrls;
+      std::map<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr> _blk_ctrl_map;
       std::map<const size_t, const size_t> _port_map;
       ::uhd::device_addr_t                _merged_args;
 
