@@ -123,4 +123,7 @@
     <vlen>$fft_size</vlen>
     <domain>rfnoc</domain>
   </source>
+  <doc>
+On the X3x0 the FFT block currently requires that the Ethernet MTU size be set to 8*FFT size as the FFT result must fit inside a single packet.
+  </doc>
 </block>
