@@ -71,7 +71,10 @@ class ModToolNewModule(ModTool):
         self._srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path',
                                              args.srcdir)
         if not os.path.isdir(self._srcdir):
-            raise ModToolException('Could not find rfnoc-newmod source dir')
+            raise ModToolException("Could not find rfnoc-newmod source dir. \n"
+                    "Please run: \n\n\t $ rfnocmodtool newmod [NAME] --srcdir"
+                    " {path/to/rfnoc-newmod/}\n\n"
+                    "Specifying the path where the newmod template is located.")
         self.args = args
         self._setup_scm(mode='new')
 
