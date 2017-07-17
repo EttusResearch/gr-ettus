@@ -285,6 +285,88 @@ private:
 UHD_RFNOC_BLOCK_REGISTER(${blockname}_block_ctrl,"${blockname}");
 '''
 
+# C++ file for QA
+Templates['qa_cpp'] = '''/* -*- c++ -*- */
+${str_to_fancyc_comment(license)}
+
+#include <gnuradio/attributes.h>
+#include <cppunit/TestAssert.h>
+#include "qa_${blockname}.h"
+#include <${include_dir_prefix}/${blockname}.h>
+
+namespace gr {
+  namespace ${modname} {
+
+    void
+    qa_${blockname}::t1()
+    {
+      // Put test here
+    }
+
+  } /* namespace ${modname} */
+} /* namespace gr */
+
+'''
+
+# Header file for QA
+Templates['qa_h'] = '''/* -*- c++ -*- */
+${str_to_fancyc_comment(license)}
+
+#ifndef _QA_${blockname.upper()}_H_
+#define _QA_${blockname.upper()}_H_
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestCase.h>
+
+namespace gr {
+  namespace ${modname} {
+
+    class qa_${blockname} : public CppUnit::TestCase
+    {
+    public:
+      CPPUNIT_TEST_SUITE(qa_${blockname});
+      CPPUNIT_TEST(t1);
+      CPPUNIT_TEST_SUITE_END();
+
+    private:
+      void t1();
+    };
+
+  } /* namespace ${modname} */
+} /* namespace gr */
+
+#endif /* _QA_${blockname.upper()}_H_ */
+
+'''
+
+# Python QA code TODO check this
+Templates['qa_python'] = '''#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+${str_to_python_comment(license)}
+
+
+from gnuradio import gr, gr_unittest
+from gnuradio import blocks
+import ${modname}_swig as ${modname}
+
+class qa_${blockname} (gr_unittest.TestCase):
+
+    def setUp (self):
+        self.tb = gr.top_block ()
+
+    def tearDown (self):
+        self.tb = None
+
+    def test_001_t (self):
+        # set up fg
+        self.tb.run ()
+        # check data
+
+
+if __name__ == '__main__':
+    gr_unittest.run(qa_${blockname}, "qa_${blockname}.xml")
+'''
+
 Templates['grc_xml'] = '''<?xml version="1.0"?>
 <block>
   <name>RFNoC: ${blockname}</name>
