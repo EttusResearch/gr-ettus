@@ -54,7 +54,7 @@ namespace gr {
       /*********************************************************************
        * GR Block functions
        *********************************************************************/
-      int general_work(
+      virtual int general_work(
           int noutput_items,
           gr_vector_int &ninput_items,
           gr_vector_const_void_star &input_items,
@@ -62,8 +62,8 @@ namespace gr {
        );
 
       bool check_topology(int ninputs, int noutputs);
-      bool start();
-      bool stop();
+      virtual bool start();
+      virtual bool stop();
 
       /**********************************************************************
        * Structors
@@ -156,20 +156,20 @@ namespace gr {
       /*********************************************************************
        * Workers and Helpers
        *********************************************************************/
-      void work_tx_a(
+      virtual void work_tx_a(
           gr_vector_int &ninput_items,
           gr_vector_const_void_star &input_items
       );
-      void work_tx_u(
+      virtual void work_tx_u(
           gr_vector_int &ninput_items,
           gr_vector_const_void_star &input_items
       );
 
-      int work_rx_a(
+      virtual int work_rx_a(
           int noutput_items,
           gr_vector_void_star &output_items
       );
-      void work_rx_u(
+      virtual void work_rx_u(
           int noutput_items,
           gr_vector_void_star &output_items
       );
@@ -193,7 +193,7 @@ namespace gr {
       //! Translate the RFNoC block's output signature into a GNU Radio output signature
       gr::io_signature::sptr get_rfnoc_output_signature();
 
-     private:
+     protected:
       /*********************************************************************
        * Private attributes
        ********************************************************************/
