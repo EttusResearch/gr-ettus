@@ -75,18 +75,27 @@
     <tab>RFNoC Config</tab>
   </param>
 
+  <param>
+    <name>Force Vector Length</name>
+    <key>grvlen</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
   <check>$output_rate &gt;= $input_rate</check>
   <check>$output_rate &lt;= $input_rate*512</check>
 
   <sink>
     <name>in</name>
     <type>complex</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </sink>
 
   <source>
     <name>out</name>
     <type>complex</type>
+    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
   </source>
 </block>
