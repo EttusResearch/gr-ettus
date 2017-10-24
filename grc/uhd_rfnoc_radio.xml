@@ -52,6 +52,7 @@ self.$(id).set_rx_lo_export_enabled(${lo_export1}, "all", 1)
 #end if
 #end if
 
+self.$(id).set_clock_source(${source})
 </make>
 <callback>self.$(id).set_rate($rate)</callback>
 <callback>self.$(id).set_bandwidth($rx_bandwidth)</callback>
@@ -81,6 +82,8 @@ self.$(id).set_rx_lo_source($lo_source0, "all", 0)
 self.$(id).set_rx_lo_source($lo_source1, "all", 1)
 #end if
 </callback>
+
+<callback>self.$(id).set_clock_source(${source})</callback>
 
   <param>
     <name>Radio Select</name>
@@ -174,6 +177,25 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
     <name>Stream Args</name>
     <key>stream_args</key>
     <type>string</type>
+  </param>
+
+  <param>
+    <name>MB Clock Source</name>
+    <key>source</key>
+    <value>"internal"</value>
+    <type>string</type>
+    <option>
+      <name>Internal</name>
+      <key>"internal"</key>
+    </option>
+    <option>
+      <name>External</name>
+      <key>"external"</key>
+    </option>
+    <option>
+      <name>GPSDO</name>
+      <key>"gpsdo"</key>
+    </option>
   </param>
 
   <param>

@@ -90,6 +90,9 @@ namespace gr {
       virtual double set_rx_lo_freq(double freq, const std::string &name, const size_t chan=0) = 0;
       virtual double get_rx_lo_freq(const std::string &name, const size_t chan=0) = 0;
 
+      virtual void set_clock_source(const std::string &source) = 0;
+      virtual std::string get_clock_source() = 0;
+      
       virtual std::vector<std::string> get_gpio_banks() const = 0;
       virtual void set_gpio_attr(
           const std::string &bank,

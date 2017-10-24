@@ -75,6 +75,9 @@ namespace gr {
       double set_rx_lo_freq(double freq, const std::string &name, const size_t chan);
       double get_rx_lo_freq(const std::string &name, const size_t chan);
 
+      void set_clock_source(const std::string &source);
+      std::string get_clock_source();
+      
       std::vector<std::string> get_gpio_banks() const;
       void set_gpio_attr(
           const std::string &bank,

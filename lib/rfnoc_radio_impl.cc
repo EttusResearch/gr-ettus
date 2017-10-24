@@ -207,6 +207,16 @@ namespace gr {
         return _radio_ctrl->get_rx_lo_freq(name, chan);
     }
 
+    void rfnoc_radio_impl::set_clock_source(const std::string &source)
+    {
+      _radio_ctrl->set_clock_source(source);
+    }
+    
+    std::string rfnoc_radio_impl::get_clock_source()
+    {
+      return _radio_ctrl->get_clock_source();
+    }
+
     std::vector<std::string> rfnoc_radio_impl::get_gpio_banks() const
     {
       return _radio_ctrl->get_gpio_banks();
@@ -260,6 +270,7 @@ namespace gr {
     {
       _radio_ctrl->set_command_tick_rate(chan);
     }
+
   } /* namespace ettus */
 } /* namespace gr */
 
