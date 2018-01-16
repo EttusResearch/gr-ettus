@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Register Probe</name>
+  <key>uhd_rfnoc_register_probe</key>
+  <import>from ettus import rfnoc_register_probe</import>
+  <make>#set $logger = 'self' + ('.' + $logger_id() if $logger_id() else '')
+#set $block = 'self' + ('.' + $block_id() if $block_id() else '')
+$(logger).add_query($block, $registers)</make>
+  <param>
+    <name>RFNoC Logger ID</name>
+    <key>logger_id</key>
+    <value>rfnoc_register_logger_0</value>
+    <type>string</type>
+  </param>
+  <param>
+    <name>RFNoC Block ID</name>
+    <key>block_id</key>
+    <value>rfnoc_block_0</value>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Register List</name>
+    <key>registers</key>
+    <value>["reg0","reg1"]</value>
+  </param>
+</block>

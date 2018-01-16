@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: Register Logger</name>
+  <key>uhd_rfnoc_register_logger</key>
+  <import>from ettus import rfnoc_register_probe</import>
+  <make>rfnoc_register_probe.rfnoc_register_probe(1.0 / ($poll_rate), $enable, $csvfile, $debug)
+self.temp_$(id)_stop = self.stop
+def stop_$(id)_fcn():
+    self.$(id).shutdown()
+    self.temp_$(id)_stop()
+self.stop = stop_$(id)_fcn</make>
+  <param>
+    <name>Poll Rate (Hz)</name>
+    <key>poll_rate</key>
+    <value>1</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Filename</name>
+    <key>csvfile</key>
+    <value>"probe.csv"</value>
+  </param>
+  <param>
+    <name>Enable Logger</name>
+    <key>enable</key>
+    <value>True</value>
+    <type>bool</type>
+    <option>
+      <name>Enabled</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>Disabled</name>
+      <key>False</key>
+    </option>
+  </param>
+  <param>
+    <name>Console Output</name>
+    <key>debug</key>
+    <value>True</value>
+    <type>bool</type>
+    <option>
+      <name>Enabled</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>Disabled</name>
+      <key>False</key>
+    </option>
+  </param>
+</block>
