@@ -9,13 +9,13 @@
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="input_rate={},output_rate={},fullscale={},freq={}".format($input_rate, $output_rate, $fullscale, $freq),
+        args="input_rate={},output_rate={},fullscale={},freq={},gr_vlen={},{}".format($input_rate, $output_rate, $fullscale, $freq, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="",
+        args="gr_vlen={},{}".format(${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
     ),
     "DDC", $block_index, $device_index,
 )
