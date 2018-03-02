@@ -24,6 +24,10 @@ self.$(id).set_arg("gain", $gain)
 self.$(id).set_arg("enable", $enable)
 self.$(id).set_arg("amplitude_i",  $(amplitude).real)
 self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
+self.$(id).set_arg("start_phase", ((2 * $start_freq) / $samp_rate) )
+self.$(id).set_arg("delta_phase", ((2 * ($start_freq - $stop_freq) ) / ($sweep_width * $samp_rate * $samp_rate)) )
+self.$(id).set_arg("number_steps", ($sweep_width * $samp_rate) )
+
   </make>
   <callback>set_arg("frequency", ((2*$frequency)/$samp_rate))</callback>
   <callback>set_arg("gain", $gain)</callback>
@@ -32,11 +36,35 @@ self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
   <callback>set_arg("amplitude_q", $(amplitude).imag)</callback>
   <callback>set_arg("waveform", $waveform)</callback>
   <callback>set_arg("spp", $spp)</callback>
+  <callback>set_arg("start_phase", ((2 * $start_freq) / $samp_rate) )</callback>
+  <callback>set_arg("delta_phase", ((2 * ($start_freq - $stop_freq) ) / ($sweep_width * $samp_rate * $samp_rate)) )</callback>
+  <callback>set_arg("number_steps", ($sweep_width * $samp_rate) )</callback>
 
   <param>
     <name>Frequency</name>
     <key>frequency</key>
     <value>0.1</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Start Frequency</name>
+    <key>start_freq</key>
+    <value>1000000</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Stop Frequency</name>
+    <key>stop_freq</key>
+    <value>11000000</value>
+    <type>real</type>
+  </param>
+
+  <param>
+    <name>Sweep Width</name>
+    <key>sweep_width</key>
+    <value>0.000004</value>
     <type>real</type>
   </param>
 
@@ -97,6 +125,10 @@ self.$(id).set_arg("amplitude_q",  $(amplitude).imag)
     <option>
       <name>Noise</name>
       <key>"NOISE"</key>
+    </option>
+    <option>
+      <name>FMCW</name>
+      <key>"FMCW"</key>
     </option>
   </param>
 
