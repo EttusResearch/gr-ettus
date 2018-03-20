@@ -231,6 +231,16 @@ namespace gr {
       _radio_ctrl->set_gpio_attr(bank, attr, value, mask);
     }
 
+    void rfnoc_radio_impl::set_rx_port_chan_map(const size_t port, const size_t chan)
+    {
+      _radio_ctrl->set_rx_port_chan_map(port, chan);
+    }
+
+    void rfnoc_radio_impl::set_tx_port_chan_map(const size_t port, const size_t chan)
+    {
+      _radio_ctrl->set_tx_port_chan_map(port, chan);
+    }
+
     uint32_t rfnoc_radio_impl::get_gpio_attr(const std::string &bank, const std::string &attr)
     {
       return _radio_ctrl->get_gpio_attr(bank, attr);

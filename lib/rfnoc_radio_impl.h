@@ -97,6 +97,8 @@ namespace gr {
       void set_command_time(const uhd::time_spec_t &time, const size_t chan);
       void clear_command_time(const size_t chan);
 
+      void set_rx_port_chan_map(const size_t port, const size_t chan);
+      void set_tx_port_chan_map(const size_t port, const size_t chan);
      private:
       ::uhd::rfnoc::radio_ctrl::sptr _radio_ctrl;
 

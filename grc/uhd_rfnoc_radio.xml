@@ -27,10 +27,11 @@
     $radio_index, $device_index
 )
 self.$(id).set_rate($rate)
-for i in xrange($num_channels):
+for idx, i in enumerate($channel_map):
     self.$(id).set_${direction}_freq($freq, i)
     self.$(id).set_${direction}_gain($gain, i)
     self.$(id).set_${direction}_dc_offset($dcenable, i)
+    self.$(id).set_${direction}_port_chan_map(idx, i)
 #if (str($direction()) == "rx")
 
 self.$(id).set_rx_bandwidth($rx_bandwidth0, 0)
@@ -56,9 +57,9 @@ self.$(id).set_clock_source(${source})
 </make>
 <callback>self.$(id).set_rate($rate)</callback>
 <callback>self.$(id).set_bandwidth($rx_bandwidth)</callback>
-<callback>for i in xrange($num_channels):
+<callback>for i in $channel_map:
     self.$(id).set_${direction}_freq($freq, i)</callback>
-<callback>for i in xrange($num_channels):
+<callback>for i in $channel_map:
     self.$(id).set_${direction}_gain($gain, i)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant0)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant1)</callback>
@@ -112,6 +113,13 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
       <name>1 Channel</name>
       <key>1</key>
     </option>
+  </param>
+
+  <param>
+    <name>Channel Map</name>
+    <key>channel_map</key>
+    <value>[0]</value>
+    <type>int_vector</type>
   </param>
 
   <param>
@@ -440,6 +448,8 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
      </option>
      <tab>Advanced</tab>
   </param>
+
+  <check>$num_channels == len($channel_map)</check>
 
   <sink>
     <name>in</name>
