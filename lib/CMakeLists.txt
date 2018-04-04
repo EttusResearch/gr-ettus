@@ -41,6 +41,8 @@ list(APPEND ettus_sources
     rfnoc_radio_impl.cc
     rfnoc_generic_impl.cc
     rfnoc_fosphor_c_impl.cc
+    rfnoc_pdu_tx_impl.cc
+    rfnoc_pdu_rx_impl.cc
 )
 
 if(ENABLE_QT)

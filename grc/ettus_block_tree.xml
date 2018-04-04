@@ -35,6 +35,8 @@
 			<block>uhd_rfnoc_streamer_siggen</block>
 			<block>uhd_rfnoc_streamer_dma_fifo</block>
 			<block>uhd_rfnoc_digital_gain</block>
+			<block>uhd_rfnoc_pdu_rx</block>
+			<block>uhd_rfnoc_pdu_tx</block>
 		</cat>
 	</cat>
 </cat>
