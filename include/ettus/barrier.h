@@ -22,7 +22,7 @@
 #define INCLUDED_UHD_BARRIER_H
 
 #include <ettus/api.h>
-#include <uhd/utils/atomic.hpp>
+#include <uhd/config.h>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>

@@ -37,6 +37,8 @@
 			<block>uhd_rfnoc_digital_gain</block>
 			<block>uhd_rfnoc_pdu_rx</block>
 			<block>uhd_rfnoc_pdu_tx</block>
+			<block>uhd_rfnoc_register_logger</block>
+			<block>uhd_rfnoc_register_probe</block>
 		</cat>
 	</cat>
 </cat>
