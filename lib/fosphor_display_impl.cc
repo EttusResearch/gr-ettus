@@ -223,7 +223,7 @@ namespace gr {
         return 0;
 
       /* Grab all tags available, we'll need them either way */
-      get_tags_in_range(v, port, nR, nR + n_items);
+      get_tags_in_range(v, port, nR, nR + n_items, EOB_KEY);
 
       /* If not aligned we just search for EOF */
       if (!this->d_aligned) {
