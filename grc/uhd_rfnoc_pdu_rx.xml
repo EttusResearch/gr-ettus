@@ -9,12 +9,12 @@
     uhd.stream_args( \# Tx Stream Args
         cpu_format="$type",
         otw_format="$otw_format",
-	args=""
+        args=""
     ),
     uhd.stream_args( \# Rx Stream Args
         cpu_format="$type",
         otw_format="$otw_format",
-        args=${stream_args}
+        args=""
     ),
     "FIFO",
     $block_index, $device_index, $mtu)
