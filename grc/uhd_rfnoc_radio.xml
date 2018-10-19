@@ -456,7 +456,7 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
   </param>
 
   <param>
-    <name>DC Offset Cancellation</name>
+    <name>Ch1: DC Offset Cancellation</name>
     <key>dcenable1</key>
     <type>enum</type>
     <hide>
