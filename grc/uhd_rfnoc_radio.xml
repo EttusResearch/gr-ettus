@@ -9,30 +9,36 @@
     uhd.stream_args( \# Tx Stream Args
         cpu_format="$cpu_format",
         otw_format="$otw_format",
-	#if str($direction) == "tx"
-	args=${stream_args},
-	#else
+  #if str($direction) == "tx"
+  args=${stream_args},
+  #else
         args="", \# empty
-	#end if
+  #end if
     ),
     uhd.stream_args( \# Rx Stream Args
         cpu_format="$cpu_format",
         otw_format="$otw_format",
-	#if str($direction) == "rx"
-	args=${stream_args},
-	#else
+  #if str($direction) == "rx"
+  args=${stream_args},
+  #else
         args="", \# empty
-	#end if
+  #end if
     ),
     $radio_index, $device_index
 )
 self.$(id).set_rate($rate)
-for i in xrange($num_channels):
-    self.$(id).set_${direction}_freq($freq, i)
-    self.$(id).set_${direction}_gain($gain, i)
-    self.$(id).set_${direction}_dc_offset($dcenable, i)
-#if (str($direction()) == "rx")
 
+self.$(id).set_${direction}_freq($freq0, 0)
+self.$(id).set_${direction}_gain($gain0, 0)
+self.$(id).set_${direction}_dc_offset($dcenable0, 0)
+
+#if ($num_channels() > 1)
+self.$(id).set_${direction}_freq($freq1, 1)
+self.$(id).set_${direction}_gain($gain1, 1)
+self.$(id).set_${direction}_dc_offset($dcenable1, 1)
+#end if
+
+#if (str($direction()) == "rx")
 self.$(id).set_rx_bandwidth($rx_bandwidth0, 0)
 #else if ($num_channels() > 1):
 self.$(id).set_rx_bandwidth($rx_bandwidth1, 1)
@@ -56,10 +62,18 @@ self.$(id).set_clock_source(${source})
 </make>
 <callback>self.$(id).set_rate($rate)</callback>
 <callback>self.$(id).set_bandwidth($rx_bandwidth)</callback>
-<callback>for i in xrange($num_channels):
-    self.$(id).set_${direction}_freq($freq, i)</callback>
-<callback>for i in xrange($num_channels):
-    self.$(id).set_${direction}_gain($gain, i)</callback>
+<callback>
+self.$(id).set_${direction}_freq($freq0, 0)
+#if $num_channels() > 1
+self.$(id).set_${direction}_freq($freq1, 1)
+#end if
+</callback>
+<callback>
+self.$(id).set_${direction}_gain($gain0, 0)
+#if $num_channels() > 1
+self.$(id).set_${direction}_gain($gain1, 1)
+#end if
+</callback>
 <callback>self.$(id).set_${direction}_antenna($ant0)</callback>
 <callback>self.$(id).set_${direction}_antenna($ant1)</callback>
 <callback>
@@ -197,14 +211,7 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
       <key>"gpsdo"</key>
     </option>
   </param>
-
-  <param>
-    <name>Center Frequency</name>
-    <key>freq</key>
-    <value>1.982e9</value>
-    <type>real</type>
-    <tab>RF Options</tab>
-  </param>
+  
   <param>
     <name>Sampling Rate</name>
     <key>rate</key>
@@ -212,11 +219,29 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
     <type>real</type>
     <tab>RF Options</tab>
   </param>
+
   <param>
-    <name>Gain</name>
-    <key>gain</key>
+    <name>Ch0: Center Frequency</name>
+    <key>freq0</key>
+    <value>1.982e9</value>
+    <type>real</type>
+    <hide>
+      #if not $num_channels() >= 1
+        all
+      #end if
+    </hide>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>Ch0: Gain</name>
+    <key>gain0</key>
     <value>20</value>
     <type>real</type>
+    <hide>
+      #if not $num_channels() >= 1
+        all
+      #end if
+    </hide>
     <tab>RF Options</tab>
   </param>
   <param>
@@ -301,7 +326,45 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
     <type>real</type>
     <tab>RF Options</tab>
   </param>
+  <param>
+    <name>Ch0: DC Offset Cancellation</name>
+    <key>dcenable0</key>
+    <type>enum</type>
+    <option>
+      <name>enabled</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>disabled</name>
+      <key>False</key>
+    </option>
+    <tab>RF Options</tab>
+  </param>
 
+  <param>
+    <name>Ch1: Center Frequency</name>
+    <key>freq1</key>
+    <value>1.982e9</value>
+    <type>real</type>
+    <hide>
+      #if not $num_channels() >= 2
+      all
+      #end if
+    </hide>
+    <tab>RF Options</tab>
+  </param>
+  <param>
+    <name>Ch1: Gain</name>
+    <key>gain1</key>
+    <value>20</value>
+    <type>real</type>
+    <hide>
+      #if not $num_channels() >= 2
+      all
+      #end if
+    </hide>
+    <tab>RF Options</tab>
+  </param>
   <param>
     <name>Ch1: Antenna</name>
     <key>ant1</key>
@@ -394,8 +457,13 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
 
   <param>
     <name>DC Offset Cancellation</name>
-    <key>dcenable</key>
+    <key>dcenable1</key>
     <type>enum</type>
+    <hide>
+      #if not $num_channels() >= 2
+      all
+      #end if
+    </hide>
     <option>
       <name>enabled</name>
       <key>True</key>
