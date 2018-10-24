@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<block>
+  <name>RFNoC: DUCDDC</name>
+  <key>uhd_rfnoc_streamer_ducddc</key>
+  <import>import ettus</import>
+  <make>ettus.rfnoc_generic(
+    self.device3,
+    uhd.stream_args( \# TX Stream Args
+        cpu_format="$type",
+        otw_format="$otw",
+        args="input_rate={},output_rate={},fullscale={}".format($input_rate, $output_rate, $fullscale),
+    ),
+    uhd.stream_args( \# RX Stream Args
+        cpu_format="$type",
+        otw_format="$otw",
+        args="",
+    ),
+    "DUCDDC", $block_index, $device_index,
+)
+for chan in xrange($num_chans):
+    self.$(id).set_arg("interp", float($interp), chan)
+    self.$(id).set_arg("decim", float($decim), chan)
+    self.$(id).set_arg("input_rate", float($input_rate), chan)
+    self.$(id).set_arg("output_rate", float($output_rate), chan)
+</make>
+  <callback>set_arg("interp", float($interp))</callback>
+  <callback>set_arg("decim", float($decim))</callback>
+  <callback>set_arg("input_rate", float($input_rate))</callback>
+  <callback>set_arg("output_rate", float($output_rate))</callback>
+
+  <param>
+    <name>Num Channels</name>
+    <key>num_chans</key>
+    <value>1</value>
+    <type>int</type>
+    <option>
+      <name>1</name>
+      <key>1</key>
+    </option>
+    <option>
+      <name>2</name>
+      <key>2</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Input Rate</name>
+    <key>input_rate</key>
+    <value>samp_rate</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Output Rate</name>
+    <key>output_rate</key>
+    <value>samp_rate</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Interpolation</name>
+    <key>interp</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Decimation</name>
+    <key>decim</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Full scale</name>
+    <key>fullscale</key>
+    <value>1.0</value>
+    <type>real</type>
+    <hide>part</hide>
+    <tab>Advanced</tab>
+  </param>
+
+  <param>
+    <name>Host Data Type</name>
+    <key>type</key>
+    <type>enum</type>
+    <option>
+      <name>Complex float32</name>
+      <key>fc32</key>
+      <opt>type:complex</opt>
+    </option>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+      <opt>type:sc16</opt>
+    </option>
+  </param>
+
+  <param>
+    <name>Device Format</name>
+    <key>otw</key>
+    <type>enum</type>
+    <option>
+      <name>Complex int16</name>
+      <key>sc16</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Block Select</name>
+    <key>block_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+  <param>
+    <name>Device Select</name>
+    <key>device_index</key>
+    <value>-1</value>
+    <type>int</type>
+    <hide>#if int($device_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+    <name>FPGA Module Name</name>
+    <key>fpga_module_name</key>
+    <value>noc_block_duc</value>
+    <type>string</type>
+    <hide>all</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+
+  <param>
+    <name>Force Vector Length</name>
+    <key>grvlen</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
+  <check>$output_rate == $input_rate*$interp/$decim</check>
+
+  <sink>
+    <name>in</name>
+    <type>$type.type</type>
+    <vlen>$grvlen</vlen>
+    <domain>rfnoc</domain>
+    <nports>$num_chans</nports>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>$type.type</type>
+    <vlen>$grvlen</vlen>
+    <domain>rfnoc</domain>
+    <nports>$num_chans</nports>
+  </source>
+</block>
