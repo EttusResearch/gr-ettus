@@ -40,8 +40,9 @@ self.$(id).set_${direction}_dc_offset($dcenable1, 1)
 
 #if (str($direction()) == "rx")
 self.$(id).set_rx_bandwidth($rx_bandwidth0, 0)
-#else if ($num_channels() > 1):
+#if ($num_channels() > 1):
 self.$(id).set_rx_bandwidth($rx_bandwidth1, 1)
+#end if
 #end if
 
 self.$(id).set_${direction}_antenna($ant0, 0)
