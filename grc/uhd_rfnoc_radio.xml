@@ -247,7 +247,8 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
   <param>
     <name>Ch0: Antenna</name>
     <key>ant0</key>
-    <type>enum</type>
+    <value></value>
+    <type>string</type>
     <hide>
       #if not $num_channels() >= 1
         all
@@ -368,7 +369,8 @@ self.$(id).set_rx_lo_source($lo_source1, "all", 1)
   <param>
     <name>Ch1: Antenna</name>
     <key>ant1</key>
-    <type>enum</type>
+    <value></value>
+    <type>string</type>
     <hide>
       #if not $num_channels() >= 2
       all
