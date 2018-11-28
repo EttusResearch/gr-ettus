@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.11'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Fri Nov  7 10:40:33 2014</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -93,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1112, 4)</value>
+      <value>(1104, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -120,7 +128,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1112, 68)</value>
+      <value>(1104, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -147,7 +155,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1112, 132)</value>
+      <value>(1104, 132)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -178,7 +186,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(976, 4)</value>
+      <value>(968, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -304,7 +312,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 4)</value>
+      <value>(824, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -395,15 +403,15 @@
     </param>
     <param>
       <key>start</key>
-      <value>900e6</value>
+      <value>40e6</value>
     </param>
     <param>
       <key>step</key>
-      <value>0.1e6</value>
+      <value>100e6</value>
     </param>
     <param>
       <key>stop</key>
-      <value>1e9</value>
+      <value>6e9</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -551,7 +559,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 4)</value>
+      <value>(680, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -685,7 +693,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 324)</value>
+      <value>(8, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -748,7 +756,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(40, 204)</value>
+      <value>(8, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -803,7 +811,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(240, 320)</value>
+      <value>(256, 224)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -858,7 +866,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 356)</value>
+      <value>(936, 356)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -909,7 +917,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(272, 236)</value>
+      <value>(336, 236)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -942,6 +950,37 @@
     <param>
       <key>vlen</key>
       <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>note</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(280, 356)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>note_0</value>
+    </param>
+    <param>
+      <key>note</key>
+      <value>Select input</value>
     </param>
   </block>
   <block>
@@ -992,7 +1031,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1064, 340)</value>
+      <value>(1112, 340)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1279,7 +1318,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1072, 236)</value>
+      <value>(1112, 236)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1558,6 +1597,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -1607,6 +1650,69 @@
     </param>
   </block>
   <block>
+    <key>uhd_rfnoc_split_stream</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>otw</key>
+      <value>sc16</value>
+    </param>
+    <param>
+      <key>device_index</key>
+      <value>-1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_split_stream</value>
+    </param>
+    <param>
+      <key>grvlen</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(488, 464)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>fc32</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>uhd_rfnoc_split_stream_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>block_index</key>
+      <value>-1</value>
+    </param>
+  </block>
+  <block>
     <key>uhd_rfnoc_streamer_ddc</key>
     <param>
       <key>alias</key>
@@ -1637,6 +1743,10 @@
       <value>noc_block_ddc</value>
     </param>
     <param>
+      <key>grvlen</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>freq</key>
       <value>0.0</value>
     </param>
@@ -1646,7 +1756,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(248, 508)</value>
+      <value>(280, 460)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1705,7 +1815,7 @@
     </param>
     <param>
       <key>block_index</key>
-      <value>0</value>
+      <value>-1</value>
     </param>
     <param>
       <key>fpga_module_name</key>
@@ -1717,7 +1827,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 348)</value>
+      <value>(512, 356)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1776,7 +1886,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(696, 356)</value>
+      <value>(752, 356)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1798,16 +1908,64 @@
   <block>
     <key>uhd_rfnoc_streamer_radio</key>
     <param>
-      <key>ant</key>
-      <value>"TX/RX"</value>
-    </param>
-    <param>
       <key>alias</key>
       <value></value>
     </param>
     <param>
-      <key>freq</key>
+      <key>rx_bandwidth0</key>
+      <value>56e6</value>
+    </param>
+    <param>
+      <key>ant0</key>
+      <value>"TX/RX"</value>
+    </param>
+    <param>
+      <key>freq0</key>
       <value>rx_freq</value>
+    </param>
+    <param>
+      <key>dcenable0</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain0</key>
+      <value>rx_gain</value>
+    </param>
+    <param>
+      <key>lo_export0</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>lo_source0</key>
+      <value>"internal"</value>
+    </param>
+    <param>
+      <key>rx_bandwidth1</key>
+      <value>56e6</value>
+    </param>
+    <param>
+      <key>ant1</key>
+      <value>"TX/RX"</value>
+    </param>
+    <param>
+      <key>freq1</key>
+      <value>1.982e9</value>
+    </param>
+    <param>
+      <key>dcenable1</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain1</key>
+      <value>20</value>
+    </param>
+    <param>
+      <key>lo_export1</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>lo_source1</key>
+      <value>"internal"</value>
     </param>
     <param>
       <key>comment</key>
@@ -1816,10 +1974,6 @@
     <param>
       <key>affinity</key>
       <value></value>
-    </param>
-    <param>
-      <key>dcenable</key>
-      <value>True</value>
     </param>
     <param>
       <key>otw_format</key>
@@ -1839,15 +1993,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 468)</value>
+      <value>(8, 404)</value>
     </param>
     <param>
       <key>_rotation</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>gain</key>
-      <value>rx_gain</value>
     </param>
     <param>
       <key>cpu_format</key>
@@ -1856,6 +2006,10 @@
     <param>
       <key>id</key>
       <value>uhd_rfnoc_streamer_radio_0</value>
+    </param>
+    <param>
+      <key>source</key>
+      <value>"internal"</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1879,7 +2033,11 @@
     </param>
     <param>
       <key>rate</key>
-      <value>samp_rate</value>
+      <value>master_clock_rate</value>
+    </param>
+    <param>
+      <key>hide_lo_controls</key>
+      <value>True</value>
     </param>
     <param>
       <key>stream_args</key>
@@ -1929,8 +2087,20 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>uhd_rfnoc_streamer_ddc_0</source_block_id>
+    <source_block_id>uhd_rfnoc_split_stream_0</source_block_id>
+    <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_split_stream_0</source_block_id>
     <sink_block_id>uhd_rfnoc_streamer_fifo_0</sink_block_id>
+    <source_key>1</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>uhd_rfnoc_streamer_ddc_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_split_stream_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.12'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Tue Nov 11 15:11:07 2014</timestamp>
   <block>
@@ -101,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1096, 4)</value>
+      <value>(1104, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -128,7 +128,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1096, 68)</value>
+      <value>(1104, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -159,7 +159,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(960, 4)</value>
+      <value>(968, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -277,7 +277,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>920e6</value>
+      <value>2240e6</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -313,15 +313,15 @@
     </param>
     <param>
       <key>start</key>
-      <value>900e6</value>
+      <value>40e6</value>
     </param>
     <param>
       <key>step</key>
-      <value>1e6</value>
+      <value>10e6</value>
     </param>
     <param>
       <key>stop</key>
-      <value>1e9</value>
+      <value>6e9</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -411,7 +411,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(848, 4)</value>
+      <value>(856, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -639,7 +639,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 272)</value>
+      <value>(112, 324)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -702,7 +702,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(56, 168)</value>
+      <value>(112, 212)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -757,7 +757,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(296, 200)</value>
+      <value>(336, 248)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -832,7 +832,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(592, 196)</value>
+      <value>(648, 244)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -883,7 +883,7 @@
     </param>
     <param>
       <key>block_index</key>
-      <value>0</value>
+      <value>-1</value>
     </param>
     <param>
       <key>fpga_module_name</key>
@@ -895,7 +895,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(400, 204)</value>
+      <value>(448, 260)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -921,16 +921,24 @@
       <value></value>
     </param>
     <param>
-      <key>freq</key>
-      <value>tx_freq</value>
-    </param>
-    <param>
       <key>rx_bandwidth0</key>
       <value>56e6</value>
     </param>
     <param>
       <key>ant0</key>
       <value>"TX/RX"</value>
+    </param>
+    <param>
+      <key>freq0</key>
+      <value>tx_freq</value>
+    </param>
+    <param>
+      <key>dcenable0</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain0</key>
+      <value>tx_gain</value>
     </param>
     <param>
       <key>lo_export0</key>
@@ -949,6 +957,18 @@
       <value>"TX/RX"</value>
     </param>
     <param>
+      <key>freq1</key>
+      <value>1.982e9</value>
+    </param>
+    <param>
+      <key>dcenable1</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain1</key>
+      <value>20</value>
+    </param>
+    <param>
       <key>lo_export1</key>
       <value>False</value>
     </param>
@@ -963,10 +983,6 @@
     <param>
       <key>affinity</key>
       <value></value>
-    </param>
-    <param>
-      <key>dcenable</key>
-      <value>True</value>
     </param>
     <param>
       <key>otw_format</key>
@@ -986,15 +1002,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(800, 148)</value>
+      <value>(856, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>gain</key>
-      <value>20</value>
     </param>
     <param>
       <key>cpu_format</key>

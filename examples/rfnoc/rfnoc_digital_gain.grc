@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Wed May 11 16:01:17 2016</timestamp>
   <block>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 8)</value>
+      <value>(8, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -396,7 +404,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1096, 3)</value>
+      <value>(944, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -455,7 +463,34 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 76)</value>
+      <value>(8, 132)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>points</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1024</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -467,7 +502,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>10e6</value>
+      <value>1e6</value>
     </param>
   </block>
   <block>
@@ -517,7 +552,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 4)</value>
+      <value>(1072, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -620,7 +655,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(592, 251)</value>
+      <value>(432, 308)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -662,6 +697,10 @@
       <value>False</value>
     </param>
     <param>
+      <key>axislabels</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -679,7 +718,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 411)</value>
+      <value>(688, 452)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -951,7 +990,7 @@
     </param>
     <param>
       <key>size</key>
-      <value>1024</value>
+      <value>points</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -1009,6 +1048,10 @@
       <value>1.0</value>
     </param>
     <param>
+      <key>axislabels</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>bw</key>
       <value>samp_rate</value>
     </param>
@@ -1038,11 +1081,11 @@
     </param>
     <param>
       <key>fftsize</key>
-      <value>1024</value>
+      <value>points</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 323)</value>
+      <value>(688, 372)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1277,6 +1320,10 @@
       <value>firdes.WIN_BLACKMAN_hARRIS</value>
     </param>
     <param>
+      <key>label</key>
+      <value>Relative Gain</value>
+    </param>
+    <param>
       <key>ymax</key>
       <value>10</value>
     </param>
@@ -1284,12 +1331,20 @@
       <key>ymin</key>
       <value>-140</value>
     </param>
+    <param>
+      <key>units</key>
+      <value>dB</value>
+    </param>
   </block>
   <block>
     <key>qtgui_time_sink_x</key>
     <param>
       <key>autoscale</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>axislabels</key>
+      <value>True</value>
     </param>
     <param>
       <key>alias</key>
@@ -1317,7 +1372,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 235)</value>
+      <value>(688, 292)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1589,11 +1644,15 @@
     </param>
     <param>
       <key>size</key>
-      <value>1024</value>
+      <value>points</value>
     </param>
     <param>
       <key>srate</key>
       <value>samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -1671,12 +1730,16 @@
       <value>True</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_digital_gain</value>
+    </param>
+    <param>
       <key>grvlen</key>
       <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 251)</value>
+      <value>(216, 308)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1730,12 +1793,16 @@
       <value>True</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_siggen</value>
+    </param>
+    <param>
       <key>frequency</key>
       <value>freq</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(128, 204)</value>
+      <value>(8, 260)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1759,7 +1826,7 @@
     </param>
     <param>
       <key>spp</key>
-      <value>364</value>
+      <value>points</value>
     </param>
     <param>
       <key>samp_rate</key>

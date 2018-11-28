@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Thu Oct 20 11:06:29 2016</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -179,7 +187,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 116)</value>
+      <value>(1104, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -218,7 +226,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 4)</value>
+      <value>(0, 148)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -249,7 +257,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(848, 8)</value>
+      <value>(848, 4)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -294,33 +302,6 @@
     <param>
       <key>widget</key>
       <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(168, 68)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>50e6</value>
     </param>
   </block>
   <block>
@@ -603,7 +584,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(24, 292)</value>
+      <value>(24, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -662,7 +643,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(208, 512)</value>
+      <value>(208, 520)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -713,7 +694,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(248, 412)</value>
+      <value>(248, 436)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -756,7 +737,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(0, 148)</value>
+      <value>(168, 4)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -787,7 +768,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(80, 148)</value>
+      <value>(168, 52)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -830,7 +811,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 572)</value>
+      <value>(888, 580)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1061,7 +1042,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 660)</value>
+      <value>(888, 668)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -2216,7 +2197,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 484)</value>
+      <value>(888, 492)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -3427,6 +3408,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -3788,6 +3773,10 @@
     <param>
       <key>srate</key>
       <value>samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -4153,6 +4142,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -4514,6 +4507,10 @@
     <param>
       <key>srate</key>
       <value>samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -4879,6 +4876,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -4963,7 +4964,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1104, 484)</value>
+      <value>(1104, 492)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -5240,6 +5241,10 @@
     <param>
       <key>srate</key>
       <value>samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -5605,6 +5610,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -5966,6 +5975,10 @@
     <param>
       <key>srate</key>
       <value>samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -6331,6 +6344,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -6694,6 +6711,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -6782,7 +6803,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 308)</value>
+      <value>(464, 332)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -6861,7 +6882,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(200, 308)</value>
+      <value>(200, 332)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -6919,6 +6940,10 @@
       <value>noc_block_duc</value>
     </param>
     <param>
+      <key>grvlen</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>freq</key>
       <value>0.0</value>
     </param>
@@ -6928,7 +6953,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 292)</value>
+      <value>(688, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -6995,7 +7020,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 412)</value>
+      <value>(464, 436)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -7021,16 +7046,64 @@
   <block>
     <key>uhd_rfnoc_streamer_radio</key>
     <param>
-      <key>ant</key>
-      <value>"TX/RX"</value>
-    </param>
-    <param>
       <key>alias</key>
       <value></value>
     </param>
     <param>
-      <key>freq</key>
+      <key>rx_bandwidth0</key>
+      <value>56e6</value>
+    </param>
+    <param>
+      <key>ant0</key>
+      <value>"TX/RX"</value>
+    </param>
+    <param>
+      <key>freq0</key>
       <value>tx_freq</value>
+    </param>
+    <param>
+      <key>dcenable0</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain0</key>
+      <value>tx_gain</value>
+    </param>
+    <param>
+      <key>lo_export0</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>lo_source0</key>
+      <value>"internal"</value>
+    </param>
+    <param>
+      <key>rx_bandwidth1</key>
+      <value>56e6</value>
+    </param>
+    <param>
+      <key>ant1</key>
+      <value>"TX/RX"</value>
+    </param>
+    <param>
+      <key>freq1</key>
+      <value>1.982e9</value>
+    </param>
+    <param>
+      <key>dcenable1</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>gain1</key>
+      <value>20</value>
+    </param>
+    <param>
+      <key>lo_export1</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>lo_source1</key>
+      <value>"internal"</value>
     </param>
     <param>
       <key>comment</key>
@@ -7039,10 +7112,6 @@
     <param>
       <key>affinity</key>
       <value></value>
-    </param>
-    <param>
-      <key>dcenable</key>
-      <value>True</value>
     </param>
     <param>
       <key>otw_format</key>
@@ -7069,16 +7138,16 @@
       <value>0</value>
     </param>
     <param>
-      <key>gain</key>
-      <value>tx_gain</value>
-    </param>
-    <param>
       <key>cpu_format</key>
       <value>fc32</value>
     </param>
     <param>
       <key>id</key>
       <value>uhd_rfnoc_streamer_radio_0</value>
+    </param>
+    <param>
+      <key>source</key>
+      <value>"internal"</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -7103,6 +7172,10 @@
     <param>
       <key>rate</key>
       <value>master_clock_rate</value>
+    </param>
+    <param>
+      <key>hide_lo_controls</key>
+      <value>True</value>
     </param>
     <param>
       <key>stream_args</key>
