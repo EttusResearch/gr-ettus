@@ -211,7 +211,7 @@
     </param>
   </block>
   <block>
-    <key>blocks_throttle</key>
+    <key>blocks_complex_to_real</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -230,7 +230,93 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(304, 212)</value>
+      <value>(488, 328)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_complex_to_real_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_float_to_complex</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>z2 = x + ix</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(680, 328)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_float_to_complex_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_throttle</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>z = x + iy</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(312, 212)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -321,7 +407,7 @@
     </param>
     <param>
       <key>vector</key>
-      <value>numpy.array([0, 1., 2., 3.])  / 32768</value>
+      <value>numpy.array([0, 1., 2., 3.])  / 4</value>
     </param>
   </block>
   <block>
@@ -371,7 +457,12 @@
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>1a) Re(z) = x
+1b) Im(z) = y
+2a) Re(z) + Re(z2) = x + x
+2b) Im(z) + Im(z2) = y + x
+3a) Re(z) - Re(z2) = x - x
+3b) Im(z) - Im(z2) = y - x</value>
     </param>
     <param>
       <key>ctrlpanel</key>
@@ -391,7 +482,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(752, 216)</value>
+      <value>(1112, 216)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -734,7 +825,9 @@
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Calculating
+sum = z + z2
+diff = z - z2</value>
     </param>
     <param>
       <key>affinity</key>
@@ -754,7 +847,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(512, 248)</value>
+      <value>(880, 248)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -784,6 +877,30 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_complex_to_real_0</source_block_id>
+    <sink_block_id>blocks_float_to_complex_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_complex_to_real_0</source_block_id>
+    <sink_block_id>blocks_float_to_complex_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_float_to_complex_0</source_block_id>
+    <sink_block_id>uhd_rfnoc_streamer_adder_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_throttle_0</source_block_id>
+    <sink_block_id>blocks_complex_to_real_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_throttle_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
     <source_key>0</source_key>
@@ -794,12 +911,6 @@
     <sink_block_id>uhd_rfnoc_streamer_adder_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_streamer_adder_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
   </connection>
   <connection>
     <source_block_id>blocks_vector_source_x_0</source_block_id>
