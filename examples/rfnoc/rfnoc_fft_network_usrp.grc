@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Wed Nov 26 11:33:34 2014</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -93,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(504, 75)</value>
+      <value>(832, 140)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -551,7 +559,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(280, 304)</value>
+      <value>(256, 304)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -602,7 +610,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(576, 316)</value>
+      <value>(528, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -653,7 +661,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(384, 316)</value>
+      <value>(352, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -726,6 +734,10 @@
       <value></value>
     </param>
     <param>
+      <key>block_index</key>
+      <value>-1</value>
+    </param>
+    <param>
       <key>comment</key>
       <value></value>
     </param>
@@ -746,16 +758,24 @@
       <value>"MAGNITUDE"</value>
     </param>
     <param>
-      <key>block_index</key>
-      <value>0</value>
+      <key>scaling</key>
+      <value>1706</value>
     </param>
     <param>
       <key>fft_size</key>
       <value>num_points</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_fft</value>
+    </param>
+    <param>
+      <key>direction</key>
+      <value>"forward"</value>
+    </param>
+    <param>
       <key>_coordinate</key>
-      <value>(960, 300)</value>
+      <value>(856, 284)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -772,6 +792,10 @@
     <param>
       <key>minoutbuf</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>shift</key>
+      <value>"normal"</value>
     </param>
   </block>
   <block>
@@ -801,8 +825,12 @@
       <value>1</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_window</value>
+    </param>
+    <param>
       <key>_coordinate</key>
-      <value>(768, 316)</value>
+      <value>(688, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -884,11 +912,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(960, 428)</value>
+      <value>(1072, 292)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>hwm</key>

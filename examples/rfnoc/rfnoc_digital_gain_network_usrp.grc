@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Wed May 25 12:53:40 2016</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -232,7 +240,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(736, 84)</value>
+      <value>(1016, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -437,6 +445,10 @@
       <value>True</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_digital_gain</value>
+    </param>
+    <param>
       <key>grvlen</key>
       <value>1</value>
     </param>
@@ -494,6 +506,10 @@
     <param>
       <key>_enabled</key>
       <value>True</value>
+    </param>
+    <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_siggen</value>
     </param>
     <param>
       <key>frequency</key>

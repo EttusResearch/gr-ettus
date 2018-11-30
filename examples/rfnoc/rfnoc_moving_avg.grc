@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Fri Aug 21 16:54:12 2015</timestamp>
   <block>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 8)</value>
+      <value>(8, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -97,7 +105,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 139)</value>
+      <value>(8, 140)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -167,7 +175,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(184, 11)</value>
+      <value>(176, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -198,7 +206,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>freq</key>
@@ -206,7 +214,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(128, 379)</value>
+      <value>(8, 388)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -261,7 +269,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(752, 371)</value>
+      <value>(608, 396)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -270,6 +278,10 @@
     <param>
       <key>id</key>
       <value>blocks_moving_average_xx_0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
     </param>
     <param>
       <key>length</key>
@@ -316,7 +328,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(344, 299)</value>
+      <value>(248, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -371,7 +383,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(112, 283)</value>
+      <value>(8, 284)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -442,7 +454,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(528, 267)</value>
+      <value>(408, 268)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -471,73 +483,6 @@
     <param>
       <key>taps</key>
       <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>qtgui_edit_box_msg</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(448, 60)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>qtgui_edit_box_msg_0</value>
-    </param>
-    <param>
-      <key>key</key>
-      <value>length</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Avg. Length</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>is_pair</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>is_static</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>int</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>avg_length</value>
     </param>
   </block>
   <block>
@@ -576,7 +521,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1064, 67)</value>
+      <value>(1056, 292)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -855,6 +800,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -939,7 +888,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 363)</value>
+      <value>(1056, 388)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1218,6 +1167,10 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>stemplot</key>
+      <value>False</value>
+    </param>
+    <param>
       <key>tr_chan</key>
       <value>0</value>
     </param>
@@ -1297,12 +1250,16 @@
       <value>-1</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_axi_fifo_loopback</value>
+    </param>
+    <param>
       <key>grvlen</key>
       <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(976, 219)</value>
+      <value>(816, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1356,8 +1313,12 @@
       <value>1</value>
     </param>
     <param>
+      <key>fpga_module_name</key>
+      <value>noc_block_moving_avg</value>
+    </param>
+    <param>
       <key>_coordinate</key>
-      <value>(752, 219)</value>
+      <value>(608, 304)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1411,12 +1372,6 @@
     <sink_block_id>uhd_rfnoc_streamer_moving_avg_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>qtgui_edit_box_msg_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_streamer_moving_avg_0</sink_block_id>
-    <source_key>msg</source_key>
-    <sink_key>rfnoc</sink_key>
   </connection>
   <connection>
     <source_block_id>uhd_rfnoc_streamer_fifo_0</source_block_id>

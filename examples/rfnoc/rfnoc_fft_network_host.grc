@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.10'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Wed Nov 26 11:36:02 2014</timestamp>
   <block>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(10, 10)</value>
+      <value>(8, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -93,7 +101,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 12)</value>
+      <value>(920, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -120,7 +128,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 76)</value>
+      <value>(920, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -147,7 +155,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(824, 140)</value>
+      <value>(920, 140)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -205,7 +213,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(480, 12)</value>
+      <value>(576, 108)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -264,7 +272,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 139)</value>
+      <value>(8, 140)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -291,7 +299,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 75)</value>
+      <value>(8, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -322,7 +330,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(328, 12)</value>
+      <value>(424, 108)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -385,7 +393,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(184, 12)</value>
+      <value>(280, 108)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -448,7 +456,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 12)</value>
+      <value>(728, 108)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -641,7 +649,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(104, 76)</value>
+      <value>(176, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -951,7 +959,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(184, 140)</value>
+      <value>(280, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -994,7 +1002,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(328, 140)</value>
+      <value>(424, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1037,7 +1045,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(480, 140)</value>
+      <value>(576, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1080,7 +1088,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 188)</value>
+      <value>(728, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
