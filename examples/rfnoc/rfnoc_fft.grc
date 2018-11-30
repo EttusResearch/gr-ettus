@@ -1094,7 +1094,7 @@
     </param>
     <param>
       <key>x_units</key>
-      <value>"Mhz"</value>
+      <value>"MHz"</value>
     </param>
     <param>
       <key>ymax</key>
