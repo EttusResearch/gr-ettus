@@ -8,7 +8,7 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        args="",
+        args="spp={}".format($fft_size), # Need to set the FFT size here, or it won't go into the GR IO signature
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
@@ -17,7 +17,6 @@
     ),
     "FFT", $block_index, $device_index,
 )
-self.$(id).set_arg("spp", $fft_size)
 self.$(id).set_arg("direction", $direction)
 self.$(id).set_arg("scaling", $scaling)
 self.$(id).set_arg("shift", $shift)
