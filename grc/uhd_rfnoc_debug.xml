@@ -8,12 +8,12 @@
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
-        channels=(0,1),
         args="",
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
+        channels=(0,1),
         args="",
     ),
     "Debug", $block_index, $device_index,

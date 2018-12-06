@@ -46,7 +46,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>top_block</value>
+      <value>rfnoc_debug</value>
     </param>
     <param>
       <key>max_nouts</key>
