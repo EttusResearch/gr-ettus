@@ -99,23 +99,27 @@ install(TARGETS gnuradio-ettus
 ########################################################################
 # Build and register unit test
 ########################################################################
-include(GrTest)
+if(CPPUNIT_FOUND)
+    include(GrTest)
 
-include_directories(${CPPUNIT_INCLUDE_DIRS})
+    include_directories(${CPPUNIT_INCLUDE_DIRS})
 
-list(APPEND test_ettus_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_ettus.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_ettus.cc
-)
+    list(APPEND test_ettus_sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_ettus.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/qa_ettus.cc
+    )
 
-add_executable(test-ettus ${test_ettus_sources})
+    add_executable(test-ettus ${test_ettus_sources})
 
-target_link_libraries(
-  test-ettus
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  gnuradio-ettus
-)
+    target_link_libraries(
+      test-ettus
+      ${GNURADIO_RUNTIME_LIBRARIES}
+      ${Boost_LIBRARIES}
+      ${CPPUNIT_LIBRARIES}
+      gnuradio-ettus
+    )
 
-GR_ADD_TEST(test_ettus test-ettus)
+    GR_ADD_TEST(test_ettus test-ettus)
+else(CPPUNIT_FOUND)
+    message(WARNING "Disabling unit tests: No CppUnit found.")
+endif(CPPUNIT_FOUND)

@@ -168,9 +168,6 @@ find_package(Doxygen)
 set(GR_REQUIRED_COMPONENTS RUNTIME UHD FILTER FFT)
 find_package(Gnuradio "3.7.6" REQUIRED)
 
-if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile gr-ettus")
-endif()
 
 ########################################################################
 # Setup doxygen option
