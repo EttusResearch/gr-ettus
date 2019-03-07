@@ -74,7 +74,8 @@ namespace gr {
               const device3::sptr &dev,
               const std::string &block_id,
               const ::uhd::stream_args_t &tx_stream_args,
-              const ::uhd::stream_args_t &rx_stream_args
+              const ::uhd::stream_args_t &rx_stream_args,
+              const bool end_of_burst_enabled = true
       );
 
       /*********************************************************************
@@ -237,6 +238,7 @@ namespace gr {
 
       /*** Stream commands *********************************/
       bool _start_time_set;
+      bool _end_of_burst_enabled;
       ::uhd::time_spec_t _start_time;
 
       /*** Multi-Streamer Sync and concurrency stuff ********/

@@ -96,7 +96,8 @@ namespace gr {
         ${strip_default_values(arglist)},
 % endif
         const int block_select,
-        const int device_select
+        const int device_select,
+        const bool end_of_burst_enabled
       );
       ~${blockname}_impl();
 
@@ -130,7 +131,8 @@ namespace gr {
         ${strip_default_values(arglist)},
 % endif
         const int block_select,
-        const int device_select
+        const int device_select,
+        const bool end_of_burst_enabled
     )
     {
       return gnuradio::get_initial_sptr(
@@ -142,7 +144,8 @@ namespace gr {
             ${strip_arg_types(arglist)},
 % endif
             block_select,
-            device_select
+            device_select,
+            end_of_burst_enabled
         )
       );
     }
@@ -158,13 +161,14 @@ namespace gr {
          ${strip_default_values(arglist)},
 % endif
          const int block_select,
-         const int device_select
+         const int device_select,
+         const bool end_of_burst_enabled
     )
       : gr::ettus::rfnoc_block("${blockname}"),
         gr::ettus::rfnoc_block_impl(
             dev,
             gr::ettus::rfnoc_block_impl::make_block_id("${blockname}",  block_select, device_select),
-            tx_stream_args, rx_stream_args
+            tx_stream_args, rx_stream_args, end_of_burst_enabled
             )
     {}
 
@@ -221,7 +225,8 @@ namespace gr {
         ${arglist},
 % endif
         const int block_select=-1,
-        const int device_select=-1
+        const int device_select=-1,
+        const bool end_of_burst_enabled=true
         );
     };
   } // namespace ${modname}
@@ -389,7 +394,8 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
           ${strip_arg_types_grc(arglist)},
 % endif
  <%text>         $block_index,
-          $device_index
+          $device_index,
+          $end_of_burst_enabled
   )</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
@@ -438,6 +444,15 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
     <value>-1</value>
     <type>int</type>
     <hide>#if int($block_index()) &lt; 0 then 'part' else 'none'#</hide>
+    <tab>RFNoC Config</tab>
+  </param>
+</%text>
+  <param>
+    <name>End of Burst Enable</name><%text>
+    <key>end_of_burst_enabled</key>
+    <value>True</value>
+    <type>bool</type>
+    <hide>#if $end_of_burst_enabled() == True then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
 </%text>

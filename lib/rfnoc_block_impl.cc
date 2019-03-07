@@ -143,11 +143,13 @@ rfnoc_block_impl::rfnoc_block_impl(
     const device3::sptr &dev,
     const std::string &block_id,
     const ::uhd::stream_args_t &tx_stream_args,
-    const ::uhd::stream_args_t &rx_stream_args
+    const ::uhd::stream_args_t &rx_stream_args,
+    const bool end_of_burst_enabled
 ) : _dev(dev->get_device()),
     _tx(tx_stream_args),
     _rx(rx_stream_args),
-    _start_time_set(false)
+    _start_time_set(false),
+    _end_of_burst_enabled(end_of_burst_enabled)
 {
   std::vector< ::uhd::rfnoc::block_id_t > blocks =
           dev->get_device()->find_blocks(block_id);
@@ -379,16 +381,18 @@ bool rfnoc_block_impl::stop()
   }
 
   // TX: Send EOB
-  _tx.metadata.start_of_burst = false;
-  _tx.metadata.end_of_burst = true;
-  _tx.metadata.has_time_spec = false;
-  // TODO: One loop is enough here
-  if (_tx.align) {
-    _tx.streamers[0]->send(gr_vector_const_void_star(_tx.streamers[0]->get_num_channels()), 0, _tx.metadata, 1.0);
-  } else {
-    for (size_t i = 0; i < _tx.streamers.size(); i++) {
-      // Always 1 channel per streamer in this case
-      _tx.streamers[i]->send(gr_vector_const_void_star(1), 0, _tx.metadata, 1.0);
+  if (_end_of_burst_enabled) {
+    _tx.metadata.start_of_burst = false;
+    _tx.metadata.end_of_burst = true;
+    _tx.metadata.has_time_spec = false;
+    // TODO: One loop is enough here
+    if (_tx.align) {
+      _tx.streamers[0]->send(gr_vector_const_void_star(_tx.streamers[0]->get_num_channels()), 0, _tx.metadata, 1.0);
+    } else {
+      for (size_t i = 0; i < _tx.streamers.size(); i++) {
+        // Always 1 channel per streamer in this case
+        _tx.streamers[i]->send(gr_vector_const_void_star(1), 0, _tx.metadata, 1.0);
+      }
     }
   }
 
