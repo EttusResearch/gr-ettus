@@ -144,12 +144,12 @@ rfnoc_block_impl::rfnoc_block_impl(
     const std::string &block_id,
     const ::uhd::stream_args_t &tx_stream_args,
     const ::uhd::stream_args_t &rx_stream_args,
-    const bool end_of_burst_enabled
+    const bool enable_eob_on_stop
 ) : _dev(dev->get_device()),
     _tx(tx_stream_args),
     _rx(rx_stream_args),
     _start_time_set(false),
-    _end_of_burst_enabled(end_of_burst_enabled)
+    _enable_eob_on_stop(enable_eob_on_stop)
 {
   std::vector< ::uhd::rfnoc::block_id_t > blocks =
           dev->get_device()->find_blocks(block_id);
@@ -381,7 +381,7 @@ bool rfnoc_block_impl::stop()
   }
 
   // TX: Send EOB
-  if (_end_of_burst_enabled) {
+  if (_enable_eob_on_stop) {
     _tx.metadata.start_of_burst = false;
     _tx.metadata.end_of_burst = true;
     _tx.metadata.has_time_spec = false;

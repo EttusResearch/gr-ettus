@@ -97,7 +97,7 @@ namespace gr {
 % endif
         const int block_select,
         const int device_select,
-        const bool end_of_burst_enabled
+        const bool enable_eob_on_stop
       );
       ~${blockname}_impl();
 
@@ -132,7 +132,7 @@ namespace gr {
 % endif
         const int block_select,
         const int device_select,
-        const bool end_of_burst_enabled
+        const bool enable_eob_on_stop
     )
     {
       return gnuradio::get_initial_sptr(
@@ -145,7 +145,7 @@ namespace gr {
 % endif
             block_select,
             device_select,
-            end_of_burst_enabled
+            enable_eob_on_stop
         )
       );
     }
@@ -162,13 +162,13 @@ namespace gr {
 % endif
          const int block_select,
          const int device_select,
-         const bool end_of_burst_enabled
+         const bool enable_eob_on_stop
     )
       : gr::ettus::rfnoc_block("${blockname}"),
         gr::ettus::rfnoc_block_impl(
             dev,
             gr::ettus::rfnoc_block_impl::make_block_id("${blockname}",  block_select, device_select),
-            tx_stream_args, rx_stream_args, end_of_burst_enabled
+            tx_stream_args, rx_stream_args, enable_eob_on_stop
             )
     {}
 
@@ -226,7 +226,7 @@ namespace gr {
 % endif
         const int block_select=-1,
         const int device_select=-1,
-        const bool end_of_burst_enabled=true
+        const bool enable_eob_on_stop=true
         );
     };
   } // namespace ${modname}
@@ -395,7 +395,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
 % endif
  <%text>         $block_index,
           $device_index,
-          $end_of_burst_enabled
+          $enable_eob_on_stop
   )</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
@@ -449,10 +449,10 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
 </%text>
   <param>
     <name>End of Burst Enable</name><%text>
-    <key>end_of_burst_enabled</key>
+    <key>enable_eob_on_stop</key>
     <value>True</value>
     <type>bool</type>
-    <hide>#if $end_of_burst_enabled() == True then 'part' else 'none'#</hide>
+    <hide>#if $enable_eob_on_stop() == True then 'part' else 'none'#</hide>
     <tab>RFNoC Config</tab>
   </param>
 </%text>

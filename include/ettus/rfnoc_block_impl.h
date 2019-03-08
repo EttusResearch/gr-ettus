@@ -75,7 +75,7 @@ namespace gr {
               const std::string &block_id,
               const ::uhd::stream_args_t &tx_stream_args,
               const ::uhd::stream_args_t &rx_stream_args,
-              const bool end_of_burst_enabled = true
+              const bool enable_eob_on_stop = true
       );
 
       /*********************************************************************
@@ -238,7 +238,7 @@ namespace gr {
 
       /*** Stream commands *********************************/
       bool _start_time_set;
-      bool _end_of_burst_enabled;
+      bool _enable_eob_on_stop;
       ::uhd::time_spec_t _start_time;
 
       /*** Multi-Streamer Sync and concurrency stuff ********/
