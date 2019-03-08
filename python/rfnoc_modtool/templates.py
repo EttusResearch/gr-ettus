@@ -448,7 +448,7 @@ Templates['grc_xml'] = '''<?xml version="1.0"?>
   </param>
 </%text>
   <param>
-    <name>End of Burst Enable</name><%text>
+    <name>Enable EOB on Stop</name><%text>
     <key>enable_eob_on_stop</key>
     <value>True</value>
     <type>bool</type>
