@@ -113,7 +113,7 @@ class ModToolAdd(ModTool):
         self._info['noc_id'] = args.noc_id
         if self._info['noc_id'] is None:
             self._info['noc_id'] = id_process(input("Block NoC ID (Hexadecimal): "))
-        if not re.match(r'\A[0-9A-F]+\Z', self._info['noc_id']):
+        if not re.match(r'\A[0-9A-Fa-f]+\Z', self._info['noc_id']):
             raise ModToolException('Invalid NoC ID - Only Hexadecimal Values accepted.')
         self._skip_block_ctrl = args.skip_block_ctrl
         if self._skip_block_ctrl is None:

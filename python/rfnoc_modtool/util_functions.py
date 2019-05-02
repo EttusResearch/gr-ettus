@@ -149,4 +149,4 @@ def id_process(noc_id):
         print("Random NoC ID generated: {}".format(noc_id))
     else:
         '{:0>16}'.format(noc_id)
-    return noc_id
+    return noc_id.upper()
