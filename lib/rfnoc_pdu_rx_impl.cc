@@ -76,6 +76,9 @@ namespace gr {
         d_started(false),
         d_finished(false)
     {
+      if (_blk_ctrls.size() > 1) {
+        throw std::runtime_error("multi_block operation not supported by rfnoc_pdu_rx!");
+      }
       d_rxbuf.resize(mtu,0);
       message_port_register_out(pmt::mp("data"));
       start_rxthread(this, pmt::mp("data"));
@@ -104,13 +107,15 @@ namespace gr {
         _tx.streamers.clear();
       }
 
+      auto blk_ctrl = _blk_ctrls.front();
+
       // Setup RX streamer
       if (noutputs && _rx.streamers.empty()) {
         // Get a block control for the rx side:
         ::uhd::rfnoc::source_block_ctrl_base::sptr rx_blk_ctrl =
-            boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(_blk_ctrl);
+            boost::dynamic_pointer_cast< ::uhd::rfnoc::source_block_ctrl_base >(blk_ctrl);
         if (!rx_blk_ctrl) {
-          GR_LOG_FATAL(d_logger, str(boost::format("Not a source_block_ctrl_base: %s") % _blk_ctrl->unique_id()));
+          GR_LOG_FATAL(d_logger, str(boost::format("Not a source_block_ctrl_base: %s") % blk_ctrl->unique_id()));
           return false;
         }
         if (_rx.align) { // Aligned streamers:
@@ -122,7 +127,7 @@ namespace gr {
           if (rx_stream) {
             _rx.streamers.push_back(rx_stream);
           } else {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % blk_ctrl->get_block_id().get()));
             return false;
           }
         } else { // Unaligned streamers:
@@ -139,7 +144,7 @@ namespace gr {
             }
           }
           if (_rx.streamers.size() != size_t(noutputs)) {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
+            GR_LOG_FATAL(d_logger, str(boost::format("Can't create rx streamer(s) to: %s") % blk_ctrl->get_block_id().get()));
             return false;
           }
         }

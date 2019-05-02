@@ -59,6 +59,12 @@ class device3_impl : public device3
       const std::string block2,
       size_t dst_block_port
   ) {
+    // Translate multi_block_port to actual block port
+    // FIXME this should come from the map contained in the rfnoc_block base class
+    if (src_block_port >= 2) src_block_port -= 2;
+    if (dst_block_port >= 2) dst_block_port -= 2;
+
+    std::cout << "Connecting " << block1 << " port " << src_block_port << " to " << block2 << " port " << dst_block_port << std::endl;
     _graph->connect(
         ::uhd::rfnoc::block_id_t(block1),
         src_block_port,

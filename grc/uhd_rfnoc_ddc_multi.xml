@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <block>
-  <name>RFNoC: DDC</name>
-  <key>uhd_rfnoc_streamer_ddc</key>
+  <name>RFNoC: DDC (multi)</name>
+  <key>uhd_rfnoc_streamer_ddc_multi</key>
   <import>import ettus</import>
-  <make>ettus.rfnoc_generic(
+  <make>ettus.rfnoc_generic_multi(
     self.device3,
     uhd.stream_args( \# TX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="input_rate={},output_rate={},fullscale={},freq={},align={},gr_vlen={},{}".format($input_rate, $output_rate, $fullscale, $freq, $align, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
+        args="input_rate={},output_rate={},fullscale={},freq={},align={}".format($input_rate, $output_rate, $fullscale, $freq, $align),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="align={}, gr_vlen={},{}".format($align, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
+        args="align={}".format($align),
     ),
     "DDC", $block_index, $device_index,
 )
@@ -44,6 +44,14 @@ for chan in xrange($num_chans):
     <option>
       <name>2</name>
       <key>2</key>
+    </option>
+    <option>
+      <name>3</name>
+      <key>3</key>
+    </option>
+    <option>
+      <name>4</name>
+      <key>4</key>
     </option>
   </param>
 
@@ -101,12 +109,6 @@ for chan in xrange($num_chans):
   </param>
 
   <param>
-    <name>Force Vector Length</name>
-    <key>grvlen</key>
-    <value>1</value>
-    <type>int</type>
-  </param>
-  <param>
     <name>Time Align</name>
     <key>align</key>
     <value>0</value>
@@ -127,7 +129,6 @@ for chan in xrange($num_chans):
   <sink>
     <name>in</name>
     <type>complex</type>
-    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
     <nports>$num_chans</nports>
   </sink>
@@ -135,7 +136,6 @@ for chan in xrange($num_chans):
   <source>
     <name>out</name>
     <type>complex</type>
-    <vlen>$grvlen</vlen>
     <domain>rfnoc</domain>
     <nports>$num_chans</nports>
   </source>
