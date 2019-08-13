@@ -10,7 +10,7 @@
     </param>
     <param>
       <key>window_size</key>
-      <value></value>
+      <value>2**12, 2**12</value>
     </param>
     <param>
       <key>category</key>
@@ -30,7 +30,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 12)</value>
+      <value>(7, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -90,6 +90,33 @@
     </param>
   </block>
   <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(7, 237)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fft_size</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>512</value>
+    </param>
+  </block>
+  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -109,7 +136,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>3,0,1,2</value>
+      <value>10, 0, 1, 5</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -168,11 +195,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(352, 108)</value>
+      <value>(352, 107)</value>
     </param>
     <param>
       <key>gui_hint</key>
-      <value>2,0,1,1</value>
+      <value>10, 5, 1, 5</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -219,7 +246,7 @@
     <key>variable</key>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>USRP IP Address</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -227,7 +254,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 76)</value>
+      <value>(7, 75)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -254,7 +281,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 140)</value>
+      <value>(7, 174)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -289,7 +316,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>2,1,1,1</value>
+      <value>10,11,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -352,7 +379,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>1,1,1,1</value>
+      <value>10, 10, 1, 1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -423,15 +450,15 @@
     </param>
     <param>
       <key>fft_bins</key>
-      <value>1024</value>
+      <value>fft_size</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(368, 276)</value>
+      <value>(399, 295)</value>
     </param>
     <param>
       <key>gui_hint</key>
-      <value></value>
+      <value>0, 0, 10, 12</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -627,7 +654,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(488, 12)</value>
+      <value>(488, 11)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -670,7 +697,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(120, 300)</value>
+      <value>(116, 283)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -706,7 +733,7 @@
     </param>
     <param>
       <key>vlen</key>
-      <value>1024</value>
+      <value>fft_size</value>
     </param>
   </block>
   <block>
@@ -769,7 +796,7 @@
     </param>
     <param>
       <key>vlen</key>
-      <value>1024</value>
+      <value>fft_size</value>
     </param>
   </block>
   <block>
@@ -796,7 +823,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(600, 332)</value>
+      <value>(664, 340)</value>
     </param>
     <param>
       <key>_rotation</key>

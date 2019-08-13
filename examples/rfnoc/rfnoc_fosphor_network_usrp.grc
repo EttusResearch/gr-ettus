@@ -10,7 +10,7 @@
     </param>
     <param>
       <key>window_size</key>
-      <value>1400, 1024</value>
+      <value>2**12, 2**12</value>
     </param>
     <param>
       <key>category</key>
@@ -90,7 +90,42 @@
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>variable_uhd_device3</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dev_addr</key>
+      <value>type=e3x0</value>
+    </param>
+    <param>
+      <key>dev_args</key>
+      <value>"master_clock_rate=%d,fpga=%s" % (samp_rate,fpga_path)</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(184, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>variable_uhd_device3_0</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -101,7 +136,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(472, 12)</value>
+      <value>(480, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -112,12 +147,79 @@
       <value>fft_size</value>
     </param>
     <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
       <key>value</key>
-      <value>1024</value>
+      <value>512</value>
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(480, 100)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fpga_path</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"/home/root/e300.bit"</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -139,12 +241,32 @@
       <value>freq</value>
     </param>
     <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
       <key>value</key>
       <value>2.45e9</value>
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -166,12 +288,32 @@
       <value>gain</value>
     </param>
     <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
       <key>value</key>
       <value>32</value>
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -190,7 +332,23 @@
     </param>
     <param>
       <key>id</key>
-      <value>ip_addr</value>
+      <value>host_ip_addr</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>string</value>
     </param>
     <param>
       <key>value</key>
@@ -198,7 +356,42 @@
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(376, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_0</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>from gnuradio import fft</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -220,97 +413,28 @@
       <value>samp_rate</value>
     </param>
     <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
       <key>value</key>
       <value>56e6</value>
     </param>
   </block>
   <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(920, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>tdecay</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>4096</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(824, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trise</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>1024</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_uhd_device3</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>dev_addr</key>
-      <value>type=e3x0</value>
-    </param>
-    <param>
-      <key>dev_args</key>
-      <value>""</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(184, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>variable_uhd_device3_0</value>
-    </param>
-  </block>
-  <block>
-    <key>import</key>
+    <key>parameter</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -325,7 +449,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 12)</value>
+      <value>(936, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -333,11 +457,74 @@
     </param>
     <param>
       <key>id</key>
-      <value>import_0</value>
+      <value>tdecay</value>
     </param>
     <param>
-      <key>import</key>
-      <value>from gnuradio import fft</value>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>4096</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(840, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>trise</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1024</value>
     </param>
   </block>
   <block>
@@ -376,7 +563,7 @@
     </param>
     <param>
       <key>fft_size</key>
-      <value>1024</value>
+      <value>fft_size</value>
     </param>
     <param>
       <key>fpga_module_name</key>
@@ -388,7 +575,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(480, 220)</value>
+      <value>(568, 268)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -439,7 +626,7 @@
     </param>
     <param>
       <key>block_index</key>
-      <value>-1</value>
+      <value>0</value>
     </param>
     <param>
       <key>fpga_module_name</key>
@@ -451,7 +638,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(928, 212)</value>
+      <value>(1088, 252)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -502,7 +689,7 @@
     </param>
     <param>
       <key>block_index</key>
-      <value>-1</value>
+      <value>1</value>
     </param>
     <param>
       <key>fpga_module_name</key>
@@ -514,7 +701,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(928, 308)</value>
+      <value>(1088, 348)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -573,7 +760,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(704, 244)</value>
+      <value>(816, 292)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -716,7 +903,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 172)</value>
+      <value>(16, 220)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -764,7 +951,7 @@
     </param>
     <param>
       <key>stream_args</key>
-      <value>spp=1024</value>
+      <value>"spp=%d" % fft_size</value>
     </param>
   </block>
   <block>
@@ -799,7 +986,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(272, 252)</value>
+      <value>(320, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -861,7 +1048,7 @@
     <key>zeromq_pull_msg_source</key>
     <param>
       <key>address</key>
-      <value>"tcp://" + ip_addr + ":4001"</value>
+      <value>"tcp://" + host_ip_addr + ":4001"</value>
     </param>
     <param>
       <key>alias</key>
@@ -881,7 +1068,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1104, 388)</value>
+      <value>(1296, 452)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -928,7 +1115,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1152, 196)</value>
+      <value>(1344, 244)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -983,7 +1170,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1152, 292)</value>
+      <value>(1344, 340)</value>
     </param>
     <param>
       <key>_rotation</key>
