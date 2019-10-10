@@ -30,7 +30,6 @@ install(FILES
     rfnoc_block_impl.h
     rfnoc_radio.h
     rfnoc_generic.h
-    rfnoc_generic_multi.h
     rfnoc_fosphor_c.h
     rfnoc_pdu_tx.h
     rfnoc_pdu_rx.h

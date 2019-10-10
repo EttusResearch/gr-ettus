@@ -71,9 +71,6 @@ namespace gr {
 	    rx_stream_args
         )
     {
-      if (_blk_ctrls.size() > 1) {
-        throw std::runtime_error("multi_block operation not supported by rfnoc_pdu_rx!");
-      }
       message_port_register_in(pmt::mp("data"));
       set_msg_handler(
         pmt::mp("data"),
@@ -149,15 +146,14 @@ namespace gr {
         _tx.streamers.clear();
       }
 
-      auto blk_ctrl = _blk_ctrls.front();
       //////////////////// TX ///////////////////////////////////////////////////////////////
       // Setup TX streamer.
       if (ninputs && _tx.streamers.empty()) {
         // Get a block control for the tx side:
         ::uhd::rfnoc::sink_block_ctrl_base::sptr tx_blk_ctrl =
-            boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(blk_ctrl);
+            boost::dynamic_pointer_cast< ::uhd::rfnoc::sink_block_ctrl_base >(_blk_ctrl);
         if (!tx_blk_ctrl) {
-          GR_LOG_FATAL(d_logger, str(boost::format("Not a sink_block_ctrl_base: %s") % blk_ctrl->unique_id()));
+          GR_LOG_FATAL(d_logger, str(boost::format("Not a sink_block_ctrl_base: %s") % _blk_ctrl->unique_id()));
           return false;
         }
         if (_tx.align) { // Aligned streamers:
@@ -169,7 +165,7 @@ namespace gr {
           if (tx_stream) {
             _tx.streamers.push_back(tx_stream);
           } else {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % blk_ctrl->get_block_id().get()));
+            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
             return false;
           }
         } else { // Unaligned streamers:
@@ -183,7 +179,7 @@ namespace gr {
             }
           }
           if (_tx.streamers.size() != size_t(ninputs)) {
-            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % blk_ctrl->get_block_id().get()));
+            GR_LOG_FATAL(d_logger, str(boost::format("Can't create tx streamer(s) to: %s") % _blk_ctrl->get_block_id().get()));
             return false;
           }
         }

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.12'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Wed Sep 10 20:11:20 2014</timestamp>
   <block>
@@ -136,7 +136,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>100e6</value>
+      <value>200e6</value>
     </param>
   </block>
   <block>
@@ -266,14 +266,10 @@
     </param>
   </block>
   <block>
-    <key>variable_qtgui_range</key>
+    <key>variable</key>
     <param>
       <key>comment</key>
       <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>5e6</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -281,11 +277,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(584, 0)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
+      <value>(168, 68)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -296,36 +288,8 @@
       <value>samp_rate</value>
     </param>
     <param>
-      <key>label</key>
-      <value>Sample Rate (DDC Output)</value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>master_clock_rate</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter</value>
+      <key>value</key>
+      <value>10e6</value>
     </param>
   </block>
   <block>
@@ -1245,44 +1209,16 @@
   <block>
     <key>uhd_rfnoc_streamer_radio</key>
     <param>
+      <key>ant</key>
+      <value>"RX2"</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
     <param>
       <key>freq</key>
       <value>rx_freq</value>
-    </param>
-    <param>
-      <key>rx_bandwidth0</key>
-      <value>56e6</value>
-    </param>
-    <param>
-      <key>ant0</key>
-      <value>"RX1"</value>
-    </param>
-    <param>
-      <key>lo_export0</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source0</key>
-      <value>"internal"</value>
-    </param>
-    <param>
-      <key>rx_bandwidth1</key>
-      <value>56e6</value>
-    </param>
-    <param>
-      <key>ant1</key>
-      <value>"TX/RX"</value>
-    </param>
-    <param>
-      <key>lo_export1</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>lo_source1</key>
-      <value>"internal"</value>
     </param>
     <param>
       <key>comment</key>
@@ -1355,10 +1291,6 @@
     <param>
       <key>rate</key>
       <value>master_clock_rate</value>
-    </param>
-    <param>
-      <key>hide_lo_controls</key>
-      <value>True</value>
     </param>
     <param>
       <key>stream_args</key>

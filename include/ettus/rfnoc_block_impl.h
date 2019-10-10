@@ -51,12 +51,6 @@ namespace gr {
           const int device_select=-1
       );
 
-      static std::string make_block_id_multi(
-          const std::string &block_name,
-          std::vector<int> block_select,
-          std::vector<int> device_select
-      );
-
       /*********************************************************************
        * GR Block functions
        *********************************************************************/
@@ -90,10 +84,10 @@ namespace gr {
       ::uhd::device3::sptr get_device() const { return _dev; };
 
       //! \returns Block ID in string format.
-      std::string get_block_id(const size_t port=0) const { return get_block_ctrl_from_port(port)->get_block_id(); };
+      std::string get_block_id() const { return _blk_ctrl->get_block_id(); };
 
       //! Returns a shared pointer to the block control
-      boost::shared_ptr< ::uhd::rfnoc::block_ctrl_base > get_block_ctrl(const size_t port=0) const { return get_block_ctrl_from_port(port); };
+      boost::shared_ptr< ::uhd::rfnoc::block_ctrl_base > get_block_ctrl() const { return _blk_ctrl; };
 
       //! Returns a shared pointer to the block control (templated version)
       //
@@ -117,41 +111,40 @@ namespace gr {
         return the_sptr;
       }
 
-      void set_register(const size_t reg, const uint32_t value, const size_t port) { get_block_ctrl_from_port(port)->sr_write(reg, value); }
-      void set_register(const std::string &reg, const uint32_t value, const size_t port) { get_block_ctrl_from_port(port)->sr_write(reg, value); }
+      void set_register(const size_t reg, const uint32_t value, const size_t port) { _blk_ctrl->sr_write(reg, value); }
+      void set_register(const std::string &reg, const uint32_t value, const size_t port) { _blk_ctrl->sr_write(reg, value); }
 
-      uint64_t get_register(const uint32_t reg, const size_t port) { return get_block_ctrl_from_port(port)->user_reg_read64(reg, get_block_port_from_port(port)); }
-      uint64_t get_register(const std::string &reg, const size_t port) { return get_block_ctrl_from_port(port)->user_reg_read64(reg, get_block_port_from_port(port)); }
+      uint64_t get_register(const uint32_t reg, const size_t port) { return _blk_ctrl->user_reg_read64(reg, port); }
+      uint64_t get_register(const std::string &reg, const size_t port) { return _blk_ctrl->user_reg_read64(reg, port); }
 
       void set_arg(const std::string &key, const int val, const size_t port = 0)
       {
-
-          get_block_ctrl_from_port(port)->set_arg<int>(key, val, get_block_port_from_port(port));
+          _blk_ctrl->set_arg<int>(key, val, port);
       }
 
       void set_arg(const std::string &key, const double val, const size_t port = 0)
       {
-        get_block_ctrl_from_port(port)->set_arg<double>(key, val, get_block_port_from_port(port));
+          _blk_ctrl->set_arg<double>(key, val, port);
       }
 
       void set_arg(const std::string &key, const std::string &val, const size_t port = 0)
       {
-          get_block_ctrl_from_port(port)->set_arg<std::string>(key, val, get_block_port_from_port(port));
+          _blk_ctrl->set_arg<std::string>(key, val, port);
       }
 
       void set_command_time(const uhd::time_spec_t &time_spec, const size_t port = ::uhd::rfnoc::ANY_PORT)
       {
-          get_block_ctrl_from_port(port)->set_command_time(time_spec, get_block_port_from_port(port));
+          _blk_ctrl->set_command_time(time_spec, port);
       }
 
       uhd::time_spec_t get_command_time(const size_t port = 0)
       {
-          return get_block_ctrl_from_port(port)->get_command_time(get_block_port_from_port(port));
+          return _blk_ctrl->get_command_time(port);
       }
 
       void clear_command_time(const size_t port = ::uhd::rfnoc::ANY_PORT)
       {
-          get_block_ctrl_from_port(port)->clear_command_time(get_block_port_from_port(port));
+          _blk_ctrl->clear_command_time(port);
       }
 
       void set_start_time(const uhd::time_spec_t &start_time)
@@ -207,15 +200,8 @@ namespace gr {
        ********************************************************************/
       /*** Device and block controls ***********************/
       ::uhd::device3::sptr                _dev;
-      std::vector< ::uhd::rfnoc::block_ctrl_base::sptr > _blk_ctrls;
-      std::map<const size_t, ::uhd::rfnoc::block_ctrl_base::sptr> _blk_ctrl_map;
-      std::map<const size_t, const size_t> _port_map;
+      ::uhd::rfnoc::block_ctrl_base::sptr _blk_ctrl;
       ::uhd::device_addr_t                _merged_args;
-
-      void add_block_ctrl_by_port(::uhd::rfnoc::block_ctrl_base::sptr blk_ctrl, const size_t port);
-      ::uhd::rfnoc::block_ctrl_base::sptr get_block_ctrl_from_port(const size_t port) const;
-      void map_port_to_block_port(const size_t port, const size_t block_port);
-      size_t get_block_port_from_port(const size_t port) const;
 
       /*** Stream info type ********************************/
       template <typename T_streamer, typename T_md>

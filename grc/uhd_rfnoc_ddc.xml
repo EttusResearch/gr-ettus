@@ -9,13 +9,13 @@
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="input_rate={},output_rate={},fullscale={},freq={},align={},gr_vlen={},{}".format($input_rate, $output_rate, $fullscale, $freq, $align, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
+        args="input_rate={},output_rate={},fullscale={},freq={},gr_vlen={},{}".format($input_rate, $output_rate, $fullscale, $freq, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
     ),
     uhd.stream_args( \# RX Stream Args
         cpu_format="fc32", \# TODO: This must be made an option
         otw_format="sc16",
         channels=range($num_chans),
-        args="align={}, gr_vlen={},{}".format($align, ${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
+        args="gr_vlen={},{}".format(${grvlen}, "" if $grvlen == 1 else "spp={}".format($grvlen)),
     ),
     "DDC", $block_index, $device_index,
 )
@@ -105,20 +105,6 @@ for chan in xrange($num_chans):
     <key>grvlen</key>
     <value>1</value>
     <type>int</type>
-  </param>
-  <param>
-    <name>Time Align</name>
-    <key>align</key>
-    <value>0</value>
-    <type>int</type>
-    <option>
-      <name>False</name>
-      <key>0</key>
-    </option>
-    <option>
-      <name>True</name>
-      <key>1</key>
-    </option>
   </param>
 
   <check>$output_rate &lt;= $input_rate</check>

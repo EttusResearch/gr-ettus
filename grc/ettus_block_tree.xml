@@ -13,7 +13,6 @@
 			<block>variable_uhd_device3</block>
 			<block>uhd_rfnoc_streamer_adder</block>
 			<block>uhd_rfnoc_streamer_ddc</block>
-			<block>uhd_rfnoc_streamer_ddc_multi</block>
 			<block>uhd_rfnoc_streamer_duc</block>
 			<block>uhd_rfnoc_streamer_fifo</block>
 			<block>uhd_rfnoc_streamer_fft</block>
