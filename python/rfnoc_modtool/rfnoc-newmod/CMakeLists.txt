@@ -247,7 +247,7 @@ SET(SIM xsim CACHE STRING "Simulation tool defaulting to xsim")
 FOREACH(name ${name_list})
     add_custom_target(${name}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMAND source ${FPGA}/usrp3/top/e31x/setupenv.sh && make -C ${CMAKE_SOURCE_DIR}/rfnoc/testbenches/${name} ${SIM} FPGA_TOP_DIR=${FPGA}
+        COMMAND source ${FPGA}/usrp3/top/x300/setupenv.sh && make -C ${CMAKE_SOURCE_DIR}/rfnoc/testbenches/${name} ${SIM} FPGA_TOP_DIR=${FPGA}
     )
 ENDFOREACH()
 
