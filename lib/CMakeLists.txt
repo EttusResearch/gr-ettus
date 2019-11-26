@@ -104,6 +104,8 @@ if(CPPUNIT_FOUND)
 
     include_directories(${CPPUNIT_INCLUDE_DIRS})
 
+    link_directories(${CPPUNIT_LIBRARY_DIRS})
+
     list(APPEND test_ettus_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/test_ettus.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/qa_ettus.cc
