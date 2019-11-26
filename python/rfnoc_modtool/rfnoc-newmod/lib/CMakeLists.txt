@@ -22,12 +22,8 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND rfnoc_example_sources
 )
-
 
 set(rfnoc_example_sources "${rfnoc_example_sources}" PARENT_SCOPE)
 if(NOT rfnoc_example_sources)
