@@ -153,6 +153,9 @@ if(ENABLE_QT)
     if (QT_FOUND)
 	include(GrSetupQt4)
     endif (QT_FOUND)
+    if(APPLE)
+      list(APPEND QT_LIBRARIES "-framework OpenGL")
+    endif(APPLE)
 endif(ENABLE_QT)
 
 ########################################################################
