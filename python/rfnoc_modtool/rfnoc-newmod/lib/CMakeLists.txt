@@ -57,27 +57,33 @@ install(TARGETS gnuradio-rfnoc_example
 ########################################################################
 # Build and register unit test
 ########################################################################
-include(GrTest)
+if(CPPUNIT_FOUND)
 
-include_directories(${CPPUNIT_INCLUDE_DIRS})
+    include(GrTest)
 
-list(APPEND test_rfnoc_example_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_rfnoc_example.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_rfnoc_example.cc
-)
+    include_directories(${CPPUNIT_INCLUDE_DIRS})
 
-add_executable(test-rfnoc_example ${test_rfnoc_example_sources})
+    link_directories(${CPPUNIT_LIBRARY_DIRS})
 
-target_link_libraries(
-  test-rfnoc_example
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  ${ETTUS_LIBRARIES}
-  ${PC_ETTUS_LIBDIR}
-  gnuradio-rfnoc_example
-)
+    list(APPEND test_rfnoc_example_sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_rfnoc_example.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/qa_rfnoc_example.cc
+    )
 
+    add_executable(test-rfnoc_example ${test_rfnoc_example_sources})
 
+    target_link_libraries(
+        test-rfnoc_example
+        ${GNURADIO_RUNTIME_LIBRARIES}
+        ${Boost_LIBRARIES}
+        ${CPPUNIT_LIBRARIES}
+        ${ETTUS_LIBRARIES}
+        ${PC_ETTUS_LIBDIR}
+        gnuradio-rfnoc_example
+    )
 
-GR_ADD_TEST(test_rfnoc_example test-rfnoc_example)
+    GR_ADD_TEST(test_rfnoc_example test-rfnoc_example)
+
+else(CPPUNIT_FOUND)
+    message(WARNING "Disabling unit tests: No CppUnit found.")
+endif(CPPUNIT_FOUND)
