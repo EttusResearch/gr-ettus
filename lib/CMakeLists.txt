@@ -31,8 +31,6 @@ if(ENABLE_QT)
     include_directories(${QT_INCLUDE_DIRS})
 endif(ENABLE_QT)
 
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND ettus_sources
     device3.cc
     rfnoc_block_impl.cc
