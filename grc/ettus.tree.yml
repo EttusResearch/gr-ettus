@@ -1,0 +1,31 @@
+'[gr-ettus]':
+- Device Control:
+  - variable_ettus_device3
+- Blocks:
+  - ettus_rfnoc_streamer_packet_resizer
+  - ettus_rfnoc_streamer_window
+  - ettus_rfnoc_pdu_tx
+  - ettus_rfnoc_streamer_vector_iir
+  - ettus_rfnoc_register_logger
+  - ettus_rfnoc_streamer_ddc
+  - ettus_rfnoc_streamer_fir
+  - ettus_rfnoc_digital_gain
+  - ettus_rfnoc_streamer_fifo
+  - ettus_rfnoc_pdu_rx
+  - ettus_rfnoc_ofdm_schmidlcox
+  - ettus_rfnoc_streamer_keep_one_in_n
+  - ettus_rfnoc_register_probe
+  - ettus_rfnoc_streamer_fft
+  - ettus_rfnoc_streamer_fosphor
+  - ettus_rfnoc_streamer_adder
+  - ettus_rfnoc_fosphor_display
+  - ettus_rfnoc_streamer_moving_avg
+  - ettus_rfnoc_ofdm_demap
+  - ettus_rfnoc_split_stream
+  - ettus_rfnoc_ofdm_eq
+  - ettus_rfnoc_streamer_dma_fifo
+  - ettus_rfnoc_streamer_duc
+  - ettus_rfnoc_streamer_radio
+  - ettus_rfnoc_streamer_debug
+  - ettus_rfnoc_streamer_logpwr
+  - ettus_rfnoc_siggen

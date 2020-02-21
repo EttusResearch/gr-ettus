@@ -25,36 +25,33 @@
 #include <ettus/rfnoc_block.h>
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
+
+/*!
+ * \brief RFNoC FIR block
+ * \ingroup ettus
+ */
+class ETTUS_API rfnoc_fir_cci : virtual public rfnoc_block
+{
+public:
+    typedef boost::shared_ptr<rfnoc_fir_cci> sptr;
 
     /*!
-     * \brief RFNoC FIR block
-     * \ingroup ettus
+     * \param taps Taps
+     * \param dev device3 instance
+     * \param block_select Block select
+     * \param device_select Device select
      */
-    class ETTUS_API rfnoc_fir_cci : virtual public rfnoc_block
-    {
-     public:
-      typedef boost::shared_ptr<rfnoc_fir_cci> sptr;
+    static sptr make(const std::vector<int>& taps,
+                     const device3::sptr& dev,
+                     const int block_select = -1,
+                     const int device_select = -1);
 
-      /*!
-       * \param taps Taps
-       * \param dev device3 instance
-       * \param block_select Block select
-       * \param device_select Device select
-       */
-      static sptr make(
-          const std::vector<int> &taps,
-          const device3::sptr &dev,
-          const int block_select=-1,
-          const int device_select=-1
-      );
+    //! Update the filter taps
+    virtual void set_taps(const std::vector<int>& taps) = 0;
+};
 
-      //! Update the filter taps
-      virtual void set_taps(const std::vector<int> &taps) = 0;
-    };
-
-  } // namespace ettus
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_RFNOC_FIR_CCI_H */
-

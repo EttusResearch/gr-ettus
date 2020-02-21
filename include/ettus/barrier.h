@@ -22,120 +22,112 @@
 #define INCLUDED_GR_ETTUS_BARRIER_H
 
 #include <ettus/api.h>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/condition_variable.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
+#include <boost/thread/condition_variable.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 
 #define BOOST_IPC_DETAIL boost::interprocess::ipcdetail
 
-namespace gr{
-    namespace ettus{
+namespace gr {
+namespace ettus {
 
-    //! A 32-bit integer that can be atomically accessed
-    class ETTUS_API atomic_uint32_t{
-    public:
+//! A 32-bit integer that can be atomically accessed
+class ETTUS_API atomic_uint32_t
+{
+public:
+    //! Create a new atomic 32-bit integer, initialized to zero
+    inline atomic_uint32_t(void) { this->write(0); }
 
-        //! Create a new atomic 32-bit integer, initialized to zero
-        inline atomic_uint32_t(void){
-            this->write(0);
+    //! Compare with cmp, swap with newval if same, return old value
+    inline uint32_t cas(uint32_t newval, uint32_t cmp)
+    {
+        return BOOST_IPC_DETAIL::atomic_cas32(&_num, newval, cmp);
+    }
+
+    //! Sets the atomic integer to a new value
+    inline void write(const uint32_t newval)
+    {
+        BOOST_IPC_DETAIL::atomic_write32(&_num, newval);
+    }
+
+    //! Gets the current value of the atomic integer
+    inline uint32_t read(void) { return BOOST_IPC_DETAIL::atomic_read32(&_num); }
+
+    //! Increment by 1 and return the old value
+    inline uint32_t inc(void) { return BOOST_IPC_DETAIL::atomic_inc32(&_num); }
+
+    //! Decrement by 1 and return the old value
+    inline uint32_t dec(void) { return BOOST_IPC_DETAIL::atomic_dec32(&_num); }
+
+private:
+    volatile uint32_t _num;
+};
+
+class ETTUS_API reusable_barrier
+{
+public:
+    reusable_barrier() : _size(0) {}
+
+    reusable_barrier(const size_t size) : _size(size) {}
+
+    //! Resize the barrier for N threads
+    void resize(const size_t size) { _size = size; }
+
+    /*!
+     * Force the barrier wait to throw a boost::thread_interrupted
+     * The threads were not getting the interruption_point on windows.
+     */
+    void interrupt(void) { _done.inc(); }
+
+    //! Wait on the barrier condition
+    inline void wait(void)
+    {
+        if (_size == 1)
+            return;
+
+        // entry barrier with condition variable
+        _entry_counter.inc();
+        _entry_counter.cas(0, _size);
+        boost::mutex::scoped_lock lock(_mutex);
+        while (_entry_counter.read() != 0) {
+            this->check_interrupt();
+            _cond.timed_wait(lock, boost::posix_time::milliseconds(1));
         }
+        lock.unlock(); // unlock before notify
+        _cond.notify_one();
 
-        //! Compare with cmp, swap with newval if same, return old value
-        inline uint32_t cas(uint32_t newval, uint32_t cmp){
-            return BOOST_IPC_DETAIL::atomic_cas32(&_num, newval, cmp);
-        }
+        // exit barrier to ensure known condition of entry count
+        _exit_counter.inc();
+        _exit_counter.cas(0, _size);
+        while (_exit_counter.read() != 0)
+            this->check_interrupt();
+    }
 
-        //! Sets the atomic integer to a new value
-        inline void write(const uint32_t newval){
-            BOOST_IPC_DETAIL::atomic_write32(&_num, newval);
-        }
+    //! Wait on the barrier condition
+    inline void wait_others(void)
+    {
+        while (_entry_counter.read() != (_size - 1))
+            this->check_interrupt();
+    }
 
-        //! Gets the current value of the atomic integer
-        inline uint32_t read(void){
-            return BOOST_IPC_DETAIL::atomic_read32(&_num);
-        }
+private:
+    size_t _size;
+    ettus::atomic_uint32_t _entry_counter;
+    ettus::atomic_uint32_t _exit_counter;
+    ettus::atomic_uint32_t _done;
+    boost::mutex _mutex;
+    boost::condition_variable _cond;
 
-        //! Increment by 1 and return the old value
-        inline uint32_t inc(void){
-            return BOOST_IPC_DETAIL::atomic_inc32(&_num);
-        }
+    inline void check_interrupt(void)
+    {
+        if (_done.read() != 0)
+            throw boost::thread_interrupted();
+        boost::this_thread::interruption_point();
+        boost::this_thread::yield();
+    }
+};
 
-        //! Decrement by 1 and return the old value
-        inline uint32_t dec(void){
-            return BOOST_IPC_DETAIL::atomic_dec32(&_num);
-        }
-
-    private:
-        volatile uint32_t _num;
-    };
-
-    class ETTUS_API reusable_barrier{
-    public:
-
-        reusable_barrier():_size (0) {}
-
-        reusable_barrier(const size_t size):_size(size) {}
-
-        //! Resize the barrier for N threads
-        void resize(const size_t size){
-            _size = size;
-        }
-
-        /*!
-         * Force the barrier wait to throw a boost::thread_interrupted
-         * The threads were not getting the interruption_point on windows.
-         */
-        void interrupt(void)
-        {
-            _done.inc();
-        }
-
-        //! Wait on the barrier condition
-        inline void wait(void)
-        {
-            if (_size == 1) return;
-
-            //entry barrier with condition variable
-            _entry_counter.inc();
-            _entry_counter.cas(0, _size);
-            boost::mutex::scoped_lock lock(_mutex);
-            while (_entry_counter.read() != 0)
-            {
-                this->check_interrupt();
-                _cond.timed_wait(lock, boost::posix_time::milliseconds(1));
-            }
-            lock.unlock(); //unlock before notify
-            _cond.notify_one();
-
-            //exit barrier to ensure known condition of entry count
-            _exit_counter.inc();
-            _exit_counter.cas(0, _size);
-            while (_exit_counter.read() != 0) this->check_interrupt();
-        }
-
-        //! Wait on the barrier condition
-        inline void wait_others(void)
-        {
-            while (_entry_counter.read() != (_size-1)) this->check_interrupt();
-        }
-
-    private:
-        size_t _size;
-        ettus::atomic_uint32_t _entry_counter;
-        ettus::atomic_uint32_t _exit_counter;
-        ettus::atomic_uint32_t _done;
-        boost::mutex _mutex;
-        boost::condition_variable _cond;
-
-        inline void check_interrupt(void)
-        {
-            if (_done.read() != 0) throw boost::thread_interrupted();
-            boost::this_thread::interruption_point();
-            boost::this_thread::yield();
-        }
-    };
-
-  } // namespace ettus
+} // namespace ettus
 } // namespace gr
 #endif /* INCLUDED_GR_ETTUS_BARRIER_H */

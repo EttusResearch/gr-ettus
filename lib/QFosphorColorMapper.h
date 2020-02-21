@@ -22,47 +22,45 @@
 #ifndef INCLUDED_ETTUS_QFOSPHORCOLORMAPPER_H
 #define INCLUDED_ETTUS_QFOSPHORCOLORMAPPER_H
 
-#include <QObject>
 #include <QFile>
+#include <QOpenGLShaderProgram>
 #include <QGradient>
+#include <QObject>
 #include <QPixmap>
-#include <QGLShaderProgram>
 
 #include <map>
 #include <string>
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
 
-    class QFosphorColorMapper : public ::QObject
-    {
-      Q_OBJECT
+class QFosphorColorMapper : public ::QObject
+{
+    Q_OBJECT
 
-     public:
-      QFosphorColorMapper(QObject *parent = NULL);
+public:
+    QFosphorColorMapper(QObject* parent = NULL);
 
-      int  loadFromFile(QFile &file);
-      bool addPalette(std::string name, QLinearGradient &gradient);
-      bool addPalette(std::string name, QPixmap &pixmap);
+    int loadFromFile(QFile& file);
+    bool addPalette(std::string name, QLinearGradient& gradient);
+    bool addPalette(std::string name, QPixmap& pixmap);
 
-      void drawScale(std::string name, float x0, float y0, float x1, float y1);
+    void drawScale(std::string name, float x0, float y0, float x1, float y1);
 
-      void enable(std::string name, GLuint tex_id);
-      void disable();
+    void enable(std::string name, GLuint tex_id);
+    void disable();
 
-     private:
-      QGLShaderProgram *shader;
+private:
+    QOpenGLShaderProgram* shader;
 
-      int u_cmap;
-      int u_tex;
-      int u_range;
+    int u_cmap;
+    int u_tex;
+    int u_range;
 
-      std::map<std::string, GLuint> palettes;
-    };
+    std::map<std::string, GLuint> palettes;
+};
 
-  } // namespace fosphor
-} // namespace fosphor
+} // namespace ettus
+} // namespace gr
 
 #endif /* INCLUDED_ETTUS_QFOSPHORCOLORMAPPER_H */
-
-// vim: ts=2 sw=2 expandtab

@@ -29,16 +29,16 @@
 
 #include <uhd/device3.hpp>
 //#ifndef INCLUDED_UHD_USRP_MULTI_USRP_HPP
-//namespace uhd {
-  //namespace usrp {
-    //class multi_usrp;
-  //}
+// namespace uhd {
+// namespace usrp {
+// class multi_usrp;
+//}
 //}
 //#endif
 
 namespace gr {
-  //namespace uhd {
-  namespace ettus {
+// namespace uhd {
+namespace ettus {
 
 /*!
  * \brief A representation of a generation 3 USRP device.
@@ -48,26 +48,26 @@ namespace gr {
  * many blocks that all use the same UHD device instantiation. This
  * class allows this UHD device to be shared between blocks.
  */
-//class UHD_API device3
+// class UHD_API device3
 class ETTUS_API device3
 {
- public:
-  typedef boost::shared_ptr<device3> sptr;
-  virtual ~device3() {};
+public:
+    typedef boost::shared_ptr<device3> sptr;
+    virtual ~device3(){};
 
-  //! Return a pointer to the underlying multi_usrp device
-  virtual boost::shared_ptr< ::uhd::device3 > get_device(void) = 0;
+    //! Return a pointer to the underlying multi_usrp device
+    virtual boost::shared_ptr<::uhd::device3> get_device(void) = 0;
 
-  virtual void connect(const std::string &block1, size_t src_block_port, const std::string block2, size_t dst_block_port) = 0;
-  virtual void connect(const std::string &block1, const std::string block2) = 0;
+    virtual void connect(const std::string& block1,
+                         size_t src_block_port,
+                         const std::string block2,
+                         size_t dst_block_port) = 0;
+    virtual void connect(const std::string& block1, const std::string block2) = 0;
 
-  static sptr make(
-      const ::uhd::device_addr_t &device_addr
-  );
-
+    static sptr make(const ::uhd::device_addr_t& device_addr);
 };
 
-  } // namespace uhd
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_UHD_DEVICE3_H */

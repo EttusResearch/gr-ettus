@@ -25,31 +25,30 @@
 #include <ettus/rfnoc_block.h>
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
+
+/*!
+ * \brief RFNoC fosphor block
+ * \ingroup ettus
+ */
+class ETTUS_API rfnoc_fosphor_c : virtual public rfnoc_block
+{
+public:
+    typedef boost::shared_ptr<rfnoc_fosphor_c> sptr;
 
     /*!
-     * \brief RFNoC fosphor block
-     * \ingroup ettus
+     * \param fft_size The size of the FFT (num of bins)
+     * \param dev device3 instance
+     * \param block_select Block select
+     * \param device_select Device select
      */
-    class ETTUS_API rfnoc_fosphor_c : virtual public rfnoc_block
-    {
-     public:
-      typedef boost::shared_ptr<rfnoc_fosphor_c> sptr;
+    static sptr make(const int fft_size,
+                     const device3::sptr& dev,
+                     const int block_select = -1,
+                     const int device_select = -1);
+};
 
-      /*!
-       * \param fft_size The size of the FFT (num of bins)
-       * \param dev device3 instance
-       * \param block_select Block select
-       * \param device_select Device select
-       */
-      static sptr make(
-          const int fft_size,
-          const device3::sptr &dev, const int block_select=-1, const int device_select=-1
-      );
-    };
-
-  } // namespace ettus
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_RFNOC_FOSPHOR_C_H */
-
