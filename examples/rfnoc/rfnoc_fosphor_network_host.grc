@@ -1,859 +1,308 @@
-<?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.13'?>
-<flow_graph>
-  <timestamp>Mon Aug 24 13:33:35 2015</timestamp>
-  <block>
-    <key>options</key>
-    <param>
-      <key>author</key>
-      <value></value>
-    </param>
-    <param>
-      <key>window_size</key>
-      <value>2**12, 2**12</value>
-    </param>
-    <param>
-      <key>category</key>
-      <value>Custom</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>description</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(7, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>generate_options</key>
-      <value>qt_gui</value>
-    </param>
-    <param>
-      <key>hier_block_src_path</key>
-      <value>.:</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>rfnoc_fosphor_network_host</value>
-    </param>
-    <param>
-      <key>max_nouts</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>qt_qss_theme</key>
-      <value></value>
-    </param>
-    <param>
-      <key>realtime_scheduling</key>
-      <value></value>
-    </param>
-    <param>
-      <key>run_command</key>
-      <value>{python} -u {filename}</value>
-    </param>
-    <param>
-      <key>run_options</key>
-      <value>prompt</value>
-    </param>
-    <param>
-      <key>run</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>sizing_mode</key>
-      <value>fixed</value>
-    </param>
-    <param>
-      <key>thread_safe_setters</key>
-      <value></value>
-    </param>
-    <param>
-      <key>title</key>
-      <value></value>
-    </param>
-    <param>
-      <key>placement</key>
-      <value>(0,0)</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(7, 237)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>fft_size</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>512</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>2440e6</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(216, 108)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>10, 0, 1, 5</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>freq</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>50e6</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>10e6</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>6e9</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>32</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(352, 107)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>10, 5, 1, 5</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>76</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value>USRP IP Address</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(7, 75)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>ip_addr</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>"192.168.10.2"</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(7, 174)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>56e6</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>4096</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(624, 108)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>10,11,1,1</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>tdecay</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>16</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>4096</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>1024</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(488, 108)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>10, 10, 1, 1</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>trise</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>16</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>4096</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>uhd_rfnoc_fosphor_display</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>center_freq</key>
-      <value>freq</value>
-    </param>
-    <param>
-      <key>palette</key>
-      <value>iron</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>fft_bins</key>
-      <value>fft_size</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(399, 295)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>0, 0, 10, 12</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>grid_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>uhd_rfnoc_fosphor_display_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>pwr_bins</key>
-      <value>64</value>
-    </param>
-    <param>
-      <key>samp_rate</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>frame_rate</key>
-      <value>15</value>
-    </param>
-    <param>
-      <key>wf_lines</key>
-      <value>512</value>
-    </param>
-    <param>
-      <key>wf_enabled</key>
-      <value>True</value>
-    </param>
-  </block>
-  <block>
-    <key>xmlrpc_client</key>
-    <param>
-      <key>addr</key>
-      <value>ip_addr</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>callback</key>
-      <value>set_freq</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(216, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>xmlrpc_client_freq</value>
-    </param>
-    <param>
-      <key>port</key>
-      <value>8080</value>
-    </param>
-    <param>
-      <key>variable</key>
-      <value>freq</value>
-    </param>
-  </block>
-  <block>
-    <key>xmlrpc_client</key>
-    <param>
-      <key>addr</key>
-      <value>ip_addr</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>callback</key>
-      <value>set_gain</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(352, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>xmlrpc_client_gain</value>
-    </param>
-    <param>
-      <key>port</key>
-      <value>8080</value>
-    </param>
-    <param>
-      <key>variable</key>
-      <value>gain</value>
-    </param>
-  </block>
-  <block>
-    <key>xmlrpc_client</key>
-    <param>
-      <key>addr</key>
-      <value>ip_addr</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>callback</key>
-      <value>set_tdecay</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(624, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>xmlrpc_client_tdecay</value>
-    </param>
-    <param>
-      <key>port</key>
-      <value>8080</value>
-    </param>
-    <param>
-      <key>variable</key>
-      <value>tdecay</value>
-    </param>
-  </block>
-  <block>
-    <key>xmlrpc_client</key>
-    <param>
-      <key>addr</key>
-      <value>ip_addr</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>callback</key>
-      <value>set_trise</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(488, 11)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>xmlrpc_client_trise</value>
-    </param>
-    <param>
-      <key>port</key>
-      <value>8080</value>
-    </param>
-    <param>
-      <key>variable</key>
-      <value>trise</value>
-    </param>
-  </block>
-  <block>
-    <key>zeromq_pull_source</key>
-    <param>
-      <key>address</key>
-      <value>"tcp://" + ip_addr + ":4000"</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(116, 283)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>hwm</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>zeromq_pull_source_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>pass_tags</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>timeout</key>
-      <value>10000</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>fft_size</value>
-    </param>
-  </block>
-  <block>
-    <key>zeromq_pull_source</key>
-    <param>
-      <key>address</key>
-      <value>"tcp://" + ip_addr + ":4001"</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(120, 396)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>hwm</key>
-      <value>-1</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>zeromq_pull_source_0_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>pass_tags</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>timeout</key>
-      <value>10000</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>fft_size</value>
-    </param>
-  </block>
-  <block>
-    <key>zeromq_push_msg_sink</key>
-    <param>
-      <key>address</key>
-      <value>tcp://*:4001</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(664, 340)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>zeromq_push_msg_sink_0</value>
-    </param>
-    <param>
-      <key>timeout</key>
-      <value>100</value>
-    </param>
-  </block>
-  <connection>
-    <source_block_id>uhd_rfnoc_fosphor_display_0</source_block_id>
-    <sink_block_id>zeromq_push_msg_sink_0</sink_block_id>
-    <source_key>cfg</source_key>
-    <sink_key>in</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>zeromq_pull_source_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_fosphor_display_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>zeromq_pull_source_0_0</source_block_id>
-    <sink_block_id>uhd_rfnoc_fosphor_display_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-</flow_graph>
+options:
+  parameters:
+    author: ''
+    category: Custom
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: rfnoc_fosphor_network_host
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: ''
+    window_size: 2**12, 2**12
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [7, 12]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: fft_size
+  id: variable
+  parameters:
+    comment: ''
+    value: '512'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [7, 237]
+    rotation: 0
+    state: enabled
+- name: freq
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 10, 0, 1, 5
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: 50e6
+    step: 10e6
+    stop: 6e9
+    value: 2440e6
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 108]
+    rotation: 0
+    state: enabled
+- name: gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 10, 5, 1, 5
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '76'
+    value: '32'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [352, 107]
+    rotation: 0
+    state: enabled
+- name: ip_addr
+  id: variable
+  parameters:
+    comment: USRP IP Address
+    value: '"192.168.10.2"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [7, 75]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 56e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [7, 174]
+    rotation: 0
+    state: enabled
+- name: tdecay
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 10,11,1,1
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '16'
+    stop: '4096'
+    value: '4096'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 108]
+    rotation: 0
+    state: enabled
+- name: trise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 10, 10, 1, 1
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '16'
+    stop: '4096'
+    value: '1024'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [488, 108]
+    rotation: 0
+    state: enabled
+- name: ettus_rfnoc_fosphor_display_0
+  id: ettus_rfnoc_fosphor_display
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: '0'
+    comment: ''
+    fft_bins: fft_size
+    frame_rate: '30'
+    grid_enabled: 'True'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    palette: iron
+    pwr_bins: '64'
+    samp_rate: samp_rate
+    wf_enabled: 'True'
+    wf_lines: '512'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [446, 294]
+    rotation: 0
+    state: true
+- name: xmlrpc_client_freq
+  id: xmlrpc_client
+  parameters:
+    addr: ip_addr
+    alias: ''
+    callback: set_freq
+    comment: ''
+    port: '8080'
+    variable: freq
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 12]
+    rotation: 0
+    state: enabled
+- name: xmlrpc_client_gain
+  id: xmlrpc_client
+  parameters:
+    addr: ip_addr
+    alias: ''
+    callback: set_gain
+    comment: ''
+    port: '8080'
+    variable: gain
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [352, 12]
+    rotation: 0
+    state: enabled
+- name: xmlrpc_client_tdecay
+  id: xmlrpc_client
+  parameters:
+    addr: ip_addr
+    alias: ''
+    callback: set_tdecay
+    comment: ''
+    port: '8080'
+    variable: tdecay
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 12]
+    rotation: 0
+    state: enabled
+- name: xmlrpc_client_trise
+  id: xmlrpc_client
+  parameters:
+    addr: ip_addr
+    alias: ''
+    callback: set_trise
+    comment: ''
+    port: '8080'
+    variable: trise
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [488, 11]
+    rotation: 0
+    state: enabled
+- name: zeromq_pull_source_0
+  id: zeromq_pull_source
+  parameters:
+    address: '"tcp://" + ip_addr + ":4000"'
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pass_tags: 'True'
+    timeout: '10000'
+    type: byte
+    vlen: fft_size
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [116, 283]
+    rotation: 0
+    state: enabled
+- name: zeromq_pull_source_0_0
+  id: zeromq_pull_source
+  parameters:
+    address: '"tcp://" + ip_addr + ":4001"'
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pass_tags: 'True'
+    timeout: '10000'
+    type: byte
+    vlen: fft_size
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [120, 396]
+    rotation: 0
+    state: enabled
+- name: zeromq_push_msg_sink_0
+  id: zeromq_push_msg_sink
+  parameters:
+    address: tcp://*:4001
+    affinity: ''
+    alias: ''
+    comment: ''
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [787, 339]
+    rotation: 0
+    state: enabled
+
+connections:
+- [ettus_rfnoc_fosphor_display_0, cfg, zeromq_push_msg_sink_0, in]
+- [zeromq_pull_source_0, '0', ettus_rfnoc_fosphor_display_0, '0']
+- [zeromq_pull_source_0_0, '0', ettus_rfnoc_fosphor_display_0, '1']
+
+metadata:
+  file_format: 1

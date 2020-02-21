@@ -271,7 +271,7 @@ class ModToolAdd(ModTool):
         """
         fname_py_qa = 'qa_' + self._info['blockname'] + '.py'
         self._write_tpl('qa_python', self._info['pydir'], fname_py_qa)
-        os.chmod(os.path.join(self._info['pydir'], fname_py_qa), 0755)
+        os.chmod(os.path.join(self._info['pydir'], fname_py_qa), 0o755)
         self.scm.mark_files_updated((os.path.join(self._info['pydir'], fname_py_qa),))
         if self._skip_cmakefiles or CMakeFileEditor(self._file['cmpython']).check_for_glob('qa_*.py'):
             return

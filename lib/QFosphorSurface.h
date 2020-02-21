@@ -21,8 +21,8 @@
 #ifndef INCLUDED_ETTUS_QFOSPHORSURFACE_H
 #define INCLUDED_ETTUS_QFOSPHORSURFACE_H
 
-#include <QGLWidget>
-#include <QGLFunctions>
+#include <QOpenGLFunctions>
+#include <QOpenGLWidget>
 
 #include <string>
 
@@ -31,72 +31,72 @@ extern "C" {
 }
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
 
-    class QFosphorColorMapper;
+class QFosphorColorMapper;
 
-    class QFosphorSurface : public ::QGLWidget, protected ::QGLFunctions
-    {
-      Q_OBJECT
+class QFosphorSurface : public ::QOpenGLWidget, protected ::QOpenGLFunctions
+{
+    Q_OBJECT
 
-     protected:
-      void initializeGL();
-      void resizeGL(int width, int height);
-      void paintGL();
+protected:
+    void initializeGL();
+    void resizeGL(int width, int height);
+    void paintGL();
 
-     public:
-      QFosphorSurface(int fft_bins, int pwr_bins, int wf_lines, QWidget *parent);
-      virtual ~QFosphorSurface();
+public:
+    QFosphorSurface(int fft_bins, int pwr_bins, int wf_lines, QWidget* parent);
+    virtual ~QFosphorSurface();
 
-      void setFrequencyRange(const double center_freq, const double span);
-      void setWaterfall(bool enabled);
-      void setGrid(bool enabled);
-      void setPalette(std::string name);
-      void sendFrame(void *frame, int frame_len);
-      void sendWaterfall(const uint8_t *wf, int n);
+    void setFrequencyRange(const double center_freq, const double span);
+    void setWaterfall(bool enabled);
+    void setGrid(bool enabled);
+    void setPalette(std::string name);
+    void sendFrame(void* frame, int frame_len);
+    void sendWaterfall(const uint8_t* wf, int n);
 
-     private:
-      void drawHistogram();
-      void drawHistogramIntensityScale();
-      void drawSpectrum();
-      void drawGrid();
-      void drawWaterfall();
-      void drawWaterfallIntensityScale();
-      void drawMargins();
-      void uploadFrameData();
-      void uploadWaterfallData();
-      void refreshPowerAxis();
-      void refreshFrequencyAxis();
-      void refreshLayout();
+private:
+    void drawHistogram();
+    void drawHistogramIntensityScale();
+    void drawSpectrum();
+    void drawGrid();
+    void drawWaterfall();
+    void drawWaterfallIntensityScale();
+    void drawMargins();
+    void uploadFrameData();
+    void uploadWaterfallData();
+    void refreshPowerAxis();
+    void refreshFrequencyAxis();
+    void refreshLayout();
 
-      int fft_bins;
-      int pwr_bins;
-      int wf_lines;
+    int fft_bins;
+    int pwr_bins;
+    int wf_lines;
 
-      bool grid_enabled;
-      std::string palette;
+    bool grid_enabled;
+    std::string palette;
 
-      struct {
+    struct {
         bool dirty;
-        void *data;
+        void* data;
         GLuint tex;
         GLuint vbo;
-        float *vbo_buf;
-      } frame;
+        float* vbo_buf;
+    } frame;
 
-      struct {
+    struct {
         bool dirty;
         int pos;
-        uint8_t *data_buf;
+        uint8_t* data_buf;
         GLuint tex;
-      } wf;
+    } wf;
 
-      struct {
-        bool  dirty;
-        int   width;
-        int   height;
+    struct {
+        bool dirty;
+        int width;
+        int height;
 
-        bool  wf_enabled;
+        bool wf_enabled;
 
         float x[4];
         float y[6];
@@ -105,16 +105,14 @@ namespace gr {
 
         GLuint pwr_tex;
         GLuint freq_tex;
-      } layout;
+    } layout;
 
-      QFosphorColorMapper *cmap;
+    QFosphorColorMapper* cmap;
 
-      struct freq_axis freq_axis;
-    };
+    struct freq_axis freq_axis;
+};
 
-  } // namespace fosphor
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_QFOSPHORSURFACE_H */
-
-// vim: ts=2 sw=2 expandtab

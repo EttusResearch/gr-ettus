@@ -46,6 +46,10 @@
 // block headers
 ////////////////////////////////////////////////////////////////////////
 %ignore gr::uhd::device3::get_device;
+%rename("set_arg_int") set_arg(const std::string&, const int, const size_t);
+%rename("set_arg_double") set_arg(const std::string&, const double, const size_t);
+%rename("set_arg_str") set_arg(const std::string&, const std::string&, const size_t);
+
 %{
 #include <uhd/types/time_spec.hpp>
 #include <uhd/usrp/multi_usrp.hpp> // This conveniently includes all the things, we don't actually need multi_usrp

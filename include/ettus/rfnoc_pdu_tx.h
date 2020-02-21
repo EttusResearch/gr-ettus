@@ -25,37 +25,34 @@
 #include <ettus/rfnoc_block.h>
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
+
+/*!
+ * \brief RFNoC fosphor block
+ * \ingroup ettus
+ */
+class ETTUS_API rfnoc_pdu_tx : virtual public rfnoc_block
+{
+public:
+    typedef boost::shared_ptr<rfnoc_pdu_tx> sptr;
 
     /*!
-     * \brief RFNoC fosphor block
-     * \ingroup ettus
+     * \param dev device3 instance
+     * \param tx_stream_args Tx Stream Args
+     * \param rx_stream_args Tx Stream Args
+     * \param block_name Block name, e.g. "FFT"
+     * \param block_select Block select
+     * \param device_select Device select
      */
-    class ETTUS_API rfnoc_pdu_tx : virtual public rfnoc_block
-    {
-     public:
-      typedef boost::shared_ptr<rfnoc_pdu_tx> sptr;
+    static sptr make(const device3::sptr& dev,
+                     const ::uhd::stream_args_t& tx_stream_args,
+                     const ::uhd::stream_args_t& rx_stream_args,
+                     const std::string& block_name,
+                     const int block_select,
+                     const int device_select = -1);
+};
 
-      /*!
-       * \param dev device3 instance
-       * \param tx_stream_args Tx Stream Args
-       * \param rx_stream_args Tx Stream Args
-       * \param block_name Block name, e.g. "FFT"
-       * \param block_select Block select
-       * \param device_select Device select
-       */
-      static sptr make(
-          const device3::sptr &dev,
-          const ::uhd::stream_args_t &tx_stream_args,
-          const ::uhd::stream_args_t &rx_stream_args,
-	  const std::string &block_name,
-          const int block_select,
-          const int device_select=-1
-      );
-    };
-
-  } // namespace ettus
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_RFNOC_FOSPHOR_C_H */
-

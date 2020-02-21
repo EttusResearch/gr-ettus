@@ -25,9 +25,9 @@
 #include <gnuradio/attributes.h>
 
 #ifdef gnuradio_ettus_EXPORTS
-#  define ETTUS_API __GR_ATTR_EXPORT
+#define ETTUS_API __GR_ATTR_EXPORT
 #else
-#  define ETTUS_API __GR_ATTR_IMPORT
+#define ETTUS_API __GR_ATTR_IMPORT
 #endif
 
 #endif /* INCLUDED_ETTUS_API_H */

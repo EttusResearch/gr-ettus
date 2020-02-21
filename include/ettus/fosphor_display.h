@@ -22,8 +22,8 @@
 #ifndef INCLUDED_ETTUS_FOSPHOR_DISPLAY_H
 #define INCLUDED_ETTUS_FOSPHOR_DISPLAY_H
 
-#include <ettus/api.h>
 #include <gnuradio/sync_block.h>
+#include <ettus/api.h>
 
 #include <string>
 
@@ -31,49 +31,47 @@ class QApplication;
 class QWidget;
 
 namespace gr {
-  namespace ettus {
+namespace ettus {
+
+/*!
+ * \brief QT GUI Display block for RFNoC fosphor
+ * \ingroup ettus
+ */
+class ETTUS_API fosphor_display : virtual public gr::block
+{
+public:
+    typedef boost::shared_ptr<fosphor_display> sptr;
 
     /*!
-     * \brief QT GUI Display block for RFNoC fosphor
-     * \ingroup ettus
+     * \brief Return a shared_ptr to a new instance of ettus::fosphor_display
      */
-    class ETTUS_API fosphor_display : virtual public gr::block
-    {
-     public:
-      typedef boost::shared_ptr<fosphor_display> sptr;
+    static sptr make(const int fft_bins = 256,
+                     const int pwr_bins = 64,
+                     const int wf_lines = 512,
+                     QWidget* parent = NULL);
 
-      /*!
-       * \brief Return a shared_ptr to a new instance of ettus::fosphor_display
-       */
-      static sptr make(
-          const int fft_bins = 256,
-          const int pwr_bins = 64,
-          const int wf_lines = 512,
-          QWidget *parent = NULL
-      );
+    /* Block API */
+    virtual void set_frequency_range(const double center_freq,
+                                     const double samp_rate) = 0;
+    virtual void set_waterfall(bool enabled) = 0;
+    virtual void set_grid(bool enabled) = 0;
+    virtual void set_palette(std::string name) = 0;
+    virtual void set_frame_rate(int fps) = 0;
 
-      /* Block API */
-      virtual void set_frequency_range(const double center_freq,
-                                       const double samp_rate) = 0;
-      virtual void set_waterfall(bool enabled) = 0;
-      virtual void set_grid(bool enabled) = 0;
-      virtual void set_palette(std::string name) = 0;
-      virtual void set_frame_rate(int fps) = 0;
-
-      /* QT GUI Widget stuff */
-      virtual void exec_() = 0;
-      virtual QWidget* qwidget() = 0;
+    /* QT GUI Widget stuff */
+    virtual void exec_() = 0;
+    virtual QWidget* qwidget() = 0;
 
 #if defined(PY_VERSION) || defined(SWIGPYTHON)
-      virtual PyObject* pyqwidget() = 0;
+    virtual PyObject* pyqwidget() = 0;
 #else
-      virtual void* pyqwidget() = 0;
+    virtual void* pyqwidget() = 0;
 #endif
 
-      QApplication *d_qApplication;
-    };
+    QApplication* d_qApplication;
+};
 
-  } // namespace ettus
+} // namespace ettus
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_FOSPHOR_DISPLAY_H */

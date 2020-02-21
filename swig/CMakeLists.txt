@@ -21,7 +21,7 @@
 # Check if there is C++ code at all
 ########################################################################
 if(NOT ettus_sources)
-	MESSAGE(STATUS "No C++ sources... skipping swig/")
+	message(STATUS "No C++ sources... skipping swig/")
 	return()
 endif(NOT ettus_sources)
 
@@ -31,6 +31,7 @@ endif(NOT ettus_sources)
 find_package(SWIG)
 find_package(PythonLibs 2)
 if(NOT SWIG_FOUND OR NOT PYTHONLIBS_FOUND)
+    message(STATUS "SWIG or Python libs not found. Skipping Python support.")
     return()
 endif()
 include(GrSwig)
@@ -39,19 +40,22 @@ include(GrPython)
 ########################################################################
 # Setup swig generation
 ########################################################################
-foreach(incdir ${GNURADIO_RUNTIME_INCLUDE_DIRS})
-    list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gnuradio/swig)
-endforeach(incdir)
+set(GR_SWIG_INCLUDE_DIRS
+    $<TARGET_PROPERTY:gnuradio::runtime_swig,INTERFACE_INCLUDE_DIRECTORIES>
+    ${UHD_INCLUDE_DIRS}
+)
+set(GR_SWIG_TARGET_DEPS gnuradio::runtime_swig)
 
 set(GR_SWIG_LIBRARIES gnuradio-ettus)
+
 set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/ettus_swig_doc.i)
 set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+GR_SWIG_MAKE(ettus_swig ettus_swig.i)
 
 if(ENABLE_QT)
     set(GR_SWIG_FLAGS "-DENABLE_QT")
 endif(ENABLE_QT)
-
-GR_SWIG_MAKE(ettus_swig ettus_swig.i)
 
 ########################################################################
 # Install the build swig module
