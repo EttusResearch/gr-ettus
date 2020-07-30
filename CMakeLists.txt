@@ -33,7 +33,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 set(VERSION_MAJOR 3)
 set(VERSION_API   8)
 set(VERSION_ABI   0)
-set(VERSION_PATCH git)
+set(VERSION_PATCH 0)
 
 cmake_policy(SET CMP0011 NEW)
 
@@ -95,10 +95,10 @@ endif(APPLE)
 ########################################################################
 # Find gr-ettus build dependencies
 ########################################################################
-find_package(UHD REQUIRED)
-if(NOT UHD_RFNOC_FOUND)
-    message(FATAL_ERROR "RFNoC not found.")
-endif(NOT UHD_RFNOC_FOUND)
+find_package(UHD "4.0" REQUIRED)
+if(NOT UHD_FOUND)
+    message(FATAL_ERROR "UHD >= 4.0 not found.")
+endif(NOT UHD_FOUND)
 
 find_package(PythonLibs 2)
 if(NOT PYTHONLIBS_FOUND)
@@ -106,7 +106,11 @@ if(NOT PYTHONLIBS_FOUND)
 endif(NOT PYTHONLIBS_FOUND)
 
 if(ENABLE_QT)
-    find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+    find_package(Qt5 COMPONENTS Core Gui Widgets OpenGL REQUIRED)
+    if(Qt5Widgets_FOUND)
+        set(ENABLE_FOSPHOR TRUE)
+        message(STATUS "Qt enabled and Qt5 libraries found; Fosphor enabled")
+    endif(Qt5Widgets_FOUND)
     #if (QT_FOUND)
 	#include(GrSetupQt4)
     #endif (QT_FOUND)

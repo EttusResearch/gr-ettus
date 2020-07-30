@@ -2,6 +2,7 @@
 /*
  * Copyright 2013-2015 Sylvain Munaut
  * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, A National Instruments Brand.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +24,7 @@
 #define INCLUDED_ETTUS_QFOSPHORCOLORMAPPER_H
 
 #include <QFile>
-#include <QOpenGLShaderProgram>
+#include <QGLShaderProgram>
 #include <QGradient>
 #include <QObject>
 #include <QPixmap>
@@ -32,6 +33,7 @@
 #include <string>
 
 namespace gr {
+
 namespace ettus {
 
 class QFosphorColorMapper : public ::QObject
@@ -51,7 +53,7 @@ public:
     void disable();
 
 private:
-    QOpenGLShaderProgram* shader;
+    QGLShaderProgram* shader;
 
     int u_cmap;
     int u_tex;
@@ -61,6 +63,9 @@ private:
 };
 
 } // namespace ettus
+
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_QFOSPHORCOLORMAPPER_H */
+
+// vim: ts=2 sw=2 expandtab

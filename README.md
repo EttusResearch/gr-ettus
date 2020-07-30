@@ -8,7 +8,12 @@ For regular USRP operations, this OOT module is *not* required.
 ## Dependencies
 
 This OOT requires GNU Radio version 3.8 with gr-uhd enabled.
-It also requires the rfnoc-devel branch of UHD to be installed.
+It also requires UHD 4.0 to be installed.
+
+Support for the Qt-based Fosphor display block requires that Qt5 be
+installed and must be explicitly enabled in order to be built. To
+enable this support, set the ENABLE\_QT flag to ON when running
+cmake.
 
 ## RFNoC
 

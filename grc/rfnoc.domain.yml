@@ -6,9 +6,5 @@ multiple_connections_per_input: false
 multiple_connections_per_output: false
 
 templates:
--   type: [rfnoc, stream]
-    connect: self.connect(${ make_port_sig(source) }, ${ make_port_sig(sink) })
--   type: [stream, rfnoc]
-    connect: self.connect(${ make_port_sig(source) }, ${ make_port_sig(sink) })
 -   type: [rfnoc, rfnoc]
-    connect: self.device3.connect(self.${ source.parent_block.name }.get_block_id(), ${ source.key }, self.${ sink.parent_block.name }.get_block_id(), ${ sink.key })
+    connect: self.rfnoc_graph.connect(self.${ source.parent_block.name }.get_unique_id(), ${ source.key }, self.${ sink.parent_block.name }.get_unique_id(), ${ sink.key }, False)

@@ -24,8 +24,9 @@
 // header files if UHD was not installed.
 //#ifdef GR_HAVE_UHD
 
-//#define GR_UHD_API
 #define ETTUS_API
+
+#include <uhd/version.hpp>
 
 //suppress 319. No access specifier given for base class name (ignored).
 #pragma SWIG nowarn=319
@@ -38,8 +39,6 @@
 %include "gnuradio.i"
 
 //load generated python docstrings
-//%include "uhd_swig_doc.i"
-//load generated python docstrings
 %include "ettus_swig_doc.i"
 
 ////////////////////////////////////////////////////////////////////////
@@ -50,30 +49,32 @@
 %rename("set_arg_double") set_arg(const std::string&, const double, const size_t);
 %rename("set_arg_str") set_arg(const std::string&, const std::string&, const size_t);
 
+%ignore gr::ettus::rfnoc_graph::create_rx_streamer;
+%ignore gr::ettus::rfnoc_graph::create_tx_streamer;
+%ignore gr::ettus::rfnoc_graph::get_block_ref;
+%ignore gr::ettus::rfnoc_block::get_block_ref;
+%ignore gr::ettus::rfnoc_block::make_block_ref;
+
 %{
 #include <uhd/types/time_spec.hpp>
 #include <uhd/usrp/multi_usrp.hpp> // This conveniently includes all the things, we don't actually need multi_usrp
-#include "ettus/device3.h"
-#include "ettus/rfnoc_fir_cci.h"
-#include "ettus/rfnoc_window_cci.h"
-#include "ettus/rfnoc_radio.h"
-#include "ettus/rfnoc_generic.h"
-#include "ettus/rfnoc_block.h"
-#include "ettus/rfnoc_block_impl.h"
-#include "ettus/rfnoc_fosphor_c.h"
-#include "ettus/rfnoc_pdu_tx.h"
-#include "ettus/rfnoc_pdu_rx.h"
+#include <ettus/rfnoc_graph.h>
+#include <ettus/rfnoc_block_generic.h>
+#include <ettus/rfnoc_block.h>
+#include <ettus/rfnoc_ddc.h>
+#include <ettus/rfnoc_duc.h>
+#include <ettus/rfnoc_rx_radio.h>
+#include <ettus/rfnoc_rx_streamer.h>
+#include <ettus/rfnoc_tx_radio.h>
+#include <ettus/rfnoc_tx_streamer.h>
 %}
 
-#ifdef ENABLE_QT
+#ifdef ENABLE_FOSPHOR
 %{
-#include "ettus/fosphor_display.h"
+#include <ettus/fosphor_display.h>
 %}
 #endif
 
-%include "ettus/rfnoc_block.h"
-
-%include "ettus/rfnoc_block_impl.h"
 ////////////////////////////////////////////////////////////////////////
 // used types
 ////////////////////////////////////////////////////////////////////////
@@ -97,16 +98,12 @@
 
 %include <uhd/types/device_addr.hpp>
 
-%include <uhd/types/io_type.hpp>
-
 %template(range_vector_t) std::vector<uhd::range_t>; //define before range
 %include <uhd/types/ranges.hpp>
 
 %include <uhd/types/tune_request.hpp>
 
 %include <uhd/types/tune_result.hpp>
-
-%include <uhd/types/io_type.hpp>
 
 %include <uhd/types/time_spec.hpp>
 
@@ -130,25 +127,36 @@
 ////////////////////////////////////////////////////////////////////////
 // block magic
 ////////////////////////////////////////////////////////////////////////
+%include <ettus/rfnoc_graph.h>
+%include <ettus/rfnoc_block.h>
+%include <ettus/rfnoc_tx_streamer.h>
+%include <ettus/rfnoc_rx_streamer.h>
+%include <ettus/rfnoc_block_generic.h>
+%include <ettus/rfnoc_ddc.h>
+%include <ettus/rfnoc_duc.h>
+%include <ettus/rfnoc_rx_radio.h>
+%include <ettus/rfnoc_tx_radio.h>
 
-%include "ettus/device3.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, device3)
-%include "ettus/rfnoc_fir_cci.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_cci);
-%include "ettus/rfnoc_window_cci.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window_cci);
-%include "ettus/rfnoc_radio.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_radio);
-%include "ettus/rfnoc_generic.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_generic);
-%include "ettus/rfnoc_fosphor_c.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fosphor_c);
-%include "ettus/rfnoc_pdu_tx.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_pdu_tx);
-%include "ettus/rfnoc_pdu_rx.h"
-GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_pdu_rx);
+%template(set_int_property) gr::ettus::rfnoc_block::set_property<int>;
+%template(set_bool_property) gr::ettus::rfnoc_block::set_property<bool>;
+%template(set_string_property) gr::ettus::rfnoc_block::set_property<std::string>;
+%template(set_double_property) gr::ettus::rfnoc_block::set_property<double>;
 
-#ifdef ENABLE_QT
-%include "ettus/fosphor_display.h"
+%template(get_int_property) gr::ettus::rfnoc_block::get_property<int>;
+%template(get_bool_property) gr::ettus::rfnoc_block::get_property<bool>;
+%template(get_string_property) gr::ettus::rfnoc_block::get_property<std::string>;
+%template(get_double_property) gr::ettus::rfnoc_block::get_property<double>;
+
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_graph)
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_tx_streamer);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_streamer);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_block_generic);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_ddc);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_duc);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_radio);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_tx_radio);
+
+#ifdef ENABLE_FOSPHOR
+%include <ettus/fosphor_display.h>
 GR_SWIG_BLOCK_MAGIC2(ettus, fosphor_display);
 #endif

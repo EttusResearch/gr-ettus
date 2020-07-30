@@ -2,6 +2,7 @@
 /*
  * Copyright 2013-2015 Sylvain Munaut
  * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, A National Instruments Brand.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,13 +32,14 @@
 
 
 namespace gr {
+
 namespace ettus {
 
 QFosphorSurface::QFosphorSurface(int fft_bins,
                                  int pwr_bins,
                                  int wf_lines,
                                  QWidget* parent)
-    : QOpenGLWidget(parent),
+    : QGLWidget(parent),
       fft_bins(fft_bins),
       pwr_bins(pwr_bins),
       wf_lines(wf_lines),
@@ -70,7 +72,7 @@ QFosphorSurface::~QFosphorSurface()
 
 void QFosphorSurface::initializeGL()
 {
-    initializeOpenGLFunctions();
+    initializeGLFunctions();
 
     /* Init frame texture */
     glGenTextures(1, &this->frame.tex);
@@ -667,4 +669,7 @@ void QFosphorSurface::refreshLayout()
 }
 
 } /* namespace ettus */
+
 } /* namespace gr */
+
+// vim: ts=2 sw=2 expandtab

@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, A National Instruments Brand.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +22,8 @@
 #ifndef INCLUDED_ETTUS_QFOSPHORSURFACE_H
 #define INCLUDED_ETTUS_QFOSPHORSURFACE_H
 
-#include <QOpenGLFunctions>
-#include <QOpenGLWidget>
+#include <QGLFunctions>
+#include <QGLWidget>
 
 #include <string>
 
@@ -31,11 +32,12 @@ extern "C" {
 }
 
 namespace gr {
+
 namespace ettus {
 
 class QFosphorColorMapper;
 
-class QFosphorSurface : public ::QOpenGLWidget, protected ::QOpenGLFunctions
+class QFosphorSurface : public ::QGLWidget, protected ::QGLFunctions
 {
     Q_OBJECT
 
@@ -113,6 +115,9 @@ private:
 };
 
 } // namespace ettus
+
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_QFOSPHORSURFACE_H */
+
+// vim: ts=2 sw=2 expandtab

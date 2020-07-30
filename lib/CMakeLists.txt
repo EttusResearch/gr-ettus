@@ -11,25 +11,26 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-if(ENABLE_QT)
-    QT5_ADD_RESOURCES(FOSPHOR_RC_SRCS fosphor.qrc )
+if(ENABLE_FOSPHOR)
+    qt5_add_resources(FOSPHOR_RC_SRCS fosphor.qrc)
     set(CMAKE_AUTOMOC ON)
-    include_directories(${QT_INCLUDE_DIRS})
-endif(ENABLE_QT)
+    include_directories(${Qt5Widgets_INCLUDE_DIRS}
+        ${Qt5OpenGL_INCLUDE_DIRS})
+endif(ENABLE_FOSPHOR)
 
 list(APPEND ettus_sources
-    device3.cc
-    rfnoc_block_impl.cc
-    rfnoc_fir_cci_impl.cc
-    rfnoc_window_cci_impl.cc
-    rfnoc_radio_impl.cc
-    rfnoc_generic_impl.cc
-    rfnoc_fosphor_c_impl.cc
-    rfnoc_pdu_tx_impl.cc
-    rfnoc_pdu_rx_impl.cc
+    rfnoc_block.cc
+    rfnoc_block_generic_impl.cc
+    rfnoc_ddc_impl.cc
+    rfnoc_duc_impl.cc
+    rfnoc_duc_impl.cc
+    rfnoc_graph_impl.cc
+    rfnoc_rx_radio_impl.cc
+    rfnoc_rx_streamer_impl.cc
+    rfnoc_tx_radio_impl.cc
+    rfnoc_tx_streamer_impl.cc
 )
-
-if(ENABLE_QT)
+if(ENABLE_FOSPHOR)
     list(APPEND ettus_sources
         axis.c
         fosphor_display_impl.cc
@@ -37,24 +38,35 @@ if(ENABLE_QT)
         QFosphorSurface.cc
         ${FOSPHOR_RC_SRCS}
     )
-endif(ENABLE_QT)
+endif(ENABLE_FOSPHOR)
 
 set(ettus_sources "${ettus_sources}" PARENT_SCOPE)
 
 add_library(gnuradio-ettus SHARED ${ettus_sources})
-if(ENABLE_QT)
-target_link_libraries(gnuradio-ettus
-    gnuradio::gnuradio-runtime
-    Qt5::Core
-    Qt5::Gui
-    ${UHD_LIBRARIES}
+include(GrPython)
+if(ENABLE_PYTHON)
+    target_compile_definitions(gnuradio-ettus PUBLIC -DENABLE_PYTHON)
+endif(ENABLE_PYTHON)
+
+if(ENABLE_FOSPHOR)
+    target_link_libraries(gnuradio-ettus
+        gnuradio::gnuradio-runtime
+        Qt5::Core
+        Qt5::Gui
+        Qt5::OpenGL
+        ${UHD_LIBRARIES}
+    )
+    if(ENABLE_PYTHON)
+        target_link_libraries(gnuradio-ettus
+            Python::Python
+        )
+    endif(ENABLE_PYTHON)
+else(ENABLE_FOSPHOR)
+    target_link_libraries(gnuradio-ettus
+        gnuradio::gnuradio-runtime
+        ${UHD_LIBRARIES}
 )
-else(ENABLE_QT)
-target_link_libraries(gnuradio-ettus
-    gnuradio::gnuradio-runtime
-    ${UHD_LIBRARIES}
-)
-endif(ENABLE_QT)
+endif(ENABLE_FOSPHOR)
 target_include_directories(gnuradio-ettus
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     PUBLIC $<INSTALL_INTERFACE:include>

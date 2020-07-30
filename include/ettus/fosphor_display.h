@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, LLC. A National Instruments Brand
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@ class QApplication;
 class QWidget;
 
 namespace gr {
+
 namespace ettus {
 
 /*!
@@ -48,14 +50,14 @@ public:
     static sptr make(const int fft_bins = 256,
                      const int pwr_bins = 64,
                      const int wf_lines = 512,
-                     QWidget* parent = NULL);
+                     QWidget* parent = nullptr);
 
     /* Block API */
     virtual void set_frequency_range(const double center_freq,
                                      const double samp_rate) = 0;
     virtual void set_waterfall(bool enabled) = 0;
     virtual void set_grid(bool enabled) = 0;
-    virtual void set_palette(std::string name) = 0;
+    virtual void set_palette(const std::string& name) = 0;
     virtual void set_frame_rate(int fps) = 0;
 
     /* QT GUI Widget stuff */
@@ -72,6 +74,7 @@ public:
 };
 
 } // namespace ettus
+
 } // namespace gr
 
 #endif /* INCLUDED_ETTUS_FOSPHOR_DISPLAY_H */

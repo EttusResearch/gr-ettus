@@ -1,31 +1,28 @@
 '[gr-ettus]':
-- Device Control:
-  - variable_ettus_device3
-- Blocks:
-  - ettus_rfnoc_streamer_packet_resizer
-  - ettus_rfnoc_streamer_window
-  - ettus_rfnoc_pdu_tx
-  - ettus_rfnoc_streamer_vector_iir
-  - ettus_rfnoc_register_logger
-  - ettus_rfnoc_streamer_ddc
-  - ettus_rfnoc_streamer_fir
-  - ettus_rfnoc_digital_gain
-  - ettus_rfnoc_streamer_fifo
-  - ettus_rfnoc_pdu_rx
-  - ettus_rfnoc_ofdm_schmidlcox
-  - ettus_rfnoc_streamer_keep_one_in_n
-  - ettus_rfnoc_register_probe
-  - ettus_rfnoc_streamer_fft
-  - ettus_rfnoc_streamer_fosphor
-  - ettus_rfnoc_streamer_adder
-  - ettus_rfnoc_fosphor_display
-  - ettus_rfnoc_streamer_moving_avg
-  - ettus_rfnoc_ofdm_demap
-  - ettus_rfnoc_split_stream
-  - ettus_rfnoc_ofdm_eq
-  - ettus_rfnoc_streamer_dma_fifo
-  - ettus_rfnoc_streamer_duc
-  - ettus_rfnoc_streamer_radio
-  - ettus_rfnoc_streamer_debug
-  - ettus_rfnoc_streamer_logpwr
-  - ettus_rfnoc_siggen
+- ettus_fosphor_display
+- RFNoC:
+  - Device Control:
+    - ettus_rfnoc_graph
+  - Blocks:
+    - ettus_rfnoc_ddc
+    - ettus_rfnoc_duc
+    - ettus_rfnoc_fft
+    - ettus_rfnoc_fir_filter
+    - ettus_rfnoc_fosphor
+    - ettus_rfnoc_keep_one_in_n
+    - ettus_rfnoc_rx_radio
+    - ettus_rfnoc_tx_radio
+    - ettus_rfnoc_rx_streamer
+    - ettus_rfnoc_tx_streamer
+  - RFNoC Image Builder:
+      - Blocks:
+        - ettus_fpga_ddc
+        - ettus_fpga_duc
+        - ettus_fpga_fft
+        - ettus_fpga_null_src_sink
+      - Core:
+        - ettus_fpga_sep
+        - ettus_fpga_radio
+        - ettus_fpga_x310
+        - ettus_fpga_ctrl_xbar
+        - ettus_fpga_chdr_xbar

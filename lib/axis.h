@@ -22,7 +22,7 @@
 #ifndef __FOSPHOR_AXIS_H__
 #define __FOSPHOR_AXIS_H__
 
-/*! \defgroup axis
+/*! \defgroup axis Fosphor axis-related functions
  *  @{
  */
 

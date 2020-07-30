@@ -2,6 +2,7 @@
 /*
  * Copyright 2013-2015 Sylvain Munaut
  * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, A National Instruments Brand.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +22,19 @@
 
 #include "QFosphorColorMapper.h"
 
-#include <QOpenGLContext>
+#include <QGLContext>
 
 namespace gr {
+
 namespace ettus {
 
 QFosphorColorMapper::QFosphorColorMapper(QObject* parent) : QObject(parent)
 {
     /* Shader init */
-    this->shader = new QOpenGLShaderProgram(this);
+    this->shader = new QGLShaderProgram(this);
 
     this->shader->addShaderFromSourceCode(
-        QOpenGLShader::Fragment,
+        QGLShader::Fragment,
         "uniform sampler2D cmap;\n"
         "uniform sampler2D tex;\n"
         "uniform vec2 range;\n"
@@ -142,7 +144,7 @@ bool QFosphorColorMapper::addPalette(std::string name, QPixmap& pixmap)
     /* Convert to an OpenGL texture */
     /* Note: We use TEXTURE_2D because 1D isn't really supported by Qt
      * and it's also not in OpenGL ES */
-    QOpenGLContext* ctx = (QOpenGLContext*)QOpenGLContext::currentContext();
+    QGLContext* ctx = (QGLContext*)QGLContext::currentContext();
     GLuint tex_id = ctx->bindTexture(pixmap, GL_TEXTURE_2D);
 
     /* Configure behavior */
@@ -216,4 +218,7 @@ void QFosphorColorMapper::disable()
 }
 
 } // namespace ettus
+
 } // namespace gr
+
+// vim: ts=2 sw=2 expandtab

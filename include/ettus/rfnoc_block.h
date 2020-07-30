@@ -1,5 +1,7 @@
 /* -*- c++ -*- */
-/* Copyright 2015 Ettus Research
+/*
+ * Copyright 2015 Ettus Research
+ * Copyright 2020 Ettus Research, A National Instruments Brand.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,87 +19,99 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_UHD_RFNOC_BLOCK_H
-#define INCLUDED_UHD_RFNOC_BLOCK_H
+#ifndef INCLUDED_ETTUS_RFNOC_BLOCK_H
+#define INCLUDED_ETTUS_RFNOC_BLOCK_H
 
 #include <gnuradio/block.h>
-#include <ettus/api.h>
-#include <ettus/device3.h>
-#include <uhd/rfnoc/constants.hpp>
-#include <uhd/stream.hpp>
-#include <uhd/types/time_spec.hpp>
+#include <ettus/rfnoc_graph.h>
+#include <uhd/rfnoc/noc_block_base.hpp>
+#include <string>
 
 namespace gr {
 namespace ettus {
 
-/*!
- * \brief Base class for RFNoC blocks.
+/*! Base class for RFNoC blocks controlled by GNU Radio
  *
  * Any GNU Radio block that is meant to control an RFNoC block
- * should be derived from this class. It will do the following:
- *
- * - Instantiate a UHD block controller class internally. This
- *   exposes access to settings registers and other block configuration
- *   methods.
- * - Map the RFNoC block stream signature to GNU Radio I/O signatures.
- *   If the derived block changes the RFNoC stream signature (e.g., an
- *   FFT block might set a different FFT size than the default), you
- *   must call update_gr_io_signature() to make this change visible to
- *   GNU Radio.
- * - Set the tag propagation to TPP_DONT. This can of course be overridden
- *   in the derived block's constructor.
+ * should be derived from this class.
  */
 class ETTUS_API rfnoc_block : public gr::block
 {
 protected:
-    rfnoc_block(const std::string& name); // Defined in rfnoc_block_impl.cc
-    rfnoc_block() {}                      // For the virtual subclassing
+    // \param block_ref A reference to the underlying block controller
+    rfnoc_block(::uhd::rfnoc::noc_block_base::sptr block_ref);
+
+    rfnoc_block() {} // For virtual subclassing
 
 public:
-    // Add RFNoC-relevant definitions:
-    //! Allows setting a register on the settings bus
-    virtual void
-    set_register(const size_t reg, const uint32_t value, const size_t port = 0) = 0;
-    //! Allows setting a register on the settings bus (named version)
-    virtual void
-    set_register(const std::string& reg, const uint32_t value, const size_t port = 0) = 0;
-    //! Allows reading a readback register on the settings bus
-    virtual uint64_t get_register(const uint32_t reg, const size_t port = 0) = 0;
-    //! Allows reading a readback register on the settings bus (named register version)
-    virtual uint64_t get_register(const std::string& reg, const size_t port = 0) = 0;
-    //! Return the full actual block ID of this block (e.g. 0/FFT_0)
-    virtual std::string get_block_id() const = 0;
+    using sptr = boost::shared_ptr<rfnoc_block>;
 
-    virtual void
-    set_arg(const std::string& key, const int val, const size_t port = 0) = 0;
-    virtual void
-    set_arg(const std::string& key, const double val, const size_t port = 0) = 0;
-    virtual void
-    set_arg(const std::string& key, const std::string& val, const size_t port = 0) = 0;
+    //! Factory function to create a UHD block controller reference
+    //
+    // \param graph Refernce to the flowgraph's RFNoC graph
+    // \param block_args Block args
+    // \param block_name Block name (e.g. "DDC")
+    // \param device_select Device index (motherboard index)
+    // \param block_select Block index
+    // \param max_ref_count Maximum number of references this block can have in
+    //                      the GNU Radio flow graph
+    static ::uhd::rfnoc::noc_block_base::sptr
+    make_block_ref(rfnoc_graph::sptr graph,
+                   const ::uhd::device_addr_t& block_args,
+                   const std::string& block_name,
+                   const int device_select = -1,
+                   const int block_select = -1,
+                   const size_t max_ref_count = 1);
 
-    virtual void set_command_time(const uhd::time_spec_t& time_spec,
-                                  const size_t port = ::uhd::rfnoc::ANY_PORT) = 0;
-    virtual uhd::time_spec_t get_command_time(const size_t port = 0) = 0;
-    virtual void clear_command_time(const size_t port = ::uhd::rfnoc::ANY_PORT) = 0;
+    //! Return a type-cast block reference, or throw if the cast failed.
+    //
+    // \throws std::runtime_error if there is no valid block reference
+    template <typename block_type>
+    std::shared_ptr<block_type> get_block_ref()
+    {
+        auto cast_block_ref = std::dynamic_pointer_cast<block_type>(d_block_ref);
+        if (!cast_block_ref) {
+            throw std::runtime_error(
+                std::string(
+                    "Unable to cast the following block into its desired type: ") +
+                d_block_ref->get_unique_id());
+        }
+        return cast_block_ref;
+    }
 
-    /*! Specify a time stamp at which to start streaming
-     *
-     * This is valid for the next run only.
+    /*! Return the unique ID of the underlying block
      */
-    virtual void set_start_time(const uhd::time_spec_t& spec) = 0;
+    std::string get_unique_id() const;
 
-    // GNU Radio-specific overrides (defined in rfnoc_block_impl.cc)
-    virtual int general_work(int noutput_items,
-                             gr_vector_int& ninput_items,
-                             gr_vector_const_void_star& input_items,
-                             gr_vector_void_star& output_items) = 0;
+    // GNU Radio-specific overrides
 
-    virtual bool check_topology(int ninputs, int noutputs) = 0;
-    virtual bool start() = 0;
-    virtual bool stop() = 0;
+    //! This method should never be called by RFNoC blocks, they do the work
+    // in the FPGA.
+    int general_work(int noutput_items,
+                     gr_vector_int& ninput_items,
+                     gr_vector_const_void_star& input_items,
+                     gr_vector_void_star& output_items);
+
+    template <typename T>
+    void set_property(const std::string& name, const T& value, const size_t port = 0)
+    {
+        d_block_ref->set_property<T>(name, value, port);
+    }
+
+    template <typename T>
+    const T get_property(const std::string& name, const size_t port = 0)
+    {
+        return d_block_ref->get_property<T>(name, port);
+    }
+
+    std::vector<std::string> get_property_ids();
+
+private:
+    //! Reference to the underlying RFNoC block
+    ::uhd::rfnoc::noc_block_base::sptr d_block_ref;
 };
 
 } // namespace ettus
 } // namespace gr
 
-#endif /* INCLUDED_UHD_RFNOC_BLOCK_H */
+#endif /* INCLUDED_ETTUS_RFNOC_BLOCK_H */

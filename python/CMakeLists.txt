@@ -19,8 +19,6 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    fosphor_histo_framer.py
-    rfnoc_register_probe.py
     DESTINATION ${GR_PYTHON_DIR}/ettus
 )
 
@@ -32,5 +30,3 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-ettus)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 
-add_subdirectory(rfnoc_modtool)
-add_subdirectory(utils)

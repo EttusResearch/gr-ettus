@@ -46,16 +46,16 @@ set(GR_SWIG_INCLUDE_DIRS
 )
 set(GR_SWIG_TARGET_DEPS gnuradio::runtime_swig)
 
+if(ENABLE_FOSPHOR)
+    set(GR_SWIG_FLAGS "-DENABLE_FOSPHOR")
+endif(ENABLE_FOSPHOR)
+
 set(GR_SWIG_LIBRARIES gnuradio-ettus)
 
 set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/ettus_swig_doc.i)
 set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 GR_SWIG_MAKE(ettus_swig ettus_swig.i)
-
-if(ENABLE_QT)
-    set(GR_SWIG_FLAGS "-DENABLE_QT")
-endif(ENABLE_QT)
 
 ########################################################################
 # Install the build swig module

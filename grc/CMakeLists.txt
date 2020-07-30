@@ -5,36 +5,41 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+########################################################################
+# Rules for generating the source and sink yml wrappers
+########################################################################
+
 install(FILES
     ettus.tree.yml
-    ettus_device3.block.yml
-    ettus_rfnoc_adder.block.yml
+    rfnoc.domain.yml
+    ettus_fpga_clk.domain.yml
+    ettus_fpga_ctrl.domain.yml
+    ettus_fpga_data.domain.yml
+    ettus_fpga_ddc.block.yml
+    ettus_fpga_duc.block.yml
+    ettus_fpga_fft.block.yml
+    ettus_fpga_io_ctrl_port.domain.yml
+    ettus_fpga_io_radio.domain.yml
+    ettus_fpga_io_time_keeper.domain.yml
+    ettus_fpga_radio.block.yml
+    ettus_fpga_sep.block.yml
+    ettus_fpga_x310.block.yml
     ettus_rfnoc_ddc.block.yml
-    ettus_rfnoc_debug.block.yml
-    ettus_rfnoc_digital_gain.block.yml
-    ettus_rfnoc_dma_fifo.block.yml
     ettus_rfnoc_duc.block.yml
     ettus_rfnoc_fft.block.yml
-    ettus_rfnoc_fifo.block.yml
-    ettus_rfnoc_fir.block.yml
     ettus_rfnoc_fosphor.block.yml
-    ettus_rfnoc_fosphor_display.block.yml
-    ettus_rfnoc_keep_one_in_n.block.yml
-    ettus_rfnoc_logpwr.block.yml
-    ettus_rfnoc_moving_avg.block.yml
-    ettus_rfnoc_ofdmdemap.block.yml
-    ettus_rfnoc_ofdmequ.block.yml
-    ettus_rfnoc_packet_resizer.block.yml
-    ettus_rfnoc_pdu_rx.block.yml
-    ettus_rfnoc_pdu_tx.block.yml
-    ettus_rfnoc_radio.block.yml
-    ettus_rfnoc_register_logger.block.yml
-    ettus_rfnoc_register_probe.block.yml
-    ettus_rfnoc_schmidlcox.block.yml
-    ettus_rfnoc_split_stream.block.yml
-    ettus_rfnoc_vector_iir.block.yml
-    ettus_rfnoc_window.block.yml
-    ettus_rfnoc_siggen.block.yml
-    rfnoc.domain.yml
+    ettus_rfnoc_graph.block.yml
+    ettus_rfnoc_rx_radio.block.yml
+    ettus_rfnoc_rx_streamer.block.yml
+    ettus_rfnoc_tx_radio.block.yml
+    ettus_rfnoc_tx_streamer.block.yml
     DESTINATION share/gnuradio/grc/blocks
 )
+
+if(ENABLE_FOSPHOR)
+    install(FILES
+        ettus_fosphor_display.block.yml
+        DESTINATION share/gnuradio/grc/blocks
+    )
+endif(ENABLE_FOSPHOR)
+

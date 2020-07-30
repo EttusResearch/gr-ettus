@@ -48,7 +48,7 @@ public:
     void set_frequency_range(const double center_freq, const double samp_rate);
     void set_waterfall(bool enabled);
     void set_grid(bool enabled);
-    void set_palette(std::string name);
+    void set_palette(const std::string& name);
     void set_frame_rate(int fps);
 
     /* gr::block implementation */
