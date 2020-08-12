@@ -30,3 +30,5 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-ettus)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 
+add_subdirectory(rfnoc_modtool)
+add_subdirectory(utils)
