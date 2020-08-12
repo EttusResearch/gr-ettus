@@ -10,6 +10,7 @@
 ########################################################################
 install(FILES
     api.h
+    rfnoc_block.h
     rfnoc_block_generic.h
     rfnoc_ddc.h
     rfnoc_duc.h
