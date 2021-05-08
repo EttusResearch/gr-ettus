@@ -77,6 +77,10 @@ class ModToolNewModule(ModTool):
                     args.srcdir = os.path.join(os.environ.get('PYBOMBS_PREFIX'), post_path)
                 else:
                     args.srcdir = os.path.join('/usr', 'local', post_path)
+                if not os.path.isdir(args.srcdir):
+                    # Directory doesn't exist in /usr/local, so lets check relative to this file
+                    filepath = os.path.dirname(os.path.realpath(__file__))
+                    args.srcdir = os.path.realpath(os.path.join(filepath,'../../../../../', post_path))
         self._srcdir = args.srcdir
 
         if not os.path.isdir(self._srcdir):
