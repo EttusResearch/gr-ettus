@@ -150,6 +150,7 @@ bool fosphor_display_impl::start()
     msg = pmt::dict_add(msg, pmt::string_to_symbol("clear"), pmt::from_long(1));
 
     message_port_pub(pmt::mp("cfg"), msg);
+    return true;
 }
 
 void fosphor_display_impl::forecast(int noutput_items,
