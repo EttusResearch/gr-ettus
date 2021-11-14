@@ -385,6 +385,11 @@ parameters:
   label: Instance Select
   dtype: int
   default: -1
+- id: num_ports
+  label: Number of Ports
+  dtype: int
+  default: '1'
+  hide: part
 
 # Make one 'inputs' node per input. Include:
 #    label (an identifier for the GUI)
@@ -394,6 +399,7 @@ inputs:
 - domain: rfnoc
   label: in
   dtype: 'sc16'
+  multiplicity: ${"${num_ports}"}
 
 # Make out 'outputs' node per output.
 #    label (an identifier for the GUI)
@@ -403,6 +409,7 @@ outputs:
 - domain: rfnoc
   label: out
   dtype: 'sc16'
+  multiplicity: ${"${num_ports}"}
 
 file_format: 1
 '''
@@ -770,7 +777,10 @@ version: "1.0"
 rfnoc_version: "1.0"
 chdr_width: 64
 noc_id: 0x${noc_id}
-makefile_srcs: "${modpath}/rfnoc/fpga/rfnoc_block_${blockname}/Makefile.srcs"
+makefile_srcs: "${"${fpga_lib_dir}"}/blocks/rfnoc_block_${blockname}/Makefile.srcs"
+
+parameters:
+  NUM_PORTS: 1
 
 clocks:
   - name: rfnoc_chdr
@@ -792,23 +802,25 @@ control:
     has_status: False
 
 data:
-  fpga_iface: axis_data
+  fpga_iface: axis_pyld_ctxt
   clk_domain: ce
   inputs:
     in:
+      num_ports: NUM_PORTS
       item_width: 32
       nipc: 1
-      info_fifo_depth: 32
+      context_fifo_depth: 2
       payload_fifo_depth: 32
-      format: int32
+      format: sc16
       mdata_sig: ~
   outputs:
     out:
+      num_ports: NUM_PORTS
       item_width: 32
       nipc: 1
-      info_fifo_depth: 32
+      context_fifo_depth: 2
       payload_fifo_depth: 32
-      format: int32
+      format: sc16
       mdata_sig: ~
 '''
 
@@ -964,7 +976,8 @@ Templates['fpga_rfnoc_block_noc_shell'] = '''
 module noc_shell_${blockname} #(
   parameter [9:0] THIS_PORTID     = 10'd0,
   parameter       CHDR_W          = 64,
-  parameter [5:0] MTU             = 10
+  parameter [5:0] MTU             = 10,
+  parameter       NUM_PORTS       = 1
 ) (
   //---------------------
   // Framework Interface
@@ -973,25 +986,27 @@ module noc_shell_${blockname} #(
   // RFNoC Framework Clocks
   input  wire rfnoc_chdr_clk,
   input  wire rfnoc_ctrl_clk,
+  input  wire ce_clk,
 
   // NoC Shell Generated Resets
   output wire rfnoc_chdr_rst,
   output wire rfnoc_ctrl_rst,
+  output wire ce_rst,
 
   // RFNoC Backend Interface
   input  wire [511:0]          rfnoc_core_config,
   output wire [511:0]          rfnoc_core_status,
 
   // AXIS-CHDR Input Ports (from framework)
-  input  wire [(1)*CHDR_W-1:0] s_rfnoc_chdr_tdata,
-  input  wire [(1)-1:0]        s_rfnoc_chdr_tlast,
-  input  wire [(1)-1:0]        s_rfnoc_chdr_tvalid,
-  output wire [(1)-1:0]        s_rfnoc_chdr_tready,
+  input  wire [(0+NUM_PORTS)*CHDR_W-1:0] s_rfnoc_chdr_tdata,
+  input  wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tlast,
+  input  wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tvalid,
+  output wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tready,
   // AXIS-CHDR Output Ports (to framework)
-  output wire [(1)*CHDR_W-1:0] m_rfnoc_chdr_tdata,
-  output wire [(1)-1:0]        m_rfnoc_chdr_tlast,
-  output wire [(1)-1:0]        m_rfnoc_chdr_tvalid,
-  input  wire [(1)-1:0]        m_rfnoc_chdr_tready,
+  output wire [(0+NUM_PORTS)*CHDR_W-1:0] m_rfnoc_chdr_tdata,
+  output wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tlast,
+  output wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tvalid,
+  input  wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tready,
 
   // AXIS-Ctrl Control Input Port (from framework)
   input  wire [31:0]           s_rfnoc_ctrl_tdata,
@@ -1023,29 +1038,29 @@ module noc_shell_${blockname} #(
   output wire               axis_data_clk,
   output wire               axis_data_rst,
   // Payload Stream to User Logic: in
-  output wire [32*1-1:0]    m_in_payload_tdata,
-  output wire [1-1:0]       m_in_payload_tkeep,
-  output wire               m_in_payload_tlast,
-  output wire               m_in_payload_tvalid,
-  input  wire               m_in_payload_tready,
+  output wire [NUM_PORTS*32*1-1:0]   m_in_payload_tdata,
+  output wire [NUM_PORTS*1-1:0]      m_in_payload_tkeep,
+  output wire [NUM_PORTS-1:0]        m_in_payload_tlast,
+  output wire [NUM_PORTS-1:0]        m_in_payload_tvalid,
+  input  wire [NUM_PORTS-1:0]        m_in_payload_tready,
   // Context Stream to User Logic: in
-  output wire [CHDR_W-1:0]  m_in_context_tdata,
-  output wire [3:0]         m_in_context_tuser,
-  output wire               m_in_context_tlast,
-  output wire               m_in_context_tvalid,
-  input  wire               m_in_context_tready,
-  // Payload Stream from User Logic: out
-  input  wire [32*1-1:0]    s_out_payload_tdata,
-  input  wire [0:0]         s_out_payload_tkeep,
-  input  wire               s_out_payload_tlast,
-  input  wire               s_out_payload_tvalid,
-  output wire               s_out_payload_tready,
-  // Context Stream from User Logic: out
-  input  wire [CHDR_W-1:0]  s_out_context_tdata,
-  input  wire [3:0]         s_out_context_tuser,
-  input  wire               s_out_context_tlast,
-  input  wire               s_out_context_tvalid,
-  output wire               s_out_context_tready
+  output wire [NUM_PORTS*CHDR_W-1:0] m_in_context_tdata,
+  output wire [NUM_PORTS*4-1:0]      m_in_context_tuser,
+  output wire [NUM_PORTS-1:0]        m_in_context_tlast,
+  output wire [NUM_PORTS-1:0]        m_in_context_tvalid,
+  input  wire [NUM_PORTS-1:0]        m_in_context_tready,
+  // Payload Stream to User Logic: out
+  input  wire [NUM_PORTS*32*1-1:0]   s_out_payload_tdata,
+  input  wire [NUM_PORTS*1-1:0]      s_out_payload_tkeep,
+  input  wire [NUM_PORTS-1:0]        s_out_payload_tlast,
+  input  wire [NUM_PORTS-1:0]        s_out_payload_tvalid,
+  output wire [NUM_PORTS-1:0]        s_out_payload_tready,
+  // Context Stream to User Logic: out
+  input  wire [NUM_PORTS*CHDR_W-1:0] s_out_context_tdata,
+  input  wire [NUM_PORTS*4-1:0]      s_out_context_tuser,
+  input  wire [NUM_PORTS-1:0]        s_out_context_tlast,
+  input  wire [NUM_PORTS-1:0]        s_out_context_tvalid,
+  output wire [NUM_PORTS-1:0]        s_out_context_tready
 );
 
   //---------------------------------------------------------------------------
@@ -1063,8 +1078,8 @@ module noc_shell_${blockname} #(
 
   backend_iface #(
     .NOC_ID        (32'h${noc_id}),
-    .NUM_DATA_I    (1),
-    .NUM_DATA_O    (1),
+    .NUM_DATA_I    (0+NUM_PORTS),
+    .NUM_DATA_O    (0+NUM_PORTS),
     .CTRL_FIFOSIZE ($clog2(32)),
     .MTU           (MTU)
   ) backend_iface_i (
@@ -1085,11 +1100,27 @@ module noc_shell_${blockname} #(
   );
 
   //---------------------------------------------------------------------------
+  //  Reset Generation
+  //---------------------------------------------------------------------------
+
+  wire ce_rst_pulse;
+
+  pulse_synchronizer #(.MODE ("POSEDGE")) pulse_synchronizer_ce (
+    .clk_a(rfnoc_chdr_clk), .rst_a(1'b0), .pulse_a (rfnoc_chdr_rst), .busy_a (),
+    .clk_b(ce_clk), .pulse_b (ce_rst_pulse)
+  );
+
+  pulse_stretch_min #(.LENGTH(32)) pulse_stretch_min_ce (
+    .clk(ce_clk), .rst(1'b0),
+    .pulse_in(ce_rst_pulse), .pulse_out(ce_rst)
+  );
+
+  //---------------------------------------------------------------------------
   //  Control Path
   //---------------------------------------------------------------------------
 
-  assign ctrlport_clk = rfnoc_chdr_clk;
-  assign ctrlport_rst = rfnoc_chdr_rst;
+  assign ctrlport_clk = ce_clk;
+  assign ctrlport_rst = ce_rst;
 
   ctrlport_endpoint #(
     .THIS_PORTID      (THIS_PORTID),
@@ -1141,84 +1172,88 @@ module noc_shell_${blockname} #(
 
   genvar i;
 
-  assign axis_data_clk = rfnoc_chdr_clk;
-  assign axis_data_rst = rfnoc_chdr_rst;
+  assign axis_data_clk = ce_clk;
+  assign axis_data_rst = ce_rst;
 
   //---------------------
   // Input Data Paths
   //---------------------
 
-  chdr_to_axis_pyld_ctxt #(
-    .CHDR_W              (CHDR_W),
-    .ITEM_W              (32),
-    .NIPC                (1),
-    .SYNC_CLKS           (1),
-    .CONTEXT_FIFO_SIZE   ($clog2(2)),
-    .PAYLOAD_FIFO_SIZE   ($clog2(2)),
-    .CONTEXT_PREFETCH_EN (1)
-  ) chdr_to_axis_pyld_ctxt_in_in (
-    .axis_chdr_clk         (rfnoc_chdr_clk),
-    .axis_chdr_rst         (rfnoc_chdr_rst),
-    .axis_data_clk         (axis_data_clk),
-    .axis_data_rst         (axis_data_rst),
-    .s_axis_chdr_tdata     (s_rfnoc_chdr_tdata[(0)*CHDR_W+:CHDR_W]),
-    .s_axis_chdr_tlast     (s_rfnoc_chdr_tlast[0]),
-    .s_axis_chdr_tvalid    (s_rfnoc_chdr_tvalid[0]),
-    .s_axis_chdr_tready    (s_rfnoc_chdr_tready[0]),
-    .m_axis_payload_tdata  (m_in_payload_tdata),
-    .m_axis_payload_tkeep  (m_in_payload_tkeep),
-    .m_axis_payload_tlast  (m_in_payload_tlast),
-    .m_axis_payload_tvalid (m_in_payload_tvalid),
-    .m_axis_payload_tready (m_in_payload_tready),
-    .m_axis_context_tdata  (m_in_context_tdata),
-    .m_axis_context_tuser  (m_in_context_tuser),
-    .m_axis_context_tlast  (m_in_context_tlast),
-    .m_axis_context_tvalid (m_in_context_tvalid),
-    .m_axis_context_tready (m_in_context_tready),
-    .flush_en              (data_i_flush_en),
-    .flush_timeout         (data_i_flush_timeout),
-    .flush_active          (data_i_flush_active[0]),
-    .flush_done            (data_i_flush_done[0])
-  );
+  for (i = 0; i < NUM_PORTS; i = i + 1) begin: gen_input_in
+    chdr_to_axis_pyld_ctxt #(
+      .CHDR_W              (CHDR_W),
+      .ITEM_W              (32),
+      .NIPC                (1),
+      .SYNC_CLKS           (0),
+      .CONTEXT_FIFO_SIZE   ($clog2(2)),
+      .PAYLOAD_FIFO_SIZE   ($clog2(32)),
+      .CONTEXT_PREFETCH_EN (1)
+    ) chdr_to_axis_pyld_ctxt_in_in (
+      .axis_chdr_clk         (rfnoc_chdr_clk),
+      .axis_chdr_rst         (rfnoc_chdr_rst),
+      .axis_data_clk         (axis_data_clk),
+      .axis_data_rst         (axis_data_rst),
+      .s_axis_chdr_tdata     (s_rfnoc_chdr_tdata[((0+i)*CHDR_W)+:CHDR_W]),
+      .s_axis_chdr_tlast     (s_rfnoc_chdr_tlast[0+i]),
+      .s_axis_chdr_tvalid    (s_rfnoc_chdr_tvalid[0+i]),
+      .s_axis_chdr_tready    (s_rfnoc_chdr_tready[0+i]),
+      .m_axis_payload_tdata  (m_in_payload_tdata[(32*1)*i+:(32*1)]),
+      .m_axis_payload_tkeep  (m_in_payload_tkeep[1*i+:1]),
+      .m_axis_payload_tlast  (m_in_payload_tlast[i]),
+      .m_axis_payload_tvalid (m_in_payload_tvalid[i]),
+      .m_axis_payload_tready (m_in_payload_tready[i]),
+      .m_axis_context_tdata  (m_in_context_tdata[CHDR_W*i+:CHDR_W]),
+      .m_axis_context_tuser  (m_in_context_tuser[4*i+:4]),
+      .m_axis_context_tlast  (m_in_context_tlast[i]),
+      .m_axis_context_tvalid (m_in_context_tvalid[i]),
+      .m_axis_context_tready (m_in_context_tready[i]),
+      .flush_en              (data_i_flush_en),
+      .flush_timeout         (data_i_flush_timeout),
+      .flush_active          (data_i_flush_active[0+i]),
+      .flush_done            (data_i_flush_done[0+i])
+    );
+  end
 
   //---------------------
   // Output Data Paths
   //---------------------
 
-  axis_pyld_ctxt_to_chdr #(
-    .CHDR_W              (CHDR_W),
-    .ITEM_W              (32),
-    .NIPC                (1),
-    .SYNC_CLKS           (1),
-    .CONTEXT_FIFO_SIZE   ($clog2(2)),
-    .PAYLOAD_FIFO_SIZE   ($clog2(2)),
-    .MTU                 (MTU),
-    .CONTEXT_PREFETCH_EN (1)
-  ) axis_pyld_ctxt_to_chdr_out_out (
-    .axis_chdr_clk         (rfnoc_chdr_clk),
-    .axis_chdr_rst         (rfnoc_chdr_rst),
-    .axis_data_clk         (axis_data_clk),
-    .axis_data_rst         (axis_data_rst),
-    .m_axis_chdr_tdata     (m_rfnoc_chdr_tdata[(0)*CHDR_W+:CHDR_W]),
-    .m_axis_chdr_tlast     (m_rfnoc_chdr_tlast[0]),
-    .m_axis_chdr_tvalid    (m_rfnoc_chdr_tvalid[0]),
-    .m_axis_chdr_tready    (m_rfnoc_chdr_tready[0]),
-    .s_axis_payload_tdata  (s_out_payload_tdata),
-    .s_axis_payload_tkeep  (s_out_payload_tkeep),
-    .s_axis_payload_tlast  (s_out_payload_tlast),
-    .s_axis_payload_tvalid (s_out_payload_tvalid),
-    .s_axis_payload_tready (s_out_payload_tready),
-    .s_axis_context_tdata  (s_out_context_tdata),
-    .s_axis_context_tuser  (s_out_context_tuser),
-    .s_axis_context_tlast  (s_out_context_tlast),
-    .s_axis_context_tvalid (s_out_context_tvalid),
-    .s_axis_context_tready (s_out_context_tready),
-    .framer_errors         (),
-    .flush_en              (data_o_flush_en),
-    .flush_timeout         (data_o_flush_timeout),
-    .flush_active          (data_o_flush_active[0]),
-    .flush_done            (data_o_flush_done[0])
-  );
+  for (i = 0; i < NUM_PORTS; i = i + 1) begin: gen_output_out
+    axis_pyld_ctxt_to_chdr #(
+      .CHDR_W              (CHDR_W),
+      .ITEM_W              (32),
+      .NIPC                (1),
+      .SYNC_CLKS           (0),
+      .CONTEXT_FIFO_SIZE   ($clog2(2)),
+      .PAYLOAD_FIFO_SIZE   ($clog2(32)),
+      .MTU                 (MTU),
+      .CONTEXT_PREFETCH_EN (1)
+    ) axis_pyld_ctxt_to_chdr_out_out (
+      .axis_chdr_clk         (rfnoc_chdr_clk),
+      .axis_chdr_rst         (rfnoc_chdr_rst),
+      .axis_data_clk         (axis_data_clk),
+      .axis_data_rst         (axis_data_rst),
+      .m_axis_chdr_tdata     (m_rfnoc_chdr_tdata[(0+i)*CHDR_W+:CHDR_W]),
+      .m_axis_chdr_tlast     (m_rfnoc_chdr_tlast[0+i]),
+      .m_axis_chdr_tvalid    (m_rfnoc_chdr_tvalid[0+i]),
+      .m_axis_chdr_tready    (m_rfnoc_chdr_tready[0+i]),
+      .s_axis_payload_tdata  (s_out_payload_tdata[(32*1)*i+:(32*1)]),
+      .s_axis_payload_tkeep  (s_out_payload_tkeep[1*i+:1]),
+      .s_axis_payload_tlast  (s_out_payload_tlast[i]),
+      .s_axis_payload_tvalid (s_out_payload_tvalid[i]),
+      .s_axis_payload_tready (s_out_payload_tready[i]),
+      .s_axis_context_tdata  (s_out_context_tdata[CHDR_W*i+:CHDR_W]),
+      .s_axis_context_tuser  (s_out_context_tuser[4*i+:4]),
+      .s_axis_context_tlast  (s_out_context_tlast[i]),
+      .s_axis_context_tvalid (s_out_context_tvalid[i]),
+      .s_axis_context_tready (s_out_context_tready[i]),
+      .framer_errors         (),
+      .flush_en              (data_o_flush_en),
+      .flush_timeout         (data_o_flush_timeout),
+      .flush_active          (data_o_flush_active[0+i]),
+      .flush_done            (data_o_flush_done[0+i])
+    );
+  end
 
 endmodule // noc_shell_${blockname}
 
@@ -1252,7 +1287,8 @@ Templates['fpga_rfnoc_block'] = '''${str_to_verilog_comment(license)}
 module rfnoc_block_${blockname} #(
   parameter [9:0] THIS_PORTID     = 10'd0,
   parameter       CHDR_W          = 64,
-  parameter [5:0] MTU             = 10
+  parameter [5:0] MTU             = 10,
+  parameter       NUM_PORTS       = 1
 )(
   // RFNoC Framework Clocks and Resets
   input  wire                   rfnoc_chdr_clk,
@@ -1262,15 +1298,15 @@ module rfnoc_block_${blockname} #(
   input  wire [511:0]           rfnoc_core_config,
   output wire [511:0]           rfnoc_core_status,
   // AXIS-CHDR Input Ports (from framework)
-  input  wire [(1)*CHDR_W-1:0]  s_rfnoc_chdr_tdata,
-  input  wire [(1)-1:0]         s_rfnoc_chdr_tlast,
-  input  wire [(1)-1:0]         s_rfnoc_chdr_tvalid,
-  output wire [(1)-1:0]         s_rfnoc_chdr_tready,
+  input  wire [(0+NUM_PORTS)*CHDR_W-1:0] s_rfnoc_chdr_tdata,
+  input  wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tlast,
+  input  wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tvalid,
+  output wire [(0+NUM_PORTS)-1:0]        s_rfnoc_chdr_tready,
   // AXIS-CHDR Output Ports (to framework)
-  output wire [(1)*CHDR_W-1:0]  m_rfnoc_chdr_tdata,
-  output wire [(1)-1:0]         m_rfnoc_chdr_tlast,
-  output wire [(1)-1:0]         m_rfnoc_chdr_tvalid,
-  input  wire [(1)-1:0]         m_rfnoc_chdr_tready,
+  output wire [(0+NUM_PORTS)*CHDR_W-1:0] m_rfnoc_chdr_tdata,
+  output wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tlast,
+  output wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tvalid,
+  input  wire [(0+NUM_PORTS)-1:0]        m_rfnoc_chdr_tready,
   // AXIS-Ctrl Input Port (from framework)
   input  wire [31:0]            s_rfnoc_ctrl_tdata,
   input  wire                   s_rfnoc_ctrl_tlast,
@@ -1300,29 +1336,29 @@ module rfnoc_block_${blockname} #(
   reg                m_ctrlport_resp_ack;
   reg  [31:0]        m_ctrlport_resp_data;
   // Payload Stream to User Logic: in
-  wire [32*1-1:0]    m_in_payload_tdata;
-  wire [1-1:0]       m_in_payload_tkeep;
-  wire               m_in_payload_tlast;
-  wire               m_in_payload_tvalid;
-  wire               m_in_payload_tready;
+  wire [NUM_PORTS*32*1-1:0]   m_in_payload_tdata;
+  wire [NUM_PORTS*1-1:0]      m_in_payload_tkeep;
+  wire [NUM_PORTS-1:0]        m_in_payload_tlast;
+  wire [NUM_PORTS-1:0]        m_in_payload_tvalid;
+  wire [NUM_PORTS-1:0]        m_in_payload_tready;
   // Context Stream to User Logic: in
-  wire [CHDR_W-1:0]  m_in_context_tdata;
-  wire [3:0]         m_in_context_tuser;
-  wire               m_in_context_tlast;
-  wire               m_in_context_tvalid;
-  wire               m_in_context_tready;
-  // Payload Stream from User Logic: out
-  wire [32*1-1:0]    s_out_payload_tdata;
-  wire [0:0]         s_out_payload_tkeep;
-  wire               s_out_payload_tlast;
-  wire               s_out_payload_tvalid;
-  wire               s_out_payload_tready;
-  // Context Stream from User Logic: out
-  wire [CHDR_W-1:0]  s_out_context_tdata;
-  wire [3:0]         s_out_context_tuser;
-  wire               s_out_context_tlast;
-  wire               s_out_context_tvalid;
-  wire               s_out_context_tready;
+  wire [NUM_PORTS*CHDR_W-1:0] m_in_context_tdata;
+  wire [NUM_PORTS*4-1:0]      m_in_context_tuser;
+  wire [NUM_PORTS-1:0]        m_in_context_tlast;
+  wire [NUM_PORTS-1:0]        m_in_context_tvalid;
+  wire [NUM_PORTS-1:0]        m_in_context_tready;
+  // Payload Stream to User Logic: out
+  wire [NUM_PORTS*32*1-1:0]   s_out_payload_tdata;
+  wire [NUM_PORTS*1-1:0]      s_out_payload_tkeep;
+  wire [NUM_PORTS-1:0]        s_out_payload_tlast;
+  wire [NUM_PORTS-1:0]        s_out_payload_tvalid;
+  wire [NUM_PORTS-1:0]        s_out_payload_tready;
+  // Context Stream to User Logic: out
+  wire [NUM_PORTS*CHDR_W-1:0] s_out_context_tdata;
+  wire [NUM_PORTS*4-1:0]      s_out_context_tuser;
+  wire [NUM_PORTS-1:0]        s_out_context_tlast;
+  wire [NUM_PORTS-1:0]        s_out_context_tvalid;
+  wire [NUM_PORTS-1:0]        s_out_context_tready;
 
   //---------------------------------------------------------------------------
   // NoC Shell
@@ -1331,7 +1367,8 @@ module rfnoc_block_${blockname} #(
   noc_shell_${blockname} #(
     .CHDR_W      (CHDR_W),
     .THIS_PORTID (THIS_PORTID),
-    .MTU         (MTU)
+    .MTU         (MTU),
+    .NUM_PORTS   (NUM_PORTS)
   ) noc_shell_${blockname}_i (
     //---------------------
     // Framework Interface
@@ -1340,9 +1377,11 @@ module rfnoc_block_${blockname} #(
     // Clock Inputs
     .rfnoc_chdr_clk      (rfnoc_chdr_clk),
     .rfnoc_ctrl_clk      (rfnoc_ctrl_clk),
+    .ce_clk              (ce_clk),
     // Reset Outputs
     .rfnoc_chdr_rst      (),
     .rfnoc_ctrl_rst      (),
+    .ce_rst              (),
     // RFNoC Backend Interface
     .rfnoc_core_config   (rfnoc_core_config),
     .rfnoc_core_status   (rfnoc_core_status),
@@ -1483,7 +1522,7 @@ module rfnoc_block_${blockname} #(
   assign m_in_context_tready  = s_out_context_tready;
 
   // Only 1-sample per clock, so tkeep should always be asserted
-  assign s_out_payload_tkeep = 1'b1;
+  assign s_out_payload_tkeep = {NUM_PORTS{1'b1}};
 
 endmodule // rfnoc_block_${blockname}
 
@@ -1517,16 +1556,18 @@ module rfnoc_block_${blockname}_tb;
 
   localparam [ 9:0] THIS_PORTID     = 10'h123;
   localparam [31:0] NOC_ID          = 32'h${noc_id};
-  localparam int    CHDR_W          = 64;
-  localparam int    ITEM_W          = 32;
-  localparam int    NUM_PORTS_I     = 1;
-  localparam int    NUM_PORTS_O     = 1;
-  localparam int    MTU             = 13;
-  localparam int    SPP             = 64;
+  localparam int    NUM_PORTS       = 1;       // Number of CHDR data ports
+  localparam int    NUM_PORTS_I     = 0+NUM_PORTS;
+  localparam int    NUM_PORTS_O     = 0+NUM_PORTS;
+  localparam int    CHDR_W          = 64;      // CHDR size in bits
+  localparam int    ITEM_W          = 32;      // Sample size in bits
+  localparam int    MTU             = 13;      // Log2 of max transmission unit in CHDR words
+  localparam int    SPP             = 64;      // Samples per packet
   localparam int    PKT_SIZE_BYTES  = SPP * (ITEM_W/8);
   localparam int    STALL_PROB      = 25;      // Default BFM stall probability
   localparam real   CHDR_CLK_PER    = 5.0;     // 200 MHz
   localparam real   CTRL_CLK_PER    = 25.0;    // 40 MHz
+  localparam real   CE_CLK_PER      = 4.0;     // 250 MHz
 
   //---------------------------------------------------------------------------
   // Clocks and Resets
@@ -1534,9 +1575,11 @@ module rfnoc_block_${blockname}_tb;
 
   bit rfnoc_chdr_clk;
   bit rfnoc_ctrl_clk;
+  bit ce_clk;
 
   sim_clock_gen #(CHDR_CLK_PER) rfnoc_chdr_clk_gen (.clk(rfnoc_chdr_clk), .rst());
   sim_clock_gen #(CTRL_CLK_PER) rfnoc_ctrl_clk_gen (.clk(rfnoc_ctrl_clk), .rst());
+  sim_clock_gen #(CE_CLK_PER) ce_clk_gen (.clk(ce_clk), .rst());
 
   //---------------------------------------------------------------------------
   // Bus Functional Models
@@ -1609,10 +1652,12 @@ module rfnoc_block_${blockname}_tb;
   rfnoc_block_${blockname} #(
     .THIS_PORTID         (THIS_PORTID),
     .CHDR_W              (CHDR_W),
-    .MTU                 (MTU)
+    .MTU                 (MTU),
+    .NUM_PORTS           (NUM_PORTS)
   ) dut (
     .rfnoc_chdr_clk      (rfnoc_chdr_clk),
     .rfnoc_ctrl_clk      (rfnoc_ctrl_clk),
+    .ce_clk              (ce_clk),
     .rfnoc_core_config   (backend.cfg),
     .rfnoc_core_status   (backend.sts),
     .s_rfnoc_chdr_tdata  (s_rfnoc_chdr_tdata),
@@ -1694,34 +1739,37 @@ module rfnoc_block_${blockname}_tb;
 
       test.start_test("Test passing through samples", 10us);
 
-      // Generate a payload of random samples
-      send_samples = {};
-      for (int i = 0; i < SPP; i++) begin
-        send_samples.push_back($random()); // 32-bit I,Q
-      end
+      for (int n = 0; n < NUM_PORTS; n++) begin
+        // Generate a payload of random samples
+        send_samples = {};
+        for (int i = 0; i < SPP; i++) begin
+          send_samples.push_back($random()); // 32-bit I,Q
+        end
 
-      // Queue a packet for transfer
-      blk_ctrl.send_items(0, send_samples);
+        // Queue a packet for transfer
+        blk_ctrl.send_items(n, send_samples);
 
-      // Receive the output packet
-      blk_ctrl.recv_items(0, recv_samples);
+        // Receive the output packet
+        recv_samples = {};
+        blk_ctrl.recv_items(n, recv_samples);
 
-      // Check the resulting payload size
-      `ASSERT_ERROR(recv_samples.size() == SPP,
-        "Received payload didn't match size of payload sent");
+        // Check the resulting payload size
+        `ASSERT_ERROR(recv_samples.size() == SPP,
+        $sformatf("Received payload on port %1d didn't match size of payload sent", n));
 
-      // Check the resulting samples
-      for (int i = 0; i < SPP; i++) begin
-        item_t sample_in;
-        item_t sample_out;
+        // Check the resulting samples
+        for (int i = 0; i < SPP; i++) begin
+          item_t sample_in;
+          item_t sample_out;
 
-        sample_in  = send_samples[i];
-        sample_out = recv_samples[i];
+          sample_in  = send_samples[i];
+          sample_out = recv_samples[i];
 
-        `ASSERT_ERROR(
-          sample_out == sample_in,
-          $sformatf("Sample %4d, received 0x%08X, expected 0x%08X",
-                    i, sample_out, sample_in));
+          `ASSERT_ERROR(
+            sample_out == sample_in,
+            $sformatf("Port %1d, Sample %4d, Received 0x%08X, Expected 0x%08X",
+                      n, i, sample_out, sample_in));
+        end
       end
 
       test.end_test();
@@ -1814,6 +1862,8 @@ noc_blocks:
     block_desc: 'radio_2x64.yml'
   ${blockname}0:
     block_desc: '${blockname}.yml'
+    parameters:
+      NUM_PORTS: 1
 
 # A list of all static connections in design
 # ------------------------------------------
@@ -1842,8 +1892,8 @@ connections:
   - { srcblk: radio1, srcport: out_1, dstblk: ddc1,   dstport: in_1 }
   - { srcblk: ddc1,   srcport: out_1, dstblk: ep3,    dstport: in0  }
   # Custom block connection: ep4 to ${blockname}0 and ${blockname}0 to ep4
-  - { srcblk: ep4, srcport: out0, dstblk: ${blockname}0, dstport: in }
-  - { srcblk: ${blockname}0, srcport: out, dstblk: ep4, dstport: in0 }
+  - { srcblk: ep4, srcport: out0, dstblk: ${blockname}0, dstport: in_0 }
+  - { srcblk: ${blockname}0, srcport: out_0, dstblk: ep4, dstport: in0 }
   # BSP Connections
   - { srcblk: radio0, srcport: ctrl_port, dstblk: _device_, dstport: ctrlport_radio0 }
   - { srcblk: radio1, srcport: ctrl_port, dstblk: _device_, dstport: ctrlport_radio1 }
