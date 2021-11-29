@@ -83,7 +83,7 @@ class ModToolAdd(ModTool):
                 self._info['blockname'] = positional[1]
             else:
                 self._info['blockname'] = input("Enter name of block/code (without module name prefix): ")
-        if not re.match('^([a-zA-Z]+[0-9a-zA-Z]*)$', self._info['blockname']):
+        if not re.match('^([a-zA-Z]+[0-9a-zA-Z_]*)$', self._info['blockname']):
             raise ModToolException('Invalid block name.')
         print("Block/code identifier: " + self._info['blockname'])
         self._info['fullblockname'] = self._info['modname'] + '_' + self._info['blockname']
