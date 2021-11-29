@@ -142,7 +142,7 @@ if(UHD_FPGA_DIR AND NOT EXISTS ${UHD_FPGA_DIR}/usrp3/top/Makefile.common)
 endif()
 message(STATUS " * FPGA source directory: ${UHD_FPGA_DIR}")
 
-set(UHD_FPGA_DEFAULT_DEVICE "x310"
+set(UHD_FPGA_DEFAULT_DEVICE "e310"
     CACHE STRING "Default device for testbench execution")
 
 ########################################################################
