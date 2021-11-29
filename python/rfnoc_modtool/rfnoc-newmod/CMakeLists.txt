@@ -153,7 +153,7 @@ if(NOT ettus_FOUND)
     message(FATAL_ERROR "gnuradio-ettus not found.")
 endif(NOT ettus_FOUND)
 
-find_package(PythonLibs 2)
+find_package(PythonLibs)
 if(NOT PYTHONLIBS_FOUND)
     message(FATAL_ERROR "Python Libs not found.")
 endif(NOT PYTHONLIBS_FOUND)
