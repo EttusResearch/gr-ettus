@@ -8,8 +8,23 @@
 ########################################################################
 # Rules for generating the source and sink yml wrappers
 ########################################################################
+macro(GEN_BLOCK_YML _generator _yml_block)
+    set(generator ${CMAKE_CURRENT_SOURCE_DIR}/${_generator})
+    set(yml_block ${CMAKE_CURRENT_BINARY_DIR}/${_yml_block})
+    list(APPEND yml_blocks ${yml_block})
+    add_custom_command(
+        DEPENDS ${generator} OUTPUT ${yml_block}
+        COMMAND ${PYTHON_EXECUTABLE} ${generator} ${yml_block}
+    )
+endmacro(GEN_BLOCK_YML)
+
+GEN_BLOCK_YML(gen_rfnoc_window_block_yml.py ettus_rfnoc_window.block.yml)
+
+# Useful target to re-generate blocks
+add_custom_target(gr_ettus_grc_yml_blocks ALL DEPENDS ${yml_blocks})
 
 install(FILES
+    ${yml_blocks}
     ettus.tree.yml
     rfnoc.domain.yml
     ettus_fpga_clk.domain.yml
