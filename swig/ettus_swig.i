@@ -49,6 +49,9 @@
 %rename("set_arg_double") set_arg(const std::string&, const double, const size_t);
 %rename("set_arg_str") set_arg(const std::string&, const std::string&, const size_t);
 
+%rename("set_coefficients_int") gr::ettus::rfnoc_window::set_coefficients(const std::vector<int16_t>& coeffs, const size_t chan);
+%rename("set_coefficients_float") gr::ettus::rfnoc_window::set_coefficients(const std::vector<float>& coeffs, const size_t chan);
+
 %ignore gr::ettus::rfnoc_graph::create_rx_streamer;
 %ignore gr::ettus::rfnoc_graph::create_tx_streamer;
 %ignore gr::ettus::rfnoc_graph::get_block_ref;
@@ -67,6 +70,7 @@
 #include <ettus/rfnoc_rx_streamer.h>
 #include <ettus/rfnoc_tx_radio.h>
 #include <ettus/rfnoc_tx_streamer.h>
+#include <ettus/rfnoc_window.h>
 %}
 
 #ifdef ENABLE_FOSPHOR
@@ -136,6 +140,7 @@
 %include <ettus/rfnoc_duc.h>
 %include <ettus/rfnoc_rx_radio.h>
 %include <ettus/rfnoc_tx_radio.h>
+%include <ettus/rfnoc_window.h>
 
 %template(set_int_property) gr::ettus::rfnoc_block::set_property<int>;
 %template(set_bool_property) gr::ettus::rfnoc_block::set_property<bool>;
@@ -155,6 +160,7 @@ GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_ddc);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_duc);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_radio);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_tx_radio);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window);
 
 #ifdef ENABLE_FOSPHOR
 %include <ettus/fosphor_display.h>
