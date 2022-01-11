@@ -69,7 +69,7 @@ class ModToolNewModule(ModTool):
             # Try a few ways to get the rfnoc-newmod path automatically
             # Prioritize path in GNU Radio configuration file if it exists
             gr_prefs_srcdir = gr.prefs().get_string('rfnocmodtool', 'newmod_path', "")
-            if not gr_prefs_srcdir:
+            if gr_prefs_srcdir:
                 args.srcdir = gr_prefs_srcdir
             else:
                 post_path = os.path.join('share', 'gr-ettus', 'rfnoc_modtool', 'rfnoc-newmod')
