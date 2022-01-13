@@ -1,19 +1,40 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 #
+# Copyright 2021 Ettus Research
 # SPDX-License-Identifier: GPL-3.0
+#
+# This is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street,
+# Boston, MA 02110-1301, USA.
+#
 #
 # Title: multi_fosphor_example
 # GNU Radio version: 3.8.2.0
-# multi_fosphor_example for all RFNoC-based NI and ettus branded radios
 #
-# This program is an example to run multiple fosphor_displays using GNU Radio and the RFNOC API
-# Program detects number of full fosphor chains on the FPGA, which consists of a Radio, DDC, FFT, Fosphor, and SEPs all connected
-# Program then creates the blocks with the channel settings specified in from the command line and connects them all
-# Block creation and connection is repeated for the number of fosphor chains detected
-# Fosphor displays are then added to the top block format and displayed
-
+# This program illustrates the use of GNU Radio and gr-ettus's Fosphor RFNoC
+# block and display support to show real-time spectra acquired from an RFNoC-
+# enabled USRP.
+#
+# The program scans the RFNoC image of the USRP, looking for Fosphor-
+# enabled radio channels consisting of a radio, optional DDC, FFT, and Fosphor
+# RFNoC block connected together. For each one of these channels found, a
+# GNU Radio flowgraph is created to connect the blocks to a Fosphor display
+# block to show the spectrum. Each Fosphor channel also has an interactive
+# GUI, allowing channel parameters and configuration to be modified in real
+# time. The interactive GUI can be disabled, leaving more display real estate
+# for the Fosphor spectrum display.
 
 from distutils.version import StrictVersion
 
@@ -47,18 +68,6 @@ import numpy as np
 import uhd
 from datetime import datetime, timedelta
 
-# Returns dictionary with device number, block count, name, and port number based on string block ID input
-def read_id(block_id):
-    info = {}
-    block_split = block_id.split(":")
-    block = uhd.rfnoc.BlockID(block_split[0])
-    info["device_num"] = block.get_device_no()
-    info["block_count"] = block.get_block_count()
-    info["block_name"] = block.get_block_name()
-    info["port_num"] = int(block_split[1])
-    return info
-
-
 class LogFormatter(logging.Formatter):
     """Log formatter which prints the timestamp with fractional seconds"""
 
@@ -77,174 +86,85 @@ class LogFormatter(logging.Formatter):
         return formatted_date
 
 
-# This class encapsulates one single set of GNU Radio blocks that form a complete fosphor chain for one radio channel
-class fosphor_creator:
+# Parses a number with an SI unit suffix, returning a float.  Supported suffixes
+# are 'M' (mega, 10^6), 'K' or 'k' (kilo, 10^3), and 'G' (giga, 10^9).
+def parse_si_value(value):
+    multipliers = {
+        'M': 1e6,
+        'K': 1e3,
+        'k': 1e3,
+        'G': 1e9
+    }
+    for m in multipliers:
+        if value.endswith(m):
+            return float(value.rstrip(m)) * multipliers[m]
+    return float(value)
 
-    def get_fosphor_layout(self):
-        return self.fosphor_layout
-
-
-    def get_channel_gain(self):
-        return self.channel_gain
-
-    def set_channel_gain(self, gain):
-        if int(gain) in range(int(self.settings_dict["channels"][self.fosphor_num]["min_gain"]), int(self.settings_dict["channels"][self.fosphor_num]["max_gain"])):
-                self.fosphor_chain[0].set_gain(gain, self.radio_port)
-                self.channel_gain = gain
-        else:
-            assert False
-
-    def channel_gain_control_changed_callback(self, gain):
-        self.set_channel_gain(float(gain))
-
-
-    def get_channel_freq(self):
-        return self.channel_freq
-
-    def set_channel_freq(self, freq):
-        if int(freq) in range(int(self.settings_dict["channels"][self.fosphor_num]["min_freq"]), int(self.settings_dict["channels"][self.fosphor_num]["max_freq"])):
-            self.fosphor_chain[0].set_frequency(freq, self.radio_port)
-            self.fosphor_chain[self.fosphor_position+3].set_frequency_range(freq, self.settings_dict["global"]["bandwidth"])
-            self.channel_freq = freq
-        else:
-            assert False
-    def channel_freq_control_callback(self, freq):
-        self.set_channel_freq(float(freq))
+# Parses an RFNoC block ID string, returning a dictionary containing the device
+# number, block instance, name, and port number extracted from the string.
+def parse_block_id(block_id):
+    info = {}
+    block_split = block_id.split(":")
+    block = uhd.rfnoc.BlockID(block_split[0])
+    info["device_num"] = block.get_device_no()
+    info["block_count"] = block.get_block_count()
+    info["block_name"] = block.get_block_name()
+    info["port_num"] = int(block_split[1])
+    return info
 
 
-    def update_wf_mode_widget(self, mode):
-        Qt.QMetaObject.invokeMethod(self._waterfall_mode_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._waterfall_mode_options.index(mode)))
+# This class encapsulates a complete set of objects that comprise a complete
+# 'Fosphor display unit' for a single radio channel, including the GNU Radio
+# blocks that make up the flowgraph, the Qt widgets that form the GUI for the
+# Fosphor chain (the Fosphor spectrum display and the channel controls, if the
+# channel controls are not disabled), and the parameters used to configure the
+# chain (e.g., center frequency, channel gain, Fosphor display options, etc.).
+#
+# All enabled GUI elements associated with the Fosphor channel are aggregated
+# together into a single Qt.QWidget from which this class derives. This allows
+# multiple instances of this class to be created and added to a master layout
+# for displaying multiple Fosphor channels simultaneously.
+#
+# Also, as this class derives from gr.top_block, each instance is its own
+# top-level flowgraph, able to be started and stopped individually. Note,
+# however, that the demo does not support this usage, but starts and stops all
+# enabled Fosphor chains together.
+class fosphor_creator(gr.top_block, Qt.QWidget):
 
-    def get_waterfall_mode(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("wf_mode")
-
-    def set_waterfall_mode(self, mode):
-        self.fosphor_chain[self.fosphor_position].set_int_property("wf_mode", mode)
-        actual_mode = self.get_waterfall_mode()
-        self.update_wf_mode_widget(actual_mode)
-
-    def waterfall_mode_control_callback(self, mode):
-        self.set_waterfall_mode(mode)
-
-
-
-    def get_rise_time(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("trise")
-
-    def set_rise_time(self, time):
-        self.fosphor_chain[self.fosphor_position].set_int_property("trise", time)
-
-    def rise_time_control_callback(self, time):
-        self.set_rise_time(time)
-
-
-    def get_randomization_enable(self):
-        return self.fosphor_chain[self.fosphor_position].get_bool_property("enable_noise")
-
-    def set_randomization_enable(self, rand):
-        self.fosphor_chain[self.fosphor_position].set_bool_property("enable_noise", bool(rand))
-
-    def randomization_enable_control_callback(self, rand):
-        self.set_randomization_enable(rand)
-
-
-    def get_max_hold(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("epsilon")
-
-    def set_max_hold(self, max_hold):
-        self.fosphor_chain[self.fosphor_position].set_int_property("epsilon", max_hold)
-
-    def max_hold_control_callback(self, max_hold):
-        self.set_max_hold(max_hold)
-
-
-    def get_hist_scale(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("scale")
-
-    def set_hist_scale(self, scale):
-        self.fosphor_chain[self.fosphor_position].set_int_property("scale", scale)
-
-    def hist_scale_control_callback(self, scale):
-        self.set_hist_scale(scale)
-
-
-    def get_hist_offset(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("offset")
-
-    def set_hist_offset(self, offset):
-        self.fosphor_chain[self.fosphor_position].set_int_property("offset", offset)
-
-    def hist_offset_control_callback(self, offset):
-        self.set_hist_offset(offset)
-
-
-    def get_dither_enable(self):
-        return self.fosphor_chain[self.fosphor_position].get_bool_property("enable_dither")
-
-    def set_dither_enable(self, dither):
-        self.fosphor_chain[self.fosphor_position].set_bool_property("enable_dither", dither)
-
-    def dither_enable_control_callback(self, dither):
-        self.set_dither_enable(bool(dither))
-
-
-    def get_decay_time(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("tdecay")
-
-    def set_decay_time(self, time):
-        self.fosphor_chain[self.fosphor_position].set_int_property("tdecay", time)
-
-    def decay_time_control_callback(self, time):
-        self.set_decay_time(time)
-
-
-    def get_color(self):
-        return self.fosphor_chain[6].get_palette()
-
-    def set_color(self, color_index):
-        self.fosphor_chain[self.fosphor_position + 3].set_palette(self._color_options[color_index])
-        self.color = self._color_options[color_index]
-
-    def color_control_callback(self, color):
-        self.set_color(color)
-
-
-    def get_averaging_alpha(self):
-        return self.fosphor_chain[self.fosphor_position].get_int_property("alpha")
-
-    def set_averaging_alpha(self, alpha):
-        self.fosphor_chain[self.fosphor_position].set_int_property("alpha", alpha)
-
-    def averaging_alpha_control_callback(self, alpha):
-        self.set_averaging_alpha(alpha)
-
-
-
-    # Constructor creates all the GNU Radio blocks for 1 chain and connects then
-    # Uses the setting passed in through settings dictionary as well as the fosphor_chain_strings to determine the ports of the blocks
+    # The constructor takes the settings dictionary, containing the desired
+    # configuration for the all of the Fosphor channels, a list of strings of
+    # RFNoC block IDs that need to be connected together to build the RFNoC
+    # portion of the Fosphor graph, and a number enumerating which Fosphor
+    # channel this instance represents (0 for the first, 1 for the second etc.).
     def __init__(
-        self, settings_dict, fosphor_chain_strings, fosphor_num, top_block_ref
+        self, settings_dict, fosphor_chain_strings, fosphor_num
     ):
+        gr.top_block.__init__(self, f"Fosphor display unit {fosphor_num}")
+        Qt.QWidget.__init__(self)
 
         self.rfnoc_graph = settings_dict["global"]["rfnoc_graph"]
-        self.fosphor_layout = Qt.QGridLayout()
+        self.fosphor_layout = Qt.QGridLayout(self)
         self.settings_dict = settings_dict
         self.fosphor_num = fosphor_num
         self.fosphor_position = 3
 
-        # Creates and returns the radio RFNoC Block from the block_id string
+        # Creates, configures, and returns the radio RFNoC block from the
+        # provided block ID string.
         def create_radio(block_id):
-            block_info = read_id(block_id)
+            block_info = parse_block_id(block_id)
             device = block_info["device_num"]
             instance = block_info["block_count"]
             self.radio_port = int(block_info["port_num"])
-            radio = ettus.rfnoc_rx_radio(
-                self.rfnoc_graph,
-                gnuradio.uhd.device_addr(
-                    "spp={}".format(self.settings_dict["global"]["fft_size"])
-                ),
-                device,
-                instance,
+            radio = self.settings_dict["global"]["rfnoc_block_refs"].setdefault(
+                block_id,
+                ettus.rfnoc_rx_radio(
+                    self.rfnoc_graph,
+                    gnuradio.uhd.device_addr(
+                        "spp={}".format(self.settings_dict["global"]["fft_size"])
+                    ),
+                    device,
+                    instance
+                )
             )
             radio.set_antenna(
                 self.settings_dict["channels"][self.fosphor_num]["channel_type"],
@@ -256,41 +176,50 @@ class fosphor_creator:
             radio.set_gain(
                 self.settings_dict["channels"][fosphor_num]["gain"], self.radio_port
             )
-            radio.set_bandwidth(
-                self.settings_dict["global"]["bandwidth"], self.radio_port
-            )
             radio.set_int_property(
                 "spp", self.settings_dict["global"]["fft_size"], self.radio_port
             )
-            radio.set_dc_offset(False, self.radio_port)
+            try:
+                radio.set_rx_dc_offset(True, self.radio_port)
+            except:
+                pass
             radio.set_iq_balance(False, self.radio_port)
             return radio
 
-        # Creates and returns the ddc RFNoC Block from the block_id string
+        # Creates, configures, and returns the DDC RFNoC block from the
+        # provided block ID string.
         def create_ddc(block_id):
-            block_info = read_id(block_id)
+            block_info = parse_block_id(block_id)
             device = block_info["device_num"]
             instance = block_info["block_count"]
             port = int(block_info["port_num"])
-            ddc = ettus.rfnoc_ddc(
-                self.rfnoc_graph, gnuradio.uhd.device_addr(""), device, instance
-            )
+            ddc_key = f"{device}/DDC#{instance}"
+            if ddc_key in self.settings_dict["global"]["rfnoc_block_refs"]:
+                ddc = self.settings_dict["global"]["rfnoc_block_refs"][ddc_key]
+            else:
+                ddc = ettus.rfnoc_ddc(
+                    self.rfnoc_graph, gnuradio.uhd.device_addr(""), device, instance)
+                self.settings_dict["global"]["rfnoc_block_refs"][ddc_key] = ddc
             ddc.set_output_rate(self.settings_dict["global"]["bandwidth"], port)
             ddc.set_freq(0, port)
             return ddc
 
-        # Creates and returns the fft RFNoC Block from the block_id string
+        # Creates, configures, and returns the FFT RFNoC block from the
+        # provided block ID string.
         def create_fft(block_id):
-            block_info = read_id(block_id)
+            block_info = parse_block_id(block_id)
             device = block_info["device_num"]
             instance = block_info["block_count"]
             port = block_info["port_num"]
-            fft = ettus.rfnoc_block_generic(
-                self.rfnoc_graph,
-                gnuradio.uhd.device_addr(""),
-                "FFT",
-                device,
-                instance,
+            fft = self.settings_dict["global"]["rfnoc_block_refs"].setdefault(
+                f"{device}/FFT#{instance}",
+                ettus.rfnoc_block_generic(
+                    self.rfnoc_graph,
+                    gnuradio.uhd.device_addr(""),
+                    "FFT",
+                    device,
+                    instance
+                )
             )
             fft.set_int_property("length", self.settings_dict["global"]["fft_size"])
             fft.set_int_property("direction", 1)
@@ -299,23 +228,38 @@ class fosphor_creator:
             fft.set_int_property("shift_config", 0)
             return fft
 
-        # Creates and returns the fosphor RFNoC Block from the block_id string
+        # Creates, configures, and returns the Fosphor RFNoC block from the
+        # provided block ID string.
         def create_fosphor(block_id):
-            block_info = read_id(block_id)
+            block_info = parse_block_id(block_id)
             device = block_info["device_num"]
             instance = block_info["block_count"]
             port = block_info["port_num"]
-            fosphor = ettus.rfnoc_block_generic(
-                self.rfnoc_graph,
-                gnuradio.uhd.device_addr(""),
-                "Fosphor",
-                0,
-                instance,
+            fosphor = self.settings_dict["global"]["rfnoc_block_refs"].setdefault(
+                f"{device}/Fosphor#{instance}",
+                ettus.rfnoc_block_generic(
+                    self.rfnoc_graph,
+                    gnuradio.uhd.device_addr(""),
+                    "Fosphor",
+                    0,
+                    instance
+                )
             )
+
+            # Determines the decimation rate to set on the Fosphor RFNoC block
+            # using a similar formula to that in the Fosphor display block C++
+            # code, but without needing to hook up a message port.
+            def calculate_fosphor_decim():
+                decim = self.settings_dict["global"]["bandwidth"] / \
+                    (float(self.settings_dict["global"]["fft_size"]) *
+                    float(self.settings_dict["global"]["power_bins"]) *
+                    float(self.settings_dict["global"]["frame_rate"]))
+                return decim
+
             fosphor.set_bool_property(
                 "enable_dither", self.settings_dict["channels"][fosphor_num]["dither"]
             )
-            fosphor.set_int_property("hist_decimation", 16)
+            fosphor.set_int_property("hist_decimation", calculate_fosphor_decim())
             fosphor.set_int_property(
                 "offset", self.settings_dict["channels"][fosphor_num]["offset"]
             )
@@ -340,14 +284,14 @@ class fosphor_creator:
             fosphor.set_bool_property(
                 "enable_noise", self.settings_dict["channels"][fosphor_num]["randomization"]
             )
+            fosphor.set_int_property("wf_decimation", calculate_fosphor_decim())
             fosphor.set_int_property("wf_predivision_ratio", 0)
-            fosphor.set_int_property("wf_decimation", 32)
             fosphor.set_bool_property("clear_history", True)
             fosphor.set_bool_property("enable_histogram", True)
             fosphor.set_bool_property("enable_waterfall", True)
             return fosphor
 
-        # Creates and returns RFNoC streamer
+        # Creates, configures, and returns an RFNoC streamer object.
         def create_streamer():
             streamer = ettus.rfnoc_rx_streamer(
                 self.rfnoc_graph,
@@ -363,14 +307,15 @@ class fosphor_creator:
             )
             return streamer
 
-        # Creates and returns fosphor display and adds it to the fosphor layout for this fosphor chain
+        # Creates, configures, and returns the Fosphor Qt display GNU Radio
+        # block and adds it to the layout for the widgets for the Fosphor chain.
         def create_fosphor_display():
             display = ettus.fosphor_display(
                 self.settings_dict["global"]["fft_size"],
                 self.settings_dict["global"]["power_bins"],
                 self.settings_dict["global"]["fft_size"],
             )
-            display.set_frame_rate(30)
+            display.set_frame_rate(self.settings_dict["global"]["frame_rate"])
             display.set_frequency_range(
                 self.settings_dict["channels"][self.fosphor_num]["freq"],
                 self.settings_dict["global"]["bandwidth"],
@@ -388,7 +333,8 @@ class fosphor_creator:
                 self.fosphor_layout.setColumnStretch(c, 1)
             return display
 
-        # Calls create_... function based on the block_id
+        # Calls the appropriate GNU Radio block creation and configuration
+        # function above based on the name of the block in `block_id`.
         def create_block(block_id):
             if "Radio" in block_id:
                 block = create_radio(block_id)
@@ -402,31 +348,36 @@ class fosphor_creator:
                 assert False
             return block
 
-        # Creates all blocks required for fosphor chain by calling
-        # create_block for all blocks in the fosphor chain string.
-        # Also creates the fosphor display and 2 streamers needed
-        # for the fosphor chain
+        # For the Fosphor chain described in `fosphor_chain_strings`, creates
+        # all GNU Radio blocks that are required for the chain, including the
+        # RFNoC streamers and the Fosphor Qt display block (which are not part
+        # of the chain string), returning the results in a list.
         def create_fosphor_chain(fosphor_chain_strings):
             gr_blocks = []
             for block in fosphor_chain_strings:
                 gr_block = create_block(block)
                 gr_blocks.append(gr_block)
-            gr_blocks.append(create_streamer())
-            gr_blocks.append(create_streamer())
+            gr_blocks.append(create_streamer()) # hist
+            gr_blocks.append(create_streamer()) # wf
             gr_blocks.append(create_fosphor_display())
             return gr_blocks
 
-        # Connects all the blocks in the fosphor chain together. Checks to see if there is a DDC block and connects the blocks accordingly
-        # Expected blocks in fosphor_chain(in this order of indicies):
-        # Radio->DDC(Optional)->FFT->Fosphor ->Streamer-> Fosphor Display
-        #                                   \->Streamer->/
-        # If DDC is not detected, the function will shift all the indicies back to adjust
-        # Function also expects the chain used to create the blocks referenced above to determine port numbers of the blocks
+        # Connects all the GNU Radio blocks in the Fosphor chain together.
+        # The expected blocks in `fosphor_chain`, in order, are:
+        #
+        # Radio -> DDC(Optional) -> FFT -> Fosphor -> Streamer -> Fosphor Display
+        #                                         \-> Streamer ->/
+        # ^____________ RFNoC domain ___________________^ ^___ Host domain ___^
+        #
+        # If the DDC is not detected, the function will shift all the indices
+        # back to adjust for its absence. The function also takes the string
+        # describing the Fosphor chain, using the port number in each block to
+        # ensure the correct ports on the GNU Radio blocks are connected.
         def connect_blocks(fosphor_chain, fosphor_chains_strings):
-            radio_info = read_id(fosphor_chain_strings[0])
-            second_block_info = read_id(fosphor_chain_strings[1])
-            third_block_info = read_id(fosphor_chain_strings[2])
-            fourth_block_info = read_id(fosphor_chain_strings[3])
+            radio_info = parse_block_id(fosphor_chain_strings[0])
+            second_block_info = parse_block_id(fosphor_chain_strings[1])
+            third_block_info = parse_block_id(fosphor_chain_strings[2])
+            fourth_block_info = parse_block_id(fosphor_chain_strings[3])
             self.rfnoc_graph.connect(
                 fosphor_chain[0].get_unique_id(),
                 radio_info["port_num"],
@@ -466,21 +417,22 @@ class fosphor_creator:
                 0,
                 False,
             )
-            top_block_ref.connect(
+            self.connect(
                 (fosphor_chain[self.fosphor_position + 1], 0),
                 (fosphor_chain[self.fosphor_position + 3], 0),
             )
-            top_block_ref.connect(
+            self.connect(
                 (fosphor_chain[self.fosphor_position + 2], 0),
                 (fosphor_chain[self.fosphor_position + 3], 1),
             )
 
-
+        # Creates and configures the Qt widgets that comprise the GUI controls
+        # for a single Fosphor channel, and then adds them to the layout.
         def create_gui(fosphor_num):
             starting_row = 0
             starting_col = 0
 
-            #Setup for Gain Widget
+            # Setup for Gain Widget
             gain_row = starting_row
             gain_col = starting_col + 2
             gain_height = 1
@@ -490,28 +442,30 @@ class fosphor_creator:
             self._channel_gain_win = RangeWidget(self._channel_gain_range, self.set_channel_gain, 'Gain', "counter_slider", float)
             self.fosphor_layout.addWidget(self._channel_gain_win, gain_row, gain_col, gain_height, gain_width)
             for r in range(gain_row, gain_row + gain_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(gain_col, gain_col + gain_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Frequency Widget
+            # Setup for Frequency Widget
             freq_row = starting_row
             freq_col = starting_col
             freq_height = 1
             freq_width = 2
             self.channel_freq = settings_dict["channels"][fosphor_num]["freq"]
-            self._freq_tool_bar = Qt.QToolBar(top_block_ref)
+            self._freq_tool_bar = Qt.QToolBar(self)
             self._freq_tool_bar.addWidget(Qt.QLabel('Center Frequency' + ": "))
             self._freq_line_edit = Qt.QLineEdit(str(self.channel_freq))
             self._freq_tool_bar.addWidget(self._freq_line_edit)
-            self._freq_line_edit.textChanged.connect(self.channel_freq_control_callback)
+            self._freq_change_button = Qt.QPushButton("Tune")
+            self._freq_change_button.released.connect(lambda: self.channel_freq_control_callback(self._freq_line_edit.text()))
+            self._freq_tool_bar.addWidget(self._freq_change_button)
             self.fosphor_layout.addWidget(self._freq_tool_bar, freq_row, freq_col, freq_height, freq_width)
             for r in range(freq_row, freq_row + freq_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(freq_col, freq_col + freq_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Waterfall Mode
+            # Setup for Waterfall Mode
             wf_row = starting_row + 4
             wf_col = starting_col
             wf_height = 1
@@ -520,7 +474,7 @@ class fosphor_creator:
             self._waterfall_mode_options = [0, 1]
             self._waterfall_mode_labels = ['Max Hold', 'Average']
             self._waterfall_mode = settings_dict["channels"][fosphor_num]["wf_mode"]
-            self._waterfall_mode_tool_bar = Qt.QToolBar(top_block_ref)
+            self._waterfall_mode_tool_bar = Qt.QToolBar(self)
             self._waterfall_mode_tool_bar.addWidget(Qt.QLabel('Waterfall Mode' + ": "))
             self._waterfall_mode_combo_box = Qt.QComboBox()
             self._waterfall_mode_tool_bar.addWidget(self._waterfall_mode_combo_box)
@@ -528,15 +482,15 @@ class fosphor_creator:
             self._waterfall_mode_combo_box.currentIndexChanged.connect(self.waterfall_mode_control_callback)
             self.fosphor_layout.addWidget(self._waterfall_mode_tool_bar, wf_row, wf_col, wf_height, wf_width)
             for r in range(wf_row, wf_row + wf_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(wf_col, wf_col + wf_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Rise Time
+            # Setup for Rise Time
             self._rise_time_range = Range(0, 65535, 1, 4096, 200)
             self._rise_time_win = RangeWidget(self._rise_time_range, self.set_rise_time, 'Rise Time', "slider", float)
 
-            #Setup for Randomization
+            # Setup for Randomization
             rand_row = starting_row + 1
             rand_col = starting_col + 1
             rand_height = 1
@@ -544,7 +498,7 @@ class fosphor_creator:
             self._randomization_enable_options =[False, True]
             self._randomization_enable_labels = ['Disabled', 'Enabled']
             self.randomization_enable = settings_dict["channels"][fosphor_num]["randomization"]
-            self._randomization_enable_tool_bar = Qt.QToolBar(top_block_ref)
+            self._randomization_enable_tool_bar = Qt.QToolBar(self)
             self._randomization_enable_tool_bar.addWidget(Qt.QLabel('Randomization' + ": "))
             self._randomization_enable_combo_box = Qt.QComboBox()
             self._randomization_enable_tool_bar.addWidget(self._randomization_enable_combo_box)
@@ -553,23 +507,23 @@ class fosphor_creator:
             Qt.QMetaObject.invokeMethod(self._randomization_enable_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._randomization_enable_options.index(self.randomization_enable)))
             self.fosphor_layout.addWidget(self._randomization_enable_tool_bar, rand_row, rand_col, rand_height, rand_width)
             for r in range(rand_row, rand_row + rand_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(rand_col, rand_col + rand_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Max Hold Decay
+            # Setup for Max Hold Decay
             self._max_hold_decay_range = Range(0, 65535, 1, 1, 200)
             self._max_hold_decay_win = RangeWidget(self._max_hold_decay_range, self.set_max_hold, 'Max Hold Decay', "slider", int)
 
-            #Setup for Histogram Scale
+            # Setup for Histogram Scale
             self._hist_scale_range = Range(0, 65535, 1, 256, 200)
             self._hist_scale_win = RangeWidget(self._hist_scale_range, self.set_hist_scale, 'Scale', "slider", float)
 
-            #Setup for Histogram Offset
+            # Setup for Histogram Offset
             self._hist_offset_range = Range(0, 65535, 1, 0, 200)
             self._hist_offset_win = RangeWidget(self._hist_offset_range, self.set_hist_offset, 'Offset', "slider", float)
 
-            #Setup for Dither
+            # Setup for Dither
             dither_row = starting_row + 1
             dither_col = starting_col
             dither_height = 1
@@ -577,7 +531,7 @@ class fosphor_creator:
             self._dither_enable_options = [False, True]
             self._dither_enable_labels = ['Disabled', 'Enabled']
             self.dither_enable = self.settings_dict["channels"][fosphor_num]["dither"]
-            self._dither_enable_tool_bar = Qt.QToolBar(top_block_ref)
+            self._dither_enable_tool_bar = Qt.QToolBar(self)
             self._dither_enable_tool_bar.addWidget(Qt.QLabel('Dither' + ": "))
             self._dither_enable_combo_box = Qt.QComboBox()
             self._dither_enable_tool_bar.addWidget(self._dither_enable_combo_box)
@@ -586,15 +540,15 @@ class fosphor_creator:
             self._dither_enable_combo_box.currentIndexChanged.connect(self.dither_enable_control_callback)
             self.fosphor_layout.addWidget(self._dither_enable_tool_bar, dither_row, dither_col, dither_height, dither_width)
             for r in range(dither_row, dither_row + dither_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(dither_col, dither_col + dither_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Decay Time
+            # Setup for Decay Time
             self._decay_time_range = Range(0, 65535, 1, 16384, 200)
-            self._decay_time_win = RangeWidget(self._decay_time_range, self.set_decay_time, 'Decay TIme', "slider", int)
+            self._decay_time_win = RangeWidget(self._decay_time_range, self.set_decay_time, 'Decay Time', "slider", int)
 
-            #Setup for Histogram Color
+            # Setup for Histogram Color
             color_row = starting_row + 4
             color_col = starting_col + 1
             color_height = 1
@@ -602,7 +556,7 @@ class fosphor_creator:
             self._color_options = ['iron', 'cubehelix', 'sdrangelove_histogram', 'rainbow', 'prog']
             self._color_labels = ['Iron', 'Cube Helix', 'SDRangeLove', 'Rainbow', "Prog's"]
             self.color = color = settings_dict["channels"][fosphor_num]["color"]
-            self._color_tool_bar = Qt.QToolBar(top_block_ref)
+            self._color_tool_bar = Qt.QToolBar(self)
             self._color_tool_bar.addWidget(Qt.QLabel('Color' + ": "))
             self._color_combo_box = Qt.QComboBox()
             self._color_tool_bar.addWidget(self._color_combo_box)
@@ -611,16 +565,15 @@ class fosphor_creator:
             Qt.QMetaObject.invokeMethod(self._color_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._color_options.index(self.color)))
             self.fosphor_layout.addWidget(self._color_tool_bar, color_row, color_col, color_height, color_width)
             for r in range(color_row, color_row + color_height):
-                self.fosphor_layout.setRowStretch(r, 1)
+                self.fosphor_layout.setRowStretch(r, 0)
             for c in range(color_col, color_col + color_width):
-                self.fosphor_layout.setColumnStretch(c, 1)
+                self.fosphor_layout.setColumnStretch(c, 0)
 
-            #Setup for Averaging Alpha
+            # Setup for Averaging Alpha
             self._averaging_alpha_range = Range(65200, 65360, 1, 65280, 200)
             self._averaging_alpha_win = RangeWidget(self._averaging_alpha_range, self.set_averaging_alpha, 'Averaging Alpha', "slider", int)
 
-
-            #Organizing Widgets with title boxes
+            # Organize Widgets with title boxes
             spectrum_row = starting_row + 2
             spectrum_col = starting_col
             spectrum_height = 2
@@ -645,16 +598,146 @@ class fosphor_creator:
             self.histogram_title_box.setLayout(self.histogram_box)
             self.fosphor_layout.addWidget(self.histogram_title_box, histogram_row, histogram_col, histogram_height, histogram_width)
 
-        # Function calls to create and connect blocks
+        # Creates the Fosphor GNU Radio blocks, connects them, then creates the
+        # GUI controls (if enabled)
         self.fosphor_chain = create_fosphor_chain(fosphor_chain_strings)
         connect_blocks(self.fosphor_chain, fosphor_chain_strings)
-        create_gui(fosphor_num)
+        if not self.settings_dict["global"]["no_gui"]:
+            create_gui(fosphor_num)
 
-# This class creates and sets up GNURadio as well as creating the layoput for the fosphor displays to go once they are created
-# Checks to see which channels are selected, then calls fosphor creator and adds the layouts that are returned to the top_layout to organize all of the displays
-class multi_fosphor_example(gr.top_block, Qt.QWidget):
+    def get_fosphor_layout(self):
+        return self
+
+    def get_channel_gain(self):
+        return self.channel_gain
+
+    def set_channel_gain(self, gain):
+        if int(gain) in range(int(self.settings_dict["channels"][self.fosphor_num]["min_gain"]), int(self.settings_dict["channels"][self.fosphor_num]["max_gain"])):
+                self.fosphor_chain[0].set_gain(gain, self.radio_port)
+                self.channel_gain = gain
+        else:
+            assert False
+
+    def channel_gain_control_changed_callback(self, gain):
+        self.set_channel_gain(float(gain))
+
+    def get_channel_freq(self):
+        return self.channel_freq
+
+    def set_channel_freq(self, freq):
+        if int(freq) in range(int(self.settings_dict["channels"][self.fosphor_num]["min_freq"]), int(self.settings_dict["channels"][self.fosphor_num]["max_freq"])):
+            self.fosphor_chain[0].set_frequency(freq, self.radio_port)
+            self.fosphor_chain[self.fosphor_position+3].set_frequency_range(freq, self.settings_dict["global"]["bandwidth"])
+            self.channel_freq = freq
+        else:
+            assert False
+
+    def channel_freq_control_callback(self, freq):
+        self.set_channel_freq(parse_si_value(freq))
+
+    def update_wf_mode_widget(self, mode):
+        Qt.QMetaObject.invokeMethod(self._waterfall_mode_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._waterfall_mode_options.index(mode)))
+
+    def get_waterfall_mode(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("wf_mode")
+
+    def set_waterfall_mode(self, mode):
+        self.fosphor_chain[self.fosphor_position].set_int_property("wf_mode", mode)
+        actual_mode = self.get_waterfall_mode()
+        self.update_wf_mode_widget(actual_mode)
+
+    def waterfall_mode_control_callback(self, mode):
+        self.set_waterfall_mode(mode)
+
+    def get_rise_time(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("trise")
+
+    def set_rise_time(self, time):
+        self.fosphor_chain[self.fosphor_position].set_int_property("trise", time)
+
+    def rise_time_control_callback(self, time):
+        self.set_rise_time(time)
+
+    def get_randomization_enable(self):
+        return self.fosphor_chain[self.fosphor_position].get_bool_property("enable_noise")
+
+    def set_randomization_enable(self, rand):
+        self.fosphor_chain[self.fosphor_position].set_bool_property("enable_noise", bool(rand))
+
+    def randomization_enable_control_callback(self, rand):
+        self.set_randomization_enable(rand)
+
+    def get_max_hold(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("epsilon")
+
+    def set_max_hold(self, max_hold):
+        self.fosphor_chain[self.fosphor_position].set_int_property("epsilon", max_hold)
+
+    def max_hold_control_callback(self, max_hold):
+        self.set_max_hold(max_hold)
+
+    def get_hist_scale(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("scale")
+
+    def set_hist_scale(self, scale):
+        self.fosphor_chain[self.fosphor_position].set_int_property("scale", scale)
+
+    def hist_scale_control_callback(self, scale):
+        self.set_hist_scale(scale)
+
+    def get_hist_offset(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("offset")
+
+    def set_hist_offset(self, offset):
+        self.fosphor_chain[self.fosphor_position].set_int_property("offset", offset)
+
+    def hist_offset_control_callback(self, offset):
+        self.set_hist_offset(offset)
+
+    def get_dither_enable(self):
+        return self.fosphor_chain[self.fosphor_position].get_bool_property("enable_dither")
+
+    def set_dither_enable(self, dither):
+        self.fosphor_chain[self.fosphor_position].set_bool_property("enable_dither", dither)
+
+    def dither_enable_control_callback(self, dither):
+        self.set_dither_enable(bool(dither))
+
+    def get_decay_time(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("tdecay")
+
+    def set_decay_time(self, time):
+        self.fosphor_chain[self.fosphor_position].set_int_property("tdecay", time)
+
+    def decay_time_control_callback(self, time):
+        self.set_decay_time(time)
+
+    def get_color(self):
+        return self.fosphor_chain[6].get_palette()
+
+    def set_color(self, color_index):
+        self.fosphor_chain[self.fosphor_position + 3].set_palette(self._color_options[color_index])
+        self.color = self._color_options[color_index]
+
+    def color_control_callback(self, color):
+        self.set_color(color)
+
+    def get_averaging_alpha(self):
+        return self.fosphor_chain[self.fosphor_position].get_int_property("alpha")
+
+    def set_averaging_alpha(self, alpha):
+        self.fosphor_chain[self.fosphor_position].set_int_property("alpha", alpha)
+
+    def averaging_alpha_control_callback(self, alpha):
+        self.set_averaging_alpha(alpha)
+
+
+# This class aggregates all of the enabled Fosphor channels' display units,
+# building them upon construction and adding them to a grid layout of 2x2
+# display units for four Fosphor channels maximum or Nx1 for fewer than four
+# channels.
+class multi_fosphor_example(Qt.QWidget):
     def __init__(self, settings_dict, fosphor_chains_strings):
-        gr.top_block.__init__(self, "multi_fosphor_example")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("multi_fosphor_example")
         qtgui.util.check_set_qss()
@@ -662,15 +745,8 @@ class multi_fosphor_example(gr.top_block, Qt.QWidget):
             self.setWindowIcon(Qt.QIcon.fromTheme("gnuradio-grc"))
         except:
             pass
-        self.top_scroll_layout = Qt.QVBoxLayout()
-        self.setLayout(self.top_scroll_layout)
-        self.top_scroll = Qt.QScrollArea()
-        self.top_scroll.setFrameStyle(Qt.QFrame.NoFrame)
-        self.top_scroll_layout.addWidget(self.top_scroll)
-        self.top_scroll.setWidgetResizable(True)
-        self.top_widget = Qt.QWidget()
-        self.top_scroll.setWidget(self.top_widget)
-        self.top_layout = Qt.QVBoxLayout(self.top_widget)
+        self.top_layout = Qt.QGridLayout()
+        self.setLayout(self.top_layout)
         self.display_settings = Qt.QSettings("GNU Radio", "multi_fosphor_example")
 
         try:
@@ -687,37 +763,62 @@ class multi_fosphor_example(gr.top_block, Qt.QWidget):
         self.rfnoc_graph = settings_dict["global"]["rfnoc_graph"]
         self.fosphor_chains = fosphor_chains_strings
         self.channel_select = self.settings_dict["global"]["channel_select"]
-        fosphor_num = 0
+        self.fosphor_display_units = []
 
-        # Determines if displays will be created for all detected chains or specific channels
         if len(self.channel_select) == 4:
-            for chain in fosphor_chains_strings:
+            for (fosphor_num, chain) in enumerate(fosphor_chains_strings):
                 fosphor_display_unit = fosphor_creator(
-                    settings_dict, chain, fosphor_num, self
+                    settings_dict, chain, fosphor_num
                 )
-                self.top_layout.addLayout(fosphor_display_unit.get_fosphor_layout())
-                fosphor_num = fosphor_num + 1
+                grid_coords = {0: (0, 0), 1: (0, 1), 2: (1, 0), 3: (1, 1)}
+                self.top_layout.addWidget(fosphor_display_unit.get_fosphor_layout(),
+                    grid_coords[fosphor_num][0], grid_coords[fosphor_num][1], 1, 1)
+                self.fosphor_display_units.append(fosphor_display_unit)
         else:
-            while fosphor_num < len(self.channel_select):
+            for (fosphor_num, _) in enumerate(range(len(self.channel_select))):
                 fosphor_display_unit = fosphor_creator(
                     settings_dict,
                     fosphor_chains_strings[self.channel_select[fosphor_num]],
-                    fosphor_num,
-                    self,
+                    fosphor_num
                 )
-                self.top_layout.addLayout(fosphor_display_unit.get_fosphor_layout())
-                fosphor_num = fosphor_num + 1
+                self.top_layout.addWidget(fosphor_display_unit.get_fosphor_layout(), 0, fosphor_num, 1, 1)
+                self.fosphor_display_units.append(fosphor_display_unit)
 
-    # Closes the GNURadio instance
+    # Starts all the individual Fosphor channels' `gr::top_block`s (i.e., the
+    # GNU Radio flowgraph associated with the Fosphor channel).
+    def go(self):
+        for display_unit in self.fosphor_display_units:
+            display_unit.start(self.settings_dict["global"]["max_noutput_items"])
+
+    # Stops all the Fosphor channels' flowgraphs.
+    def stop(self):
+        for display_unit in self.fosphor_display_units:
+            display_unit.stop()
+
+    # Waits for all the GNU Radio threads to terminate.
+    def wait(self):
+        for display_unit in self.fosphor_display_units:
+            display_unit.wait()
+
+    # Closes the GNU Radio instance.
     def close_event(self, event):
         self.display_settings = Qt.QSettings("GNU Radio", "multi_fosphor_example")
         self.display_settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
-# This function will find completete fosphor chains that begin with a radio block and follow the path: Radio->DDC->FFT->Fosphor(port0)->SEP and Fosphor(port1)->SEP
-# Returns a list of lists that hold the strings for the fosphor chain blocks
-# Requires a static chain of radio->ddc->fft->fosphor->sep
 
+# Uses the RFNoC graph API to enumerate connections between RFNoC blocks in the
+# RFNoC image on the radio to find Fosphor-enabled channels. A Fosphor-enabled
+# channel is found if a chain of the following RFNoC blocks is found:
+#
+#  Radio --> DDC (optional) --> FFT --> Fosphor --> SEP
+#         \----------------/                    \-> SEP
+#
+# The function returns a list, with each item in the list being a list of
+# strings of the RFNoC block IDs (minus the stream endpoints) that comprise
+# a complete Fosphor-enabled channel, e.g.:
+#   [['0/Radio#0:0', '0/DDC#0:0', '0/FFT#0:0', '0/Fosphor#0:0'],  # Fosphor channel 0
+#    ['0/Radio#1:0', '0/DDC#1:0', '0/FFT#1:0', '0/Fosphor#1:0']]  # Fosphor channel 1
 def find_fosphor_chains(settings_dict):
     graph = uhd.rfnoc.RfnocGraph(settings_dict["global"]["args"])
     static_connections = graph.enumerate_static_connections()
@@ -743,6 +844,9 @@ def find_fosphor_chains(settings_dict):
         if "FFT" in connection_dict.get(connection_search):  # FFT Found
             connection_search = connection_dict.get(connection_search)
             chain.append(connection_search)
+            # Don't add an SEP found between the FFT and Fosphor blocks to the chain
+            if "SEP" in connection_dict.get(connection_search):
+                connection_search = connection_dict.get(connection_search)
             if "Fosphor" in connection_dict.get(connection_search):  # Fosphor found
                 connection_search = connection_dict.get(connection_search)
                 chain.append(connection_search)  # Adds fosphor port connected to FFT
@@ -772,7 +876,8 @@ def find_fosphor_chains(settings_dict):
 
     return fosphor_chains
 
-
+# Parses the command-line arguments used to configure the settings for the
+# application and each Fosphor channel.
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -796,13 +901,22 @@ def parse_args():
         help="channel select, 0-3",
     )
     parser.add_argument("--power_bins", default=64, help="# of power bins", type=int)
-    parser.add_argument("--bandwidth", default=10e6, type=float)
+    parser.add_argument("--frame_rate", default=30, help="Update rate (frames/sec)", type=int)
+    parser.add_argument("--bandwidth", default="10M", type=str)
+    parser.add_argument("--max_noutput_items",
+        default=10e6,
+        help="max_noutput_items for channel top_blocks (advanced)",
+        type=int)
+    parser.add_argument("--no_gui",
+        help = "Disable interactive controls for Fosphor channels (show Fosphor only)",
+        action = "store_true")
+
     # Channel Settings
     parser.add_argument(
         "--channel_freq",
         nargs="+",
         help="Channel frequencies, separated by spaces",
-        type=float,
+        type=str,
     )
     parser.add_argument(
         "--channel_gain",
@@ -834,32 +948,24 @@ def parse_args():
     parser.add_argument("--channel_type", nargs="+", default=["RX2"], type=str)
     return parser.parse_args()
 
-
-# Allows for arguments to be UP TO the number of fosphor chains and will select
-#default value if the specified channel setting was not included in the argument parsing
+# Takes a list of values and the index within that list to return. If that index
+# is out of range, the element at index 0 of the list is returned instead.
 def index_or_default(parameter, index):
-    if parameter is None:
-        logger.error("Missing Argument")
-    if index < len(parameter):
-        return parameter[index]
-    else:
-        return parameter[0]
-
+    assert len(parameter) > 0
+    return parameter[index] if index < len(parameter) else parameter[0]
 
 def wf_mode_check(wf_mode):
-    if wf_mode == "max_hold":
-        return 0
-    if wf_mode == "average":
-        return 1
+    return {"max_hold": 0, "average": 1}.get(wf_mode)
 
-
-def main(top_block_cls=multi_fosphor_example, options=None):
+def main():
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string("qtgui", "style", "raster")
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
+    # Parse the command-line parameters and populate the dictionary holding
+    # application-wide (i.e., non-channel-specific) settings.
     args = parse_args()
     if args.channel_freq is None:
         logger.error("Please specify --channel_freq")
@@ -867,18 +973,24 @@ def main(top_block_cls=multi_fosphor_example, options=None):
     settings_dict = {
         "global": {
             "fft_size": args.fft_size,
-            "bandwidth": args.bandwidth,
+            "bandwidth": parse_si_value(args.bandwidth),
             "args": args.args,
             "power_bins": args.power_bins,
+            "frame_rate": args.frame_rate,
+            "max_noutput_items": args.max_noutput_items,
             "channel_select": args.channel_select,
+            "no_gui": args.no_gui
         },
         "channels": [],
     }
+
+    # Attempt to locate Fosphor-enabled channels on the RFNoC image of the
+    # radio
     fosphor_chains_strings = find_fosphor_chains(settings_dict)
     if len(fosphor_chains_strings) < 1:
         logger.error("No fosphor chains found")
         return False
-    # If the channel_select is not the default, it checks to make sure the highest channel selected is available
+
     if (settings_dict["global"]["channel_select"] != [0, 1, 2, 3]) and (
         max(settings_dict["global"]["channel_select"]) >= len(fosphor_chains_strings)
     ):
@@ -889,15 +1001,19 @@ def main(top_block_cls=multi_fosphor_example, options=None):
         )
         return False
 
+    # Create an RFNoC graph for use in connecting the RFNoC blocks on the
+    # radio to form the Fosphor channels
     rfnoc_graph = ettus.rfnoc_graph(
         gnuradio.uhd.device_addr(settings_dict["global"]["args"])
     )
     settings_dict["global"]["rfnoc_graph"] = rfnoc_graph
+    settings_dict["global"]["rfnoc_block_refs"] = dict()
 
-    chain_index = 0
-    for chain in fosphor_chains_strings:
+    # For each detected Fosphor channels, populate the channel-specific settings
+    # dictionary from the appropriate command-line options
+    for (chain_index, _) in enumerate(fosphor_chains_strings):
         channel_settings = {
-            "freq": index_or_default(args.channel_freq, chain_index),
+            "freq": parse_si_value(index_or_default(args.channel_freq, chain_index)),
             "gain": index_or_default(args.channel_gain, chain_index),
             "max_hold_decay": index_or_default(args.max_hold_decay, chain_index),
             "randomization": index_or_default(args.randomization_enable, chain_index),
@@ -912,11 +1028,14 @@ def main(top_block_cls=multi_fosphor_example, options=None):
             "channel_type": index_or_default(args.channel_type, chain_index),
         }
         settings_dict["channels"][chain_index].update(channel_settings)
-        chain_index = chain_index + 1
 
-    top_block = top_block_cls(settings_dict, fosphor_chains_strings)
-    top_block.start()
-    top_block.show()
+    # Build all the GNU Radio flowgraphs and GUI elements for each Fosphor
+    # channel
+    mfe = multi_fosphor_example(settings_dict, fosphor_chains_strings)
+    mfe.show()
+
+    # Start the Fosphor channel flowgraphs
+    mfe.go()
 
     def sig_handler(sig=None, frame=None):
         Qt.QApplication.quit()
@@ -926,11 +1045,10 @@ def main(top_block_cls=multi_fosphor_example, options=None):
 
     timer = Qt.QTimer()
     timer.start(500)
-    timer.timeout.connect
+    timer.timeout.connect(lambda: None)
 
     def quitting():
-        top_block.stop()
-        top_block.wait()
+        mfe.stop()
 
     qapp.aboutToQuit.connect(quitting)
     qapp.exec_()
