@@ -35,9 +35,9 @@ struct freq_axis {
     double span;
     double step;
     int mode;
-    char abs_fmt[16];
+    char abs_fmt[32];
     double abs_scale;
-    char rel_fmt[16];
+    char rel_fmt[32];
     double rel_step;
 };
 
