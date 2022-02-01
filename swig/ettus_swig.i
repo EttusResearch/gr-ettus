@@ -51,6 +51,8 @@
 
 %rename("set_coefficients_int") gr::ettus::rfnoc_window::set_coefficients(const std::vector<int16_t>& coeffs, const size_t chan);
 %rename("set_coefficients_float") gr::ettus::rfnoc_window::set_coefficients(const std::vector<float>& coeffs, const size_t chan);
+%rename("set_coefficients_int") gr::ettus::rfnoc_fir_filter::set_coefficients(const std::vector<int16_t>& coeffs, const size_t chan);
+%rename("set_coefficients_float") gr::ettus::rfnoc_fir_filter::set_coefficients(const std::vector<float>& coeffs, const size_t chan);
 
 %ignore gr::ettus::rfnoc_graph::create_rx_streamer;
 %ignore gr::ettus::rfnoc_graph::create_tx_streamer;
@@ -66,6 +68,7 @@
 #include <ettus/rfnoc_block.h>
 #include <ettus/rfnoc_ddc.h>
 #include <ettus/rfnoc_duc.h>
+#include <ettus/rfnoc_fir_filter.h>
 #include <ettus/rfnoc_rx_radio.h>
 #include <ettus/rfnoc_rx_streamer.h>
 #include <ettus/rfnoc_tx_radio.h>
@@ -138,6 +141,7 @@
 %include <ettus/rfnoc_block_generic.h>
 %include <ettus/rfnoc_ddc.h>
 %include <ettus/rfnoc_duc.h>
+%include <ettus/rfnoc_fir_filter.h>
 %include <ettus/rfnoc_rx_radio.h>
 %include <ettus/rfnoc_tx_radio.h>
 %include <ettus/rfnoc_window.h>
@@ -158,6 +162,7 @@ GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_streamer);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_block_generic);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_ddc);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_duc);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_filter);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_radio);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_tx_radio);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window);
