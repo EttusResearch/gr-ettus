@@ -13,6 +13,7 @@
     - ettus_rfnoc_tx_radio
     - ettus_rfnoc_rx_streamer
     - ettus_rfnoc_tx_streamer
+    - ettus_rfnoc_siggen
     - ettus_rfnoc_window
   - RFNoC Image Builder:
       - Blocks:
