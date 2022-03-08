@@ -54,6 +54,8 @@
 %rename("set_coefficients_int") gr::ettus::rfnoc_fir_filter::set_coefficients(const std::vector<int16_t>& coeffs, const size_t chan);
 %rename("set_coefficients_float") gr::ettus::rfnoc_fir_filter::set_coefficients(const std::vector<float>& coeffs, const size_t chan);
 
+%rename("set_waveform_string") gr::ettus::rfnoc_siggen::set_waveform(const std::string type, const size_t chan);
+
 %ignore gr::ettus::rfnoc_graph::create_rx_streamer;
 %ignore gr::ettus::rfnoc_graph::create_tx_streamer;
 %ignore gr::ettus::rfnoc_graph::get_block_ref;
@@ -71,6 +73,7 @@
 #include <ettus/rfnoc_fir_filter.h>
 #include <ettus/rfnoc_rx_radio.h>
 #include <ettus/rfnoc_rx_streamer.h>
+#include <ettus/rfnoc_siggen.h>
 #include <ettus/rfnoc_tx_radio.h>
 #include <ettus/rfnoc_tx_streamer.h>
 #include <ettus/rfnoc_window.h>
@@ -143,6 +146,7 @@
 %include <ettus/rfnoc_duc.h>
 %include <ettus/rfnoc_fir_filter.h>
 %include <ettus/rfnoc_rx_radio.h>
+%include <ettus/rfnoc_siggen.h>
 %include <ettus/rfnoc_tx_radio.h>
 %include <ettus/rfnoc_window.h>
 
@@ -164,6 +168,7 @@ GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_ddc);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_duc);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_fir_filter);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_rx_radio);
+GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_siggen);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_tx_radio);
 GR_SWIG_BLOCK_MAGIC2(ettus, rfnoc_window);
 

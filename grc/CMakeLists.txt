@@ -20,6 +20,7 @@ endmacro(GEN_BLOCK_YML)
 
 GEN_BLOCK_YML(gen_rfnoc_window_block_yml.py ettus_rfnoc_window.block.yml)
 GEN_BLOCK_YML(gen_rfnoc_fir_filter_block_yml.py ettus_rfnoc_fir_filter.block.yml)
+GEN_BLOCK_YML(gen_rfnoc_siggen_block_yml.py ettus_rfnoc_siggen.block.yml)
 
 # Useful target to re-generate blocks
 add_custom_target(gr_ettus_grc_yml_blocks ALL DEPENDS ${yml_blocks})
