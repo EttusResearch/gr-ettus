@@ -50,9 +50,57 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [488, 20.0]
+    coordinate: [968, 12.0]
     rotation: 0
     state: true
+- name: device_type
+  id: variable
+  parameters:
+    comment: ''
+    value: '"type=e3xx"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 152.0]
+    rotation: 0
+    state: disabled
+- name: device_type
+  id: variable
+  parameters:
+    comment: ''
+    value: '"type=x300"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 80.0]
+    rotation: 0
+    state: enabled
+- name: device_type
+  id: variable
+  parameters:
+    comment: ''
+    value: '"type=n3xx"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 80.0]
+    rotation: 0
+    state: disabled
+- name: device_type
+  id: variable
+  parameters:
+    comment: ''
+    value: '"type=x4xx"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 152.0]
+    rotation: 0
+    state: disabled
 - name: enable
   id: variable_qtgui_check_box
   parameters:
@@ -67,7 +115,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 20.0]
+    coordinate: [656, 12.0]
     rotation: 0
     state: true
 - name: ettus_rfnoc_graph
@@ -83,8 +131,8 @@ blocks:
     clock_source_6: ''
     clock_source_7: ''
     comment: ''
-    dev_addr: addr=192.168.40.2
-    dev_args: type=x300
+    dev_addr: device_type
+    dev_args: ''
     num_mboards: '1'
     time_source_0: ''
     time_source_1: ''
@@ -98,7 +146,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 124.0]
+    coordinate: [224, 8.0]
     rotation: 0
     state: true
 - name: fs
@@ -110,7 +158,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 204.0]
+    coordinate: [560, 8.0]
     rotation: 0
     state: true
 - name: tone_freq
@@ -131,7 +179,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [360, 20.0]
+    coordinate: [816, 12.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -150,9 +198,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [680, 236.0]
+    coordinate: [584, 344.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: ettus_rfnoc_rx_streamer_0
   id: ettus_rfnoc_rx_streamer
   parameters:
@@ -170,9 +218,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 240.0]
+    coordinate: [336, 352.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: ettus_rfnoc_siggen_0
   id: ettus_rfnoc_siggen
   parameters:
@@ -269,7 +317,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 204.0]
+    coordinate: [64, 300.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
@@ -349,9 +397,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 220.0]
+    coordinate: [824, 324.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -446,7 +494,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 300.0]
+    coordinate: [824, 420.0]
+    rotation: 0
+    state: enabled
+- name: snippet_0
+  id: snippet
+  parameters:
+    alias: ''
+    code: self.ettus_rfnoc_siggen_0.set_enable(False, 0);
+    comment: 'Automatically disables SigGen output
+
+      when ending flowgraph'
+    priority: '0'
+    section: main_after_stop
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [808, 160.0]
     rotation: 0
     state: true
 
