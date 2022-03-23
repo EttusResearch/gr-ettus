@@ -44,19 +44,7 @@ blocks:
     coordinate: [216, 80.0]
     rotation: 0
     state: enabled
-- name: device_type_0
-  id: variable
-  parameters:
-    comment: ''
-    value: '"type=x4xx"'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [216, 152.0]
-    rotation: 0
-    state: disabled
-- name: device_type_1
+- name: device_type
   id: variable
   parameters:
     comment: ''
@@ -68,7 +56,19 @@ blocks:
     coordinate: [352, 80.0]
     rotation: 0
     state: disabled
-- name: device_type_2
+- name: device_type
+  id: variable
+  parameters:
+    comment: ''
+    value: '"type=x4xx"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 152.0]
+    rotation: 0
+    state: disabled
+- name: device_type
   id: variable
   parameters:
     comment: ''
