@@ -53,28 +53,26 @@ public:
      * \param coeffs Vector of Coeffs (float)
      * \param chan   Channel Index
      */
-    virtual void set_coefficients(const std::vector<float>& coeffs,
-                                  const size_t chan) = 0;
+    virtual void set_coefficients(const std::vector<float>& coeffs) = 0;
 
     /*! Set the FIR Filter coefficients
      *
      * \param coeffs Vector of Coeffs (int16)
      * \param chan   Channel Index
      */
-    virtual void set_coefficients(const std::vector<int16_t>& coeffs,
-                                  const size_t chan) = 0;
+    virtual void set_coefficients(const std::vector<int16_t>& coeffs) = 0;
 
     /*! Get the number of FIR Filter coefficients
      *
      * \param chan   Channel Index
      */
-    virtual size_t get_max_num_coefficients(const size_t chan) = 0;
+    virtual size_t get_max_num_coefficients() = 0;
 
     /*! Returns a vector of FIR Filter coefficients
      *
      * \param chan   Channel Index
      */
-    virtual std::vector<int16_t> get_coefficients(const size_t chan) = 0;
+    virtual std::vector<int16_t> get_coefficients() = 0;
 };
 
 } // namespace ettus

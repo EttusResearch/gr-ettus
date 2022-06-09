@@ -52,8 +52,7 @@ rfnoc_fir_filter_impl::~rfnoc_fir_filter_impl() {}
  * rfnoc_fir_filter API
  *****************************************************************************/
 void rfnoc_fir_filter_impl::set_coefficients(
-    const std::vector<float>& coeffs,
-    const size_t chan = 0)
+    const std::vector<float>& coeffs)
 {
     std::vector<int16_t> coeffs_int16(coeffs.size());
 
@@ -61,24 +60,23 @@ void rfnoc_fir_filter_impl::set_coefficients(
     int16_t* out = &coeffs_int16.front();
 
     volk_32f_s32f_convert_16i(out, in, 32768.0, coeffs.size());
-    set_coefficients(coeffs_int16, chan);
+    set_coefficients(coeffs_int16);
 }
 
 void rfnoc_fir_filter_impl::set_coefficients(
-    const std::vector<int16_t>& coeffs,
-    const size_t chan = 0)
+    const std::vector<int16_t>& coeffs)
 {
-    d_fir_filter_ref->set_coefficients(coeffs, chan);
+    d_fir_filter_ref->set_coefficients(coeffs);
 }
 
-size_t rfnoc_fir_filter_impl::get_max_num_coefficients(const size_t chan = 0)
+size_t rfnoc_fir_filter_impl::get_max_num_coefficients()
 {
-    return d_fir_filter_ref->get_max_num_coefficients(chan);
+    return d_fir_filter_ref->get_max_num_coefficients();
 }
 
-std::vector<int16_t> rfnoc_fir_filter_impl::get_coefficients(const size_t chan = 0)
+std::vector<int16_t> rfnoc_fir_filter_impl::get_coefficients()
 {
-    return d_fir_filter_ref->get_coefficients(chan);
+    return d_fir_filter_ref->get_coefficients();
 }
 
 } /* namespace ettus */
