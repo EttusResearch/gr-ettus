@@ -95,9 +95,9 @@ endif(APPLE)
 ########################################################################
 # Find gr-ettus build dependencies
 ########################################################################
-find_package(UHD "4.0" REQUIRED)
+find_package(UHD "4.2" REQUIRED)
 if(NOT UHD_FOUND)
-    message(FATAL_ERROR "UHD >= 4.0 not found.")
+    message(FATAL_ERROR "UHD >= 4.2 not found.")
 endif(NOT UHD_FOUND)
 
 find_package(PythonLibs 2)
