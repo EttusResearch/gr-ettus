@@ -4,7 +4,7 @@ flags: [ show_id, python ]
 
 templates:
   imports: |-
-      import ettus
+      import gnuradio.ettus as ettus
       from gnuradio import uhd
   var_make: |
       self.rfnoc_graph = ${id} = ettus.rfnoc_graph(uhd.device_addr(",".join((${dev_addr}, ${dev_args}))))

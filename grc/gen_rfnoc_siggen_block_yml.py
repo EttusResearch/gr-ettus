@@ -50,7 +50,7 @@ outputs:
 
 templates:
   imports: |-
-    import ettus
+    import gnuradio.ettus as ettus
     from gnuradio import uhd
   make: |-
     ettus.rfnoc_siggen(

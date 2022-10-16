@@ -5,7 +5,7 @@ templates:
   imports: |-
     from PyQt5 import Qt
     import sip
-    import ettus
+    import gnuradio.ettus as ettus
     from gnuradio import uhd
   make: |-
     <%
