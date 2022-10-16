@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_RX_STREAMER_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_RX_STREAMER_IMPL_H
 
-#include <ettus/rfnoc_rx_streamer.h>
+#include <gnuradio/ettus/rfnoc_rx_streamer.h>
 
 namespace gr {
 namespace ettus {

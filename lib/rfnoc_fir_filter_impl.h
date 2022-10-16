@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_WINDOW_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_WINDOW_IMPL_H
 
-#include <ettus/rfnoc_fir_filter.h>
+#include <gnuradio/ettus/rfnoc_fir_filter.h>
 #include <uhd/rfnoc/fir_filter_block_control.hpp>
 
 namespace gr {

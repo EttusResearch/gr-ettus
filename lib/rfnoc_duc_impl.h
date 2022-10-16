@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_DUC_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_DUC_IMPL_H
 
-#include <ettus/rfnoc_duc.h>
+#include <gnuradio/ettus/rfnoc_duc.h>
 #include <uhd/rfnoc/duc_block_control.hpp>
 
 namespace gr {

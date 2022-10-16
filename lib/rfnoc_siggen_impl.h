@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_SIGGEN_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_SIGGEN_IMPL_H
 
-#include <ettus/rfnoc_siggen.h>
+#include <gnuradio/ettus/rfnoc_siggen.h>
 #include <uhd/rfnoc/siggen_block_control.hpp>
 
 namespace gr {

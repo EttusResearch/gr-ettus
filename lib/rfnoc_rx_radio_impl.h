@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_RX_RADIO_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_RX_RADIO_IMPL_H
 
-#include <ettus/rfnoc_rx_radio.h>
+#include <gnuradio/ettus/rfnoc_rx_radio.h>
 #include <uhd/rfnoc/radio_control.hpp>
 
 namespace gr {

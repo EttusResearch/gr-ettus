@@ -24,7 +24,7 @@
 #endif
 
 #include "rfnoc_block_generic_impl.h"
-#include <ettus/rfnoc_graph.h>
+#include <gnuradio/ettus/rfnoc_graph.h>
 
 namespace gr {
 namespace ettus {

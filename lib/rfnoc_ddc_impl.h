@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_RFNOC_DDC_IMPL_H
 #define INCLUDED_ETTUS_RFNOC_DDC_IMPL_H
 
-#include <ettus/rfnoc_ddc.h>
+#include <gnuradio/ettus/rfnoc_ddc.h>
 #include <uhd/rfnoc/ddc_block_control.hpp>
 
 namespace gr {

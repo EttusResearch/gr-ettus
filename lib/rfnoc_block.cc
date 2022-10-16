@@ -23,7 +23,7 @@
 #include "config.h"
 #endif
 
-#include <ettus/rfnoc_block.h>
+#include <gnuradio/ettus/rfnoc_block.h>
 
 namespace gr {
 namespace ettus {

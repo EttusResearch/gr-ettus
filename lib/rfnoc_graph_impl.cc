@@ -24,8 +24,8 @@
 #endif
 
 #include "gr_uhd_common.h"
-#include <ettus/rfnoc_block.h>
-#include <ettus/rfnoc_graph.h>
+#include <gnuradio/ettus/rfnoc_block.h>
+#include <gnuradio/ettus/rfnoc_graph.h>
 #include <uhd/rfnoc/mb_controller.hpp>
 #include <uhd/rfnoc_graph.hpp>
 #include <unordered_map>
@@ -223,5 +223,5 @@ private:
 rfnoc_graph::sptr rfnoc_graph::make(const device_addr_t& dev_addr)
 {
     check_abi();
-    return boost::make_shared<rfnoc_graph_impl>(dev_addr);
+    return std::make_shared<rfnoc_graph_impl>(dev_addr);
 }

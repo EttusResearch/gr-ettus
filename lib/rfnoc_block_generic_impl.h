@@ -22,7 +22,7 @@
 #ifndef INCLUDED_GR_UHD_RFNOC_BLOCK_GENERIC_IMPL_H
 #define INCLUDED_GR_UHD_RFNOC_BLOCK_GENERIC_IMPL_H
 
-#include <ettus/rfnoc_block_generic.h>
+#include <gnuradio/ettus/rfnoc_block_generic.h>
 
 namespace gr {
 namespace ettus {

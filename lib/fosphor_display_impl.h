@@ -22,7 +22,7 @@
 #ifndef INCLUDED_ETTUS_FOSPHOR_DISPLAY_IMPL_H
 #define INCLUDED_ETTUS_FOSPHOR_DISPLAY_IMPL_H
 
-#include <ettus/fosphor_display.h>
+#include <gnuradio/ettus/fosphor_display.h>
 
 #include <stdint.h>
 
