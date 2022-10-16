@@ -21,7 +21,7 @@ namespace py = pybind11;
 // Please do not delete
 /**************************************/
 // BINDING_FUNCTION_PROTOTYPES(
-#ifdef ENABLE_QT
+#ifdef ENABLE_FOSPHOR
 void bind_fosphor_display(py::module& m);
 #endif
 void bind_rfnoc_block(py::module& m);
@@ -64,7 +64,8 @@ PYBIND11_MODULE(ettus_python, m)
     // Please do not delete
     /**************************************/
     // BINDING_FUNCTION_CALLS(
-    #ifdef ENABLE_QT
+    #ifdef ENABLE_FOSPHOR
+    py::module::import("gnuradio.qtgui.qtgui_python");
     bind_fosphor_display(m);
     #endif
     bind_rfnoc_block(m);

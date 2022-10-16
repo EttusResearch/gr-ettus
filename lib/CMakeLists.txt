@@ -32,6 +32,7 @@ list(APPEND ettus_sources
     rfnoc_tx_radio_impl.cc
     rfnoc_tx_streamer_impl.cc
 )
+
 if(ENABLE_FOSPHOR)
     list(APPEND ettus_sources
         axis.c
@@ -52,12 +53,15 @@ add_library(gnuradio-ettus SHARED ${ettus_sources})
 include(GrPython)
 if(ENABLE_PYTHON)
     target_compile_definitions(gnuradio-ettus PUBLIC -DENABLE_PYTHON)
+    target_link_libraries(gnuradio-ettus Python::Python)
 endif(ENABLE_PYTHON)
 
 if(ENABLE_FOSPHOR)
     target_link_libraries(gnuradio-ettus
         gnuradio::gnuradio-runtime
-        ${Qt5_LIBRARIES}
+        Qt5::Core
+        Qt5::Gui
+        Qt5::OpenGL
         ${UHD_LIBRARIES}
     )
     if(ENABLE_PYTHON)
@@ -74,10 +78,10 @@ endif(ENABLE_FOSPHOR)
 target_include_directories(gnuradio-ettus
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     PUBLIC $<INSTALL_INTERFACE:include>
-    PUBLIC ${Qt5_INCLUDE_DIRS}
     ${UHD_INCLUDE_DIRS}
 )
 set_target_properties(gnuradio-ettus PROPERTIES DEFINE_SYMBOL "gnuradio_ettus_EXPORTS")
+
 
 if(APPLE)
     set_target_properties(gnuradio-ettus PROPERTIES

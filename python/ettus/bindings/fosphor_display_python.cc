@@ -22,7 +22,7 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
-
+#include <QWidget>
 #include <gnuradio/ettus/fosphor_display.h>
 // pydoc.h is automatically generated in the build directory
 #include <fosphor_display_pydoc.h>
