@@ -7,7 +7,7 @@ For regular USRP operations, this OOT module is *not* required.
 
 ## Dependencies
 
-This OOT requires GNU Radio version 3.8 with gr-uhd enabled.
+This OOT requires GNU Radio version >= 3.10 with gr-uhd enabled.
 It also requires UHD 4.0 to be installed.
 
 Support for the Qt-based Fosphor display block requires that Qt5 be
