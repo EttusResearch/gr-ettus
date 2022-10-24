@@ -95,9 +95,9 @@ endif(APPLE)
 ########################################################################
 # Find gr-ettus build dependencies
 ########################################################################
-find_package(UHD "4.0" REQUIRED)
+find_package(UHD "4.2" REQUIRED)
 if(NOT UHD_FOUND)
-    message(FATAL_ERROR "UHD >= 4.0 not found.")
+    message(FATAL_ERROR "UHD >= 4.2 not found.")
 endif(NOT UHD_FOUND)
 # The maint-3.8-uhd4.0 branch of gr-ettus is compatible only with UHD
 # versions greater than 4.0 and less than 4.2. Perform an explicit check

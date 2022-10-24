@@ -773,8 +773,8 @@ metadata:
 Templates['block_yml'] = '''
 schema: rfnoc_modtool_args
 module_name: ${blockname}
-version: 1.0
-rfnoc_version: 1.0
+version: "1.0"
+rfnoc_version: "1.0"
 chdr_width: 64
 noc_id: 0x${noc_id}
 makefile_srcs: "${"${fpga_lib_dir}"}/blocks/rfnoc_block_${blockname}/Makefile.srcs"
@@ -1807,8 +1807,8 @@ Templates['icore_yml'] = '''
 schema: rfnoc_imagebuilder_args         # Identifier for the schema used to validate this file
 copyright: ''                           # Copyright information used in file headers
 license: 'SPDX-License-Identifier: LGPL-3.0-or-later' # License information used in file headers
-version: 1.0                            # File version
-rfnoc_version: 1.0                      # RFNoC protocol version
+version: '1.0'                          # File version
+rfnoc_version: '1.0'                    # RFNoC protocol version
 chdr_width: 64                          # Bit width of the CHDR bus for this image
 device: 'x310'
 default_target: 'X310_HG'

@@ -29,6 +29,7 @@ parameters:
 - id: num_chans
   label: 'Num Channels'
   dtype: int
+  default: 1
   options: [ ${", ".join([str(n) for n in range(1, max_num_chans+1)])} ]
 - id: block_args
   label: Block Args
