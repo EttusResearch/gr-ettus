@@ -35,10 +35,10 @@ public:
     ~rfnoc_fir_filter_impl();
 
     /*** API *****************************************************************/
-    void set_coefficients(const std::vector<float>& coeffs);
-    void set_coefficients(const std::vector<int16_t>& coeffs);
-    size_t get_max_num_coefficients();
-    std::vector<int16_t> get_coefficients();
+    void set_coefficients(const std::vector<float>& coeffs, const size_t chan);
+    void set_coefficients(const std::vector<int16_t>& coeffs, const size_t chan);
+    size_t get_max_num_coefficients(const size_t chan);
+    std::vector<int16_t> get_coefficients(const size_t chan);
 
 private:
     ::uhd::rfnoc::fir_filter_block_control::sptr d_fir_filter_ref;
