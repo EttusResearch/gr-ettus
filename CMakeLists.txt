@@ -96,17 +96,10 @@ endif(APPLE)
 ########################################################################
 # Find gr-ettus build dependencies
 ########################################################################
-find_package(UHD "4.2" REQUIRED)
+find_package(UHD "4.0" REQUIRED)
 if(NOT UHD_FOUND)
-    message(FATAL_ERROR "UHD >= 4.2 not found.")
+    message(FATAL_ERROR "UHD >= 4.0 not found.")
 endif(NOT UHD_FOUND)
-# The maint-3.8-uhd4.0 branch of gr-ettus is compatible only with UHD
-# versions greater than 4.0 and less than 4.2. Perform an explicit check
-# here, as specifying a version range in find_package() is only supported
-# with CMake 3.19 or later.
-if(NOT UHD_VERSION VERSION_LESS "4.2")
-    MESSAGE(FATAL_ERROR "UHD version must be at least 4.0 but less than 4.2 (found version ${UHD_VERSION}).")
-endif(NOT UHD_VERSION VERSION_LESS "4.2")
 
 find_package(PythonLibs 2)
 if(NOT PYTHONLIBS_FOUND)
