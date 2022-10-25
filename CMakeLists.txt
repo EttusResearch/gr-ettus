@@ -135,10 +135,15 @@ endif(APPLE)
 ########################################################################
 # Find gr-ettus build dependencies
 ########################################################################
-find_package(UHD REQUIRED)
+find_package(UHD 3.10 REQUIRED)
 if(NOT UHD_RFNOC_FOUND)
     message(FATAL_ERROR "RFNoC not found.")
 endif(NOT UHD_RFNOC_FOUND)
+if(NOT UHD_VERSION VERSION_LESS 4.0)
+    message(
+       FATAL_ERROR
+       "This version of gr-ettus does not support UHD 4.x! See README.md.")
+endif()
 
 find_package(PythonLibs 2)
 if(NOT PYTHONLIBS_FOUND)
