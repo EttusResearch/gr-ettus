@@ -24,6 +24,7 @@
 
 #include <ettus/api.h>
 #include <uhd/rfnoc/noc_block_base.hpp>
+#include <uhd/rfnoc_graph.hpp>
 #include <uhd/stream.hpp>
 #include <uhd/types/device_addr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -44,6 +45,9 @@ public:
     using sptr = boost::shared_ptr<rfnoc_graph>;
 
     static sptr make(const ::uhd::device_addr_t& dev_addr);
+
+    static const size_t NULL_ADAPTER_ID =
+        static_cast<size_t>(::uhd::transport::NULL_ADAPTER_ID);
 
     virtual ~rfnoc_graph() {}
 
@@ -92,6 +96,23 @@ public:
     // \param args Stream args.
     virtual ::uhd::tx_streamer::sptr
     create_tx_streamer(const size_t num_ports, const ::uhd::stream_args_t& args) = 0;
+
+    //! Set the desired adapter ID for a streamer connection
+    //
+    // If it is desired to connect a streamer to the device using a specific
+    // adapter ID, this method needs to be called before calling connect().
+    //
+    // For more detail on adapter IDs, see the UHD documentation (e.g.,
+    // ::uhd::rfnoc::rfnoc_graph::connect()). Note that this does not have a
+    // corresponding API call in UHD: There, the connect() call is atomic and
+    // takes the adapter ID as an argument. The reason this is different in the
+    // GNU Radio implementation is that this makes it much easier to generate
+    // code from GRC for C++ and Python. It reduces the number of connect calls
+    // down to 1 (from 3 in UHD) and allows the streamer blocks to set this
+    // property on the streamer-edges before connect calls are made later on.
+    virtual void set_streamer_adapter_id(const std::string& stream_block_id,
+                                         const size_t port,
+                                         const size_t adapter_id) = 0;
 
     //! Commit the graph and run initial checks
     //
