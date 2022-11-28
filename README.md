@@ -1,28 +1,25 @@
 # gr-ettus: Experimental UHD and USRP features for GNU Radio
 
-This is an out-of-tree module with experimental and other features
-extending gr-uhd.
+The master branch of gr-ettus currently does not hold any code!
 
-For regular USRP operations, this OOT module is *not* required.
+For regular `multi_usrp` operations, this OOT module is *not* required.
 
-## Dependencies
+## RFNoC Support
 
-This OOT requires GNU Radio version 3.8 with gr-uhd enabled.
-It also requires UHD 4.0 to be installed.
+This branch (`master`) is not required for using any RFNoC features.
+Refer to the following table to
+identify the correct software packages for other versions of GNU Radio and/or
+UHD.
 
-Support for the Qt-based Fosphor display block requires that Qt5 be
-installed and must be explicitly enabled in order to be built. To
-enable this support, set the ENABLE\_QT flag to ON when running
-cmake.
+| GNU Radio Version | UHD Version | Required Branch                          |
+|-------------------|-------------|------------------------------------------|
+| 3.8.x             | 4.x         | [`maint-3.8-uhd4.0`](https://github.com/EttusResearch/gr-ettus/tree/maint-3.8-uhd4.0) (this branch) |
+| 3.10.x            | 4.x         | gr-ettus not required -- use gr-uhd directly!
+| 3.8.x             | 3.x         | [`maint-3.8`](https://github.com/EttusResearch/gr-ettus/tree/maint-3.8) |
+| 3.7.x             | 3.x         | [`maint-3.7`](https://github.com/EttusResearch/gr-ettus/tree/maint-3.7) |
 
-## RFNoC
 
-Currently, this OOT is required to run RFNoC with GNU Radio.
-
-## License
-
-All code in this repository is licensed under the GPLv3 (see file
-COPYING). Unless stated otherwise, copyright belongs to Ettus Research.
-
-In some cases, copyright may already have been transferred to the FSF
-for blocks that are planned for inclusion in gr-uhd.
+Notes:
+- GNU Radio 3.9 is no longer supported and therefore has no RFNoC support
+- GNU Radio 3.7 does not have UHD 4 support, and there are no plans to
+  support it.
