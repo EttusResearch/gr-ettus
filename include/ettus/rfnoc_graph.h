@@ -42,7 +42,7 @@ class rfnoc_block;
 class ETTUS_API rfnoc_graph
 {
 public:
-    using sptr = boost::shared_ptr<rfnoc_graph>;
+    using sptr = std::shared_ptr<rfnoc_graph>;
 
     static sptr make(const ::uhd::device_addr_t& dev_addr);
 

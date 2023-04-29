@@ -42,7 +42,7 @@ namespace ettus {
 class ETTUS_API fosphor_display : virtual public gr::block
 {
 public:
-    typedef boost::shared_ptr<fosphor_display> sptr;
+    typedef std::shared_ptr<fosphor_display> sptr;
 
     /*!
      * \brief Return a shared_ptr to a new instance of ettus::fosphor_display

@@ -35,7 +35,7 @@ namespace ettus {
 class ETTUS_API rfnoc_siggen : virtual public rfnoc_block
 {
 public:
-    typedef boost::shared_ptr<rfnoc_siggen> sptr;
+    typedef std::shared_ptr<rfnoc_siggen> sptr;
 
     static const ::uhd::rfnoc::siggen_waveform CONSTANT ;
     static const ::uhd::rfnoc::siggen_waveform SINE_WAVE ;

@@ -45,7 +45,7 @@ namespace ettus {
 class ETTUS_API rfnoc_rx_streamer : virtual public gr::sync_block
 {
 public:
-    typedef boost::shared_ptr<rfnoc_rx_streamer> sptr;
+    typedef std::shared_ptr<rfnoc_rx_streamer> sptr;
 
     /*!
      * \param graph Reference to the graph this block is connected to

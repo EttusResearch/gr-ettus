@@ -35,7 +35,7 @@ namespace ettus {
 class ETTUS_API rfnoc_fir_filter : virtual public rfnoc_block
 {
 public:
-    typedef boost::shared_ptr<rfnoc_fir_filter> sptr;
+    typedef std::shared_ptr<rfnoc_fir_filter> sptr;
 
     /*!
      * \param graph Reference to the rfnoc_graph object this block is attached to
